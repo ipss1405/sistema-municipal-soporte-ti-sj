@@ -17,3 +17,7 @@ Route::get('/registro', function () {
 Route::get('/funcionario', function () {
     return view('funcionario.dashboard');
 })->name('funcionario.dashboard');
+
+Route::get('/requerimientos/crear', function () {
+    return view('requerimientos.create');
+})->name('requerimientos.create');
