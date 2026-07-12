@@ -21,3 +21,7 @@ Route::get('/funcionario', function () {
 Route::get('/requerimientos/crear', function () {
     return view('requerimientos.create');
 })->name('requerimientos.create');
+
+Route::get('/mis-requerimientos', function () {
+    return view('requerimientos.index');
+})->name('requerimientos.index');
