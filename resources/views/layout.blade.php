@@ -37,12 +37,12 @@
         .barra-superior {
             padding: 10px 40px;
             background: var(--verde-principal);
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
         }
 
         .navbar {
-            padding: 18px 40px;
+            padding: 24px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -188,7 +188,11 @@
         </div>
 
         <div class="navbar">
-            <div class="logo">MesaTI Municipal</div>
+            <div class="logo">
+                <a href="/" style="color: white; text-decoration: none;">
+                    MesaTI Municipal
+                </a>
+        </div>
 
             <nav class="menu">
                 <a href="/">Inicio</a>
