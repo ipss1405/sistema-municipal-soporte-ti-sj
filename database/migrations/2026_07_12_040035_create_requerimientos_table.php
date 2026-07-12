@@ -6,20 +6,29 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('requerimientos', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            $table->string('categoria');
+            $table->string('titulo');
+            $table->text('descripcion');
+            $table->string('prioridad')->default('media');
+            $table->string('estado')->default('pendiente');
+
+            $table->text('respuesta_admin')->nullable();
+            $table->timestamp('fecha_cierre')->nullable();
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('requerimientos');

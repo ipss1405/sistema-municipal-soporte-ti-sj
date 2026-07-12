@@ -7,59 +7,33 @@ use Illuminate\Http\Request;
 
 class RequerimientoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $requerimientos = Requerimiento::orderBy('created_at', 'desc')->get();
+
+        return view('requerimientos.index', compact('requerimientos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $datos = $request->validate([
+            'categoria' => 'required|string|max:255',
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'prioridad' => 'required|in:baja,media,alta,urgente',
+        ]);
+
+        $datos['user_id'] = null;
+        $datos['estado'] = 'pendiente';
+
+        Requerimiento::create($datos);
+
+        return redirect('/mis-requerimientos')
+            ->with('success', 'Requerimiento registrado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Requerimiento $requerimiento)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Requerimiento $requerimiento)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Requerimiento $requerimiento)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Requerimiento $requerimiento)
-    {
-        //
+        return view('requerimientos.show', compact('requerimiento'));
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RequerimientoController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -22,10 +23,15 @@ Route::get('/requerimientos/crear', function () {
     return view('requerimientos.create');
 })->name('requerimientos.create');
 
-Route::get('/mis-requerimientos', function () {
-    return view('requerimientos.index');
-})->name('requerimientos.index');
+Route::get('/requerimientos', function () {
+    return redirect('/mis-requerimientos');
+});
 
-Route::get('/requerimientos/1', function () {
-    return view('requerimientos.show');
-})->name('requerimientos.show');
+Route::post('/requerimientos', [RequerimientoController::class, 'store'])
+    ->name('requerimientos.store');
+
+Route::get('/mis-requerimientos', [RequerimientoController::class, 'index'])
+    ->name('requerimientos.index');
+
+Route::get('/requerimientos/{requerimiento}', [RequerimientoController::class, 'show'])
+    ->name('requerimientos.show');
