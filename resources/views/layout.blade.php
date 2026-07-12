@@ -15,6 +15,11 @@
             --fondo-claro: #EAF7E3;
             --blanco: #FFFFFF;
             --texto: #1F2937;
+            --gris: #6B7280;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -24,54 +29,67 @@
             color: var(--texto);
         }
 
-        header {
-            background: linear-gradient(
-                90deg,
-                var(--morado-principal),
-                var(--rojo-acento),
-                var(--naranjo-acento)
-            );
-            color: var(--blanco);
-        }
-
         .barra-superior {
-            padding: 10px 40px;
             background: var(--verde-principal);
+            color: white;
+            padding: 14px 40px;
             font-size: 14px;
             font-weight: bold;
         }
 
         .navbar {
-            padding: 24px 40px;
+            background: linear-gradient(90deg, var(--morado-principal), var(--rojo-acento), var(--naranjo-acento));
+            padding: 12px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .logo {
+        .logo-contenedor {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: white;
+            text-decoration: none;
             font-size: 24px;
             font-weight: bold;
         }
 
+        .logo-municipal {
+            width: 145px;
+            height: 58px;
+            object-fit: contain;
+            background: white;
+            padding: 5px;
+            border-radius: 6px;
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
         .menu a {
-            color: var(--blanco);
+            color: white;
             text-decoration: none;
-            margin-left: 20px;
-            font-size: 15px;
             font-weight: bold;
+            font-size: 15px;
         }
 
         .menu a:hover {
             text-decoration: underline;
         }
 
-        main {
-            padding: 40px;
-        }
-
         .contenedor {
+            width: 88%;
             max-width: 1150px;
-            margin: auto;
+            margin: 40px auto;
         }
 
         .grid-inicio {
@@ -81,105 +99,135 @@
             align-items: start;
         }
 
-        .card {
-            background: var(--blanco);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-top: 5px solid var(--verde-principal);
-        }
-
-        .card h1 {
-            margin-top: 0;
-            color: var(--morado-principal);
-        }
-
-        .card p {
-            line-height: 1.4;
-        }
-
-        .btn {
-            display: inline-block;
-            background: var(--morado-principal);
-            color: var(--blanco);
-            padding: 12px 18px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin-top: 15px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn:hover {
-            background: #4A327D;
-        }
-
         .panel-accesos {
             background: var(--morado-principal);
-            color: var(--blanco);
+            color: white;
             padding: 25px;
             border-radius: 8px;
         }
 
         .panel-accesos h2 {
             margin-top: 0;
-            font-size: 24px;
+            margin-bottom: 20px;
+            font-size: 26px;
         }
 
         .acceso {
             display: block;
             background: var(--morado-secundario);
-            color: var(--blanco);
+            color: white;
             text-decoration: none;
-            padding: 11px 14px;
+            padding: 12px 14px;
             border-radius: 5px;
             margin-bottom: 12px;
-            font-size: 15px;
             font-weight: bold;
         }
 
         .acceso:hover {
-            background: var(--naranjo-acento);
+            background: #7B5AC8;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border-top: 5px solid var(--verde-principal);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        .card h1 {
+            color: var(--morado-principal);
+            margin-top: 0;
+            font-size: 34px;
+        }
+
+        .card h2 {
+            color: var(--morado-principal);
+            margin-top: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--morado-principal);
+            color: white;
+            text-decoration: none;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--morado-secundario);
         }
 
         input,
         select,
         textarea {
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #D1D5DB;
+            border-radius: 5px;
+            font-size: 15px;
         }
 
-        footer {
-            margin-top: 40px;
+        label {
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid #E5E7EB;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #F3F4F6;
+            color: var(--morado-principal);
+        }
+
+        .footer {
+            margin-top: 50px;
             padding: 20px;
             text-align: center;
             background: var(--morado-principal);
-            color: var(--blanco);
+            color: white;
             font-size: 14px;
         }
 
-        @media (max-width: 800px) {
+        @media (max-width: 850px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
             .grid-inicio {
                 grid-template-columns: 1fr;
             }
 
-            .navbar {
+            .logo-link {
                 flex-direction: column;
+                gap: 8px;
+            }
+
+            .menu {
                 gap: 15px;
-            }
-
-            .menu a {
-                margin-left: 10px;
-                margin-right: 10px;
-            }
-
-            main {
-                padding: 25px;
             }
         }
     </style>
 </head>
+
 <body>
 
     <header>
@@ -188,11 +236,12 @@
         </div>
 
         <div class="navbar">
-            <div class="logo">
-                <a href="/" style="color: white; text-decoration: none;">
-                    MesaTI Municipal
+            <div class="logo-contenedor">
+                <a href="/" class="logo-link">
+                    <img src="{{ asset('img/logo-municipal.png') }}" alt="Logo Municipal" class="logo-municipal">
+                    <span>MesaTI Municipal</span>
                 </a>
-        </div>
+            </div>
 
             <nav class="menu">
                 <a href="/">Inicio</a>
@@ -202,14 +251,12 @@
         </div>
     </header>
 
-    <main>
-        <div class="contenedor">
-            @yield('content')
-        </div>
+    <main class="contenedor">
+        @yield('content')
     </main>
 
-    <footer>
-        Plataforma de Requerimientos Informáticos Municipales
+    <footer class="footer">
+        MesaTI Municipal - Sistema interno de requerimientos informáticos
     </footer>
 
 </body>
