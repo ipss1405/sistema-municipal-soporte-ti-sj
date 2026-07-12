@@ -25,3 +25,7 @@ Route::get('/requerimientos/crear', function () {
 Route::get('/mis-requerimientos', function () {
     return view('requerimientos.index');
 })->name('requerimientos.index');
+
+Route::get('/requerimientos/1', function () {
+    return view('requerimientos.show');
+})->name('requerimientos.show');

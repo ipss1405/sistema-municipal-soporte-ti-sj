@@ -36,8 +36,9 @@
                 <td style="padding: 12px;">En revisión</td>
                 <td style="padding: 12px;">02-07-2026</td>
                 <td style="padding: 12px;">
-                    <a href="#" class="btn" style="padding: 8px 12px; margin-top: 0;">
+                    <a href="/requerimientos/1" class="btn" style="padding: 8px 12px; margin-top: 0;">
                         Ver detalle
+                    </a>
                     </a>
                 </td>
             </tr>
@@ -50,7 +51,7 @@
                 <td style="padding: 12px;">Pendiente</td>
                 <td style="padding: 12px;">02-07-2026</td>
                 <td style="padding: 12px;">
-                    <a href="#" class="btn" style="padding: 8px 12px; margin-top: 0;">
+                    <a href="/requerimientos/1" class="btn" style="padding: 8px 12px; margin-top: 0;">
                         Ver detalle
                     </a>
                 </td>
@@ -64,8 +65,9 @@
                 <td style="padding: 12px;">Resuelto</td>
                 <td style="padding: 12px;">01-07-2026</td>
                 <td style="padding: 12px;">
-                    <a href="#" class="btn" style="padding: 8px 12px; margin-top: 0;">
+                    <a href="/requerimientos/1" class="btn" style="padding: 8px 12px; margin-top: 0;">
                         Ver detalle
+                    </a>
                     </a>
                 </td>
             </tr>
