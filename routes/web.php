@@ -13,3 +13,7 @@ Route::get('/login', function () {
 Route::get('/registro', function () {
     return view('auth.register');
 })->name('registro');
+
+Route::get('/funcionario', function () {
+    return view('funcionario.dashboard');
+})->name('funcionario.dashboard');
