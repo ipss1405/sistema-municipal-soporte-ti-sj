@@ -32,7 +32,7 @@
 
             <p>
                 <strong>Estado:</strong>
-                {{ ucfirst(str_replace('_', ' ', $requerimiento->estado)) }}
+                <x-estado :estado="$requerimiento->estado" />
             </p>
 
             <p>
@@ -88,7 +88,7 @@
 
             <p>
                 <strong>Estado actual:</strong><br>
-                {{ ucfirst(str_replace('_', ' ', $requerimiento->estado)) }}
+                <x-estado :estado="$requerimiento->estado" />
             </p>
 
             <p>
@@ -104,7 +104,7 @@
             @if ($requerimiento->fecha_cierre)
                 <p>
                     <strong>Fecha de cierre:</strong><br>
-                    {{ $requerimiento->fecha_cierre->format('d-m-Y H:i') }}
+                    {{ $requerimiento->fecha_cierre }}
                 </p>
             @else
                 <p>

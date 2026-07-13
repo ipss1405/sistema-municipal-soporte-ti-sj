@@ -196,6 +196,46 @@
             color: var(--morado-principal);
         }
 
+        .estado-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 95px;
+        }
+
+        .estado-pendiente {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .estado-revision {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .estado-proceso {
+            background: #EDE9FE;
+            color: #5B21B6;
+        }
+
+        .estado-resuelto {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .estado-cerrado {
+            background: #E5E7EB;
+            color: #374151;
+        }
+
+        .estado-rechazado {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
         .footer {
             margin-top: 50px;
             padding: 20px;

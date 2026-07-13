@@ -17,13 +17,35 @@
         border-left: 5px solid #78BE20;
         margin-bottom: 25px;
     ">
-        <p><strong>N° de requerimiento:</strong> {{ $requerimiento->id }}</p>
-        <p><strong>Título:</strong> {{ $requerimiento->titulo }}</p>
-        <p><strong>Categoría:</strong> {{ ucfirst($requerimiento->categoria) }}</p>
-        <p><strong>Prioridad:</strong> {{ ucfirst($requerimiento->prioridad) }}</p>
-        <p><strong>Estado actual:</strong> {{ ucfirst(str_replace('_', ' ', $requerimiento->estado)) }}</p>
+        <p>
+            <strong>N° de requerimiento:</strong>
+            {{ $requerimiento->id }}
+        </p>
 
-        <p><strong>Descripción del funcionario:</strong></p>
+        <p>
+            <strong>Título:</strong>
+            {{ $requerimiento->titulo }}
+        </p>
+
+        <p>
+            <strong>Categoría:</strong>
+            {{ ucfirst($requerimiento->categoria) }}
+        </p>
+
+        <p>
+            <strong>Prioridad:</strong>
+            {{ ucfirst($requerimiento->prioridad) }}
+        </p>
+
+        <p>
+            <strong>Estado actual:</strong>
+            <x-estado :estado="$requerimiento->estado" />
+        </p>
+
+        <p>
+            <strong>Descripción del funcionario:</strong>
+        </p>
+
         <p>
             {{ $requerimiento->descripcion }}
         </p>

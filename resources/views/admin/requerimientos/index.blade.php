@@ -43,7 +43,9 @@
                     <td>{{ $requerimiento->titulo }}</td>
                     <td>{{ ucfirst($requerimiento->categoria) }}</td>
                     <td>{{ ucfirst($requerimiento->prioridad) }}</td>
-                    <td>{{ ucfirst(str_replace('_', ' ', $requerimiento->estado)) }}</td>
+                    <td>
+                        <x-estado :estado="$requerimiento->estado" />
+                    </td>
                     <td>{{ $requerimiento->created_at->format('d-m-Y H:i') }}</td>
                     <td>
                         <a href="{{ route('admin.requerimientos.edit', $requerimiento) }}" class="btn">
