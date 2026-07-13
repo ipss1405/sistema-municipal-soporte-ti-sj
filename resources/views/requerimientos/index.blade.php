@@ -6,76 +6,69 @@
     <h1>Mis requerimientos</h1>
 
     <p>
-        En esta sección podrás revisar los requerimientos informáticos ingresados,
-        consultar su estado actual y acceder al detalle de cada solicitud.
+        En esta sección se muestran los requerimientos informáticos registrados
+        en la plataforma.
     </p>
-</div>
 
-<div class="card" style="margin-top: 25px; overflow-x: auto;">
-    <h2>Listado de solicitudes</h2>
+    @if (session('success'))
+        <div style="
+            background: #DCFCE7;
+            color: #166534;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 5px solid #78BE20;
+        ">
+            {{ session('success') }}
+        </div>
+    @endif
 
-    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+    <table>
         <thead>
-            <tr style="background: #5B3F95; color: white;">
-                <th style="padding: 12px; text-align: left;">N°</th>
-                <th style="padding: 12px; text-align: left;">Título</th>
-                <th style="padding: 12px; text-align: left;">Categoría</th>
-                <th style="padding: 12px; text-align: left;">Prioridad</th>
-                <th style="padding: 12px; text-align: left;">Estado</th>
-                <th style="padding: 12px; text-align: left;">Fecha</th>
-                <th style="padding: 12px; text-align: left;">Acción</th>
+            <tr>
+                <th>N°</th>
+                <th>Título</th>
+                <th>Categoría</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Fecha ingreso</th>
+                <th>Acción</th>
             </tr>
         </thead>
 
         <tbody>
-            <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px;">1</td>
-                <td style="padding: 12px;">Problema para acceder al correo</td>
-                <td style="padding: 12px;">Correo institucional</td>
-                <td style="padding: 12px;">Alta</td>
-                <td style="padding: 12px;">En revisión</td>
-                <td style="padding: 12px;">02-07-2026</td>
-                <td style="padding: 12px;">
-                    <a href="/requerimientos/1" class="btn" style="padding: 8px 12px; margin-top: 0;">
-                        Ver detalle
-                    </a>
-                    </a>
-                </td>
-            </tr>
-
-            <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px;">2</td>
-                <td style="padding: 12px;">Impresora no responde</td>
-                <td style="padding: 12px;">Impresora</td>
-                <td style="padding: 12px;">Media</td>
-                <td style="padding: 12px;">Pendiente</td>
-                <td style="padding: 12px;">02-07-2026</td>
-                <td style="padding: 12px;">
-                    <a href="/requerimientos/1" class="btn" style="padding: 8px 12px; margin-top: 0;">
-                        Ver detalle
-                    </a>
-                </td>
-            </tr>
-
-            <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px;">3</td>
-                <td style="padding: 12px;">Solicitud de creación de usuario</td>
-                <td style="padding: 12px;">Usuario y contraseña</td>
-                <td style="padding: 12px;">Baja</td>
-                <td style="padding: 12px;">Resuelto</td>
-                <td style="padding: 12px;">01-07-2026</td>
-                <td style="padding: 12px;">
-                    <a href="/requerimientos/1" class="btn" style="padding: 8px 12px; margin-top: 0;">
-                        Ver detalle
-                    </a>
-                    </a>
-                </td>
-            </tr>
+            @forelse ($requerimientos as $requerimiento)
+                <tr>
+                    <td>{{ $requerimiento->id }}</td>
+                    <td>{{ $requerimiento->titulo }}</td>
+                    <td>{{ ucfirst($requerimiento->categoria) }}</td>
+                    <td>{{ ucfirst($requerimiento->prioridad) }}</td>
+                    <td>{{ ucfirst(str_replace('_', ' ', $requerimiento->estado)) }}</td>
+                    <td>{{ $requerimiento->created_at->format('d-m-Y H:i') }}</td>
+                    <td>
+                        <a href="{{ route('requerimientos.show', $requerimiento) }}" class="btn">
+                            Ver detalle
+                        </a>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7">
+                        No existen requerimientos registrados.
+                    </td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 
-    <a href="/funcionario" class="btn" style="background: #6B7280; margin-top: 20px;">
+    <br>
+
+    <a href="/funcionario" class="btn" style="background: #6B7280;">
         Volver al panel
+    </a>
+
+    <a href="/requerimientos/crear" class="btn" style="margin-left: 10px;">
+        Nuevo requerimiento
     </a>
 </div>
 
