@@ -36,4 +36,33 @@ class RequerimientoController extends Controller
     {
         return view('requerimientos.show', compact('requerimiento'));
     }
+
+    public function adminIndex()
+    {
+        $requerimientos = Requerimiento::orderBy('created_at', 'desc')->get();
+
+        return view('admin.requerimientos.index', compact('requerimientos'));
+    }
+
+    public function edit(Requerimiento $requerimiento)
+    {
+        return view('admin.requerimientos.edit', compact('requerimiento'));
+    }
+
+    public function update(Request $request, Requerimiento $requerimiento)
+    {
+        $datos = $request->validate([
+            'estado' => 'required|in:pendiente,en_revision,en_proceso,resuelto,cerrado,rechazado',
+            'respuesta_admin' => 'nullable|string',
+        ]);
+
+        if ($datos['estado'] === 'resuelto' || $datos['estado'] === 'cerrado') {
+            $datos['fecha_cierre'] = now();
+        }
+
+        $requerimiento->update($datos);
+
+        return redirect('/admin/requerimientos')
+            ->with('success', 'Requerimiento actualizado correctamente.');
+    }
 }

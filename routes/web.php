@@ -33,5 +33,26 @@ Route::post('/requerimientos', [RequerimientoController::class, 'store'])
 Route::get('/mis-requerimientos', [RequerimientoController::class, 'index'])
     ->name('requerimientos.index');
 
+/*
+|--------------------------------------------------------------------------
+| Rutas de administración
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/admin/requerimientos', [RequerimientoController::class, 'adminIndex'])
+    ->name('admin.requerimientos.index');
+
+Route::get('/admin/requerimientos/{requerimiento}/editar', [RequerimientoController::class, 'edit'])
+    ->name('admin.requerimientos.edit');
+
+Route::put('/admin/requerimientos/{requerimiento}', [RequerimientoController::class, 'update'])
+    ->name('admin.requerimientos.update');
+
+/*
+|--------------------------------------------------------------------------
+| Detalle de requerimiento funcionario
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/requerimientos/{requerimiento}', [RequerimientoController::class, 'show'])
     ->name('requerimientos.show');
