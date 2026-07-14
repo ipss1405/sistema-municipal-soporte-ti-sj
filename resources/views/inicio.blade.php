@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div style="
+<div class="animacion-entrada" style="
     display: grid;
     grid-template-columns: 330px 1fr;
     gap: 25px;
@@ -10,7 +10,7 @@
 ">
 
     <div>
-        <aside class="panel-accesos">
+        <aside class="panel-accesos tarjeta-dinamica">
             <h2>Accesos rápidos</h2>
 
             <a href="/login" class="acceso">
@@ -26,7 +26,7 @@
             </a>
         </aside>
 
-        <div style="
+        <div class="tarjeta-dinamica" style="
             background: white;
             margin-top: 20px;
             padding: 22px;
@@ -54,7 +54,7 @@
             </p>
         </div>
 
-        <div style="
+        <div class="tarjeta-dinamica" style="
             background: white;
             margin-top: 20px;
             padding: 22px;
@@ -84,22 +84,8 @@
     </div>
 
     <section class="card" style="padding: 0; overflow: hidden;">
-        <div style="
-            background: linear-gradient(135deg, #5B3F95, #EF3E24, #F26B21);
-            color: white;
-            padding: 35px;
-        ">
-            <p style="
-                display: inline-block;
-                background: #78BE20;
-                color: white;
-                padding: 8px 14px;
-                border-radius: 20px;
-                font-weight: bold;
-                margin-top: 0;
-                margin-bottom: 18px;
-                font-size: 14px;
-            ">
+        <div class="hero-municipal">
+            <p class="etiqueta-municipal">
                 Municipalidad de San Joaquín
             </p>
 
@@ -140,7 +126,7 @@
                 gap: 18px;
                 margin-top: 30px;
             ">
-                <div style="
+                <div class="bloque-resumen" style="
                     background: #EAF7E3;
                     border-left: 5px solid #78BE20;
                     padding: 18px;
@@ -155,7 +141,7 @@
                     </p>
                 </div>
 
-                <div style="
+                <div class="bloque-resumen" style="
                     background: #F9FAFB;
                     border-left: 5px solid #5B3F95;
                     padding: 18px;
@@ -170,7 +156,7 @@
                     </p>
                 </div>
 
-                <div style="
+                <div class="bloque-resumen" style="
                     background: #FFF7ED;
                     border-left: 5px solid #F26B21;
                     padding: 18px;
@@ -187,15 +173,42 @@
             </div>
 
             <div style="
+                display: grid;
+                grid-template-columns: 100px 1fr;
+                gap: 20px;
+                align-items: center;
                 margin-top: 30px;
-                padding: 20px;
+                padding: 22px;
                 background: #F9FAFB;
                 border-radius: 8px;
                 border-left: 5px solid #78BE20;
             ">
-                <strong>Estado inicial:</strong>
-                todo requerimiento ingresado queda registrado como
-                <strong>Pendiente</strong>, hasta que el área de Informática revise la solicitud.
+                <div class="circulo-ti" style="
+                    background: #5B3F95;
+                    color: white;
+                    border-radius: 50%;
+                    width: 80px;
+                    height: 80px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 30px;
+                    font-weight: bold;
+                ">
+                    TI
+                </div>
+
+                <div>
+                    <h3 style="color: #5B3F95; margin-top: 0;">
+                        Seguimiento del requerimiento
+                    </h3>
+
+                    <p style="margin-bottom: 0;">
+                        Todo requerimiento ingresado queda registrado inicialmente como
+                        <strong>Pendiente</strong>, hasta que el área de Informática revise,
+                        gestione y responda la solicitud.
+                    </p>
+                </div>
             </div>
         </div>
     </section>

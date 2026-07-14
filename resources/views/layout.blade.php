@@ -92,13 +92,6 @@
             margin: 40px auto;
         }
 
-        .grid-inicio {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 25px;
-            align-items: start;
-        }
-
         .panel-accesos {
             background: var(--morado-principal);
             color: white;
@@ -121,10 +114,12 @@
             border-radius: 5px;
             margin-bottom: 12px;
             font-weight: bold;
+            transition: transform 0.25s ease, background 0.25s ease;
         }
 
         .acceso:hover {
             background: #7B5AC8;
+            transform: translateX(4px);
         }
 
         .card {
@@ -156,10 +151,12 @@
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
+            transition: transform 0.25s ease, background 0.25s ease;
         }
 
         .btn:hover {
             background: var(--morado-secundario);
+            transform: translateY(-2px);
         }
 
         input,
@@ -236,6 +233,67 @@
             color: #991B1B;
         }
 
+        .animacion-entrada {
+            animation: entradaSuave 0.7s ease-in-out;
+        }
+
+        @keyframes entradaSuave {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tarjeta-dinamica {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .tarjeta-dinamica:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+        }
+
+        .hero-municipal {
+            background: linear-gradient(135deg, #5B3F95, #EF3E24, #F26B21);
+            color: white;
+            padding: 35px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .etiqueta-municipal {
+            display: inline-block;
+            background: #78BE20;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .bloque-resumen {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .bloque-resumen:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.14);
+        }
+
+        .circulo-ti {
+            transition: transform 0.3s ease;
+        }
+
+        .circulo-ti:hover {
+            transform: rotate(-4deg) scale(1.06);
+        }
+
         .footer {
             margin-top: 50px;
             padding: 20px;
@@ -252,10 +310,6 @@
                 text-align: center;
             }
 
-            .grid-inicio {
-                grid-template-columns: 1fr;
-            }
-
             .logo-link {
                 flex-direction: column;
                 gap: 8px;
@@ -263,6 +317,10 @@
 
             .menu {
                 gap: 15px;
+            }
+
+            .contenedor {
+                width: 94%;
             }
         }
     </style>
