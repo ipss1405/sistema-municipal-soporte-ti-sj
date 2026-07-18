@@ -38,6 +38,7 @@ Desarrollar una plataforma web municipal para registrar, gestionar y hacer segui
 - Administración de requerimientos.
 - Cambio de estado del requerimiento.
 - Registro de respuesta del área informática.
+- Eliminación de requerimientos desde administración.
 - Seguimiento visible para el funcionario.
 - Componente reutilizable para mostrar estados.
 - Efectos visuales suaves en la portada.

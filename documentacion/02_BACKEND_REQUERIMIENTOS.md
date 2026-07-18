@@ -163,6 +163,36 @@ El flujo principal del backend es:
 - Base de datos MySQL.
 - Vista con datos reales.
 
+---
+
+## Eliminación de requerimientos
+
+Se incorporó la funcionalidad de eliminación de requerimientos desde la sección administrativa del sistema.
+
+Esta funcionalidad permite que el área de informática pueda eliminar un requerimiento registrado cuando corresponda a un registro de prueba, duplicado o ingresado por error.
+
+La eliminación se realiza utilizando el verbo HTTP `DELETE`, cumpliendo con la estructura esperada para una operación CRUD en Laravel.
+
+La ruta utilizada es:
+
+`DELETE /admin/requerimientos/{requerimiento}`
+
+Esta ruta llama al método `destroy` del controlador `RequerimientoController`.
+
+En el controlador, el método encargado de eliminar es:
+
+`destroy(Requerimiento $requerimiento)`
+
+Dentro de este método se ejecuta la eliminación del registro mediante:
+
+`$requerimiento->delete();`
+
+Después de eliminar el requerimiento, el sistema redirige nuevamente a la vista de administración y muestra el mensaje:
+
+`Requerimiento eliminado correctamente.`
+
+Esta funcionalidad complementa el CRUD del sistema, permitiendo listar, crear, visualizar, actualizar y eliminar requerimientos.
+
 ## Conclusión
 
 El backend de MesaTI Municipal permite gestionar requerimientos informáticos de forma funcional, utilizando Laravel, MySQL, rutas, controlador, modelo, migraciones y vistas Blade.

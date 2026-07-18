@@ -17,6 +17,7 @@ El objetivo es comprobar que el sistema permita:
 - Gestionar requerimientos desde administración.
 - Cambiar el estado de un requerimiento.
 - Registrar una respuesta del área informática.
+- Eliminar requerimientos desde administración.
 - Mostrar el seguimiento actualizado al funcionario.
 
 ## Alcance de las pruebas
@@ -29,6 +30,7 @@ Las pruebas consideran las siguientes secciones del sistema:
 - Detalle del requerimiento.
 - Administración de requerimientos.
 - Gestión administrativa del requerimiento.
+- Eliminación de requerimientos desde administración.
 
 Actualmente el login y el registro se encuentran implementados de forma visual, por lo que no se incluyen pruebas de autenticación real.
 
@@ -335,6 +337,44 @@ Los efectos visuales se ejecutan correctamente sin afectar la navegación del si
 
 **Estado:** Aprobado.
 
+## Caso de prueba 13: Eliminar requerimiento desde administración
+
+**Objetivo:** Verificar que el administrador pueda eliminar un requerimiento registrado utilizando la opción Eliminar desde la vista de administración.
+
+**Ruta:** `/admin/requerimientos`
+
+**Datos de prueba:**
+
+- Requerimiento de prueba: Prueba eliminar.
+- Acción: Botón Eliminar.
+- Método utilizado: DELETE.
+
+**Precondiciones:**
+
+- El proyecto debe estar ejecutándose con `php artisan serve`.
+- Laragon debe tener MySQL iniciado.
+- Debe existir al menos un requerimiento de prueba registrado en el sistema.
+- El usuario debe estar ubicado en la vista de administración de requerimientos.
+
+**Pasos:**
+
+- Ingresar a la ruta `/admin/requerimientos`.
+- Identificar un requerimiento de prueba en la tabla.
+- Presionar el botón Eliminar.
+- Confirmar la eliminación en la ventana emergente del navegador.
+- Verificar que el sistema redirige nuevamente a la administración.
+- Revisar que el requerimiento eliminado ya no aparezca en la tabla.
+
+**Resultado esperado:**
+
+El sistema debe eliminar correctamente el requerimiento seleccionado, mostrar el mensaje `Requerimiento eliminado correctamente.` y quitar el registro de la tabla administrativa.
+
+**Resultado obtenido:**
+
+El requerimiento fue eliminado correctamente desde administración. El sistema mostró el mensaje de confirmación y el registro ya no se visualizó en la tabla.
+
+**Estado:** Aprobado.
+
 ## Resumen de pruebas
 
 | N° | Prueba | Estado |
@@ -351,9 +391,14 @@ Los efectos visuales se ejecutan correctamente sin afectar la navegación del si
 | 10 | Registro de respuesta administrativa | Aprobado |
 | 11 | Visualización de etiqueta de estado | Aprobado |
 | 12 | Dinamismo visual de la portada | Aprobado |
+| 13 | Eliminar requerimiento desde administración | Aprobado |
 
 ## Conclusión
 
 Las pruebas realizadas permiten comprobar que el sistema MesaTI Municipal cumple correctamente con el flujo principal de gestión de requerimientos informáticos.
 
-El sistema permite crear, guardar, listar, visualizar, administrar y actualizar requerimientos, además de mostrar el seguimiento y la respuesta del área informática al funcionario.
+El sistema permite crear, guardar, listar, visualizar, administrar, actualizar y eliminar requerimientos, además de mostrar el seguimiento y la respuesta del área informática al funcionario.
+
+La prueba de eliminación confirma que la funcionalidad DELETE fue implementada correctamente desde la vista administrativa, cumpliendo con las operaciones principales solicitadas en la evaluación.
+
+---
