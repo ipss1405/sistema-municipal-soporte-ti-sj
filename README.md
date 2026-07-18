@@ -6,7 +6,7 @@ Sistema web interno para la gestión de requerimientos informáticos municipales
 
 MesaTI Municipal es una plataforma orientada al uso interno de funcionarios municipales. Permite registrar solicitudes de soporte informático, revisar su estado, visualizar el seguimiento y consultar la respuesta entregada por el área de Informática.
 
-El sistema también cuenta con una sección de administración donde el área informática puede revisar los requerimientos ingresados, cambiar su estado y registrar una respuesta para el funcionario.
+El sistema también cuenta con una sección de administración donde el área informática puede revisar los requerimientos ingresados, cambiar su estado, registrar una respuesta para el funcionario y eliminar requerimientos cuando corresponda.
 
 ## Objetivo general
 
@@ -42,6 +42,8 @@ Desarrollar una plataforma web municipal para registrar, gestionar y hacer segui
 - Seguimiento visible para el funcionario.
 - Componente reutilizable para mostrar estados.
 - Efectos visuales suaves en la portada.
+- Documentación técnica del sistema.
+- Capturas de evidencia del funcionamiento.
 
 ## Estructura general del sistema
 
@@ -52,6 +54,16 @@ El sistema utiliza el patrón MVC propio de Laravel:
 - **Controlador:** procesa las solicitudes y coordina la lógica.
 - **Base de datos:** almacena la información en MySQL.
 
+La estructura principal utilizada es:
+
+- `routes/web.php`
+- `app/Http/Controllers/RequerimientoController.php`
+- `app/Models/Requerimiento.php`
+- `resources/views`
+- `resources/views/components`
+- `database/migrations`
+- `documentacion`
+
 ## Modelo principal
 
 El modelo principal del sistema es `Requerimiento`.
@@ -61,6 +73,8 @@ Archivo:
 `app/Models/Requerimiento.php`
 
 Este modelo permite trabajar con la tabla `requerimientos` mediante Eloquent ORM.
+
+El modelo contiene los campos permitidos para registro y actualización mediante `$fillable`.
 
 ## Controlador principal
 
@@ -76,6 +90,17 @@ Este controlador permite:
 - Mostrar la vista de administración.
 - Editar requerimientos desde administración.
 - Actualizar estado y respuesta.
+- Eliminar requerimientos desde administración.
+
+Métodos principales del controlador:
+
+- `index()`
+- `store()`
+- `show()`
+- `adminIndex()`
+- `edit()`
+- `update()`
+- `destroy()`
 
 ## Base de datos
 
@@ -89,31 +114,43 @@ Tabla principal:
 
 Campos principales:
 
-- id.
-- user_id.
-- categoria.
-- titulo.
-- descripcion.
-- prioridad.
-- estado.
-- respuesta_admin.
-- fecha_cierre.
-- created_at.
-- updated_at.
+- `id`
+- `user_id`
+- `categoria`
+- `titulo`
+- `descripcion`
+- `prioridad`
+- `estado`
+- `respuesta_admin`
+- `fecha_cierre`
+- `created_at`
+- `updated_at`
 
 ## Rutas principales
 
-| Ruta | Descripción |
-|---|---|
-| `/` | Página principal |
-| `/login` | Login visual |
-| `/registro` | Registro visual |
-| `/funcionario` | Panel funcionario |
-| `/requerimientos/crear` | Crear requerimiento |
-| `/mis-requerimientos` | Listado de requerimientos |
-| `/requerimientos/{id}` | Detalle del requerimiento |
-| `/admin/requerimientos` | Administración de requerimientos |
-| `/admin/requerimientos/{id}/editar` | Gestión administrativa del requerimiento |
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/` | Página principal |
+| GET | `/login` | Login visual |
+| GET | `/registro` | Registro visual |
+| GET | `/funcionario` | Panel funcionario |
+| GET | `/requerimientos/crear` | Formulario para crear requerimiento |
+| POST | `/requerimientos` | Guarda un nuevo requerimiento |
+| GET | `/mis-requerimientos` | Listado de requerimientos |
+| GET | `/requerimientos/{requerimiento}` | Detalle del requerimiento |
+| GET | `/admin/requerimientos` | Administración de requerimientos |
+| GET | `/admin/requerimientos/{requerimiento}/editar` | Gestión administrativa del requerimiento |
+| PUT | `/admin/requerimientos/{requerimiento}` | Actualiza estado y respuesta |
+| DELETE | `/admin/requerimientos/{requerimiento}` | Elimina un requerimiento desde administración |
+
+## Verbos HTTP utilizados
+
+El proyecto utiliza los verbos HTTP solicitados para una estructura CRUD:
+
+- **GET:** mostrar vistas y consultar información.
+- **POST:** guardar nuevos requerimientos.
+- **PUT:** actualizar estado y respuesta administrativa.
+- **DELETE:** eliminar requerimientos desde administración.
 
 ## Flujo principal del sistema
 
@@ -124,6 +161,7 @@ Campos principales:
 5. El área de Informática revisa el requerimiento.
 6. Administración cambia el estado y registra una respuesta.
 7. El funcionario visualiza el seguimiento actualizado.
+8. Administración puede eliminar un requerimiento si corresponde.
 
 ## Estados del requerimiento
 
@@ -140,6 +178,43 @@ Estos estados se muestran mediante un componente visual reutilizable ubicado en:
 
 `resources/views/components/estado.blade.php`
 
+El componente se utiliza en distintas vistas para mantener una visualización consistente del estado del requerimiento.
+
+## Vistas principales
+
+El sistema cuenta con las siguientes vistas Blade:
+
+- `resources/views/inicio.blade.php`
+- `resources/views/auth/login.blade.php`
+- `resources/views/auth/register.blade.php`
+- `resources/views/funcionario/dashboard.blade.php`
+- `resources/views/requerimientos/create.blade.php`
+- `resources/views/requerimientos/index.blade.php`
+- `resources/views/requerimientos/show.blade.php`
+- `resources/views/admin/requerimientos/index.blade.php`
+- `resources/views/admin/requerimientos/edit.blade.php`
+
+## Layout y componente reutilizable
+
+El sistema utiliza un layout principal ubicado en:
+
+`resources/views/layout.blade.php`
+
+Este layout contiene la estructura general del sitio:
+
+- Encabezado.
+- Logo institucional.
+- Menú de navegación.
+- Estilos CSS.
+- Contenedor principal.
+- Pie de página.
+
+También se creó un componente reutilizable para mostrar los estados:
+
+`resources/views/components/estado.blade.php`
+
+Este componente permite mostrar el estado del requerimiento con texto y color correspondiente.
+
 ## Diseño de interfaz
 
 La interfaz fue diseñada con enfoque institucional municipal, utilizando logo, colores asociados a la Municipalidad de San Joaquín, accesos rápidos, bloques informativos y navegación simple.
@@ -155,6 +230,8 @@ El sistema utiliza medidas básicas propias de Laravel:
 - Uso del archivo `.env` para configuración local.
 - Separación de responsabilidades mediante MVC.
 - Rutas definidas en `routes/web.php`.
+- Uso de `@method('PUT')` para actualización.
+- Uso de `@method('DELETE')` para eliminación.
 
 ## Documentación del proyecto
 
@@ -168,10 +245,23 @@ Archivos incluidos:
 - `02_BACKEND_REQUERIMIENTOS.md`
 - `03_FLUJO_DEL_SISTEMA.md`
 - `04_CASOS_DE_PRUEBA.md`
+- `05_GUIA_PRESENTACION.md`
 
-Las capturas del sistema se agregarán posteriormente en:
+Las capturas del sistema se encuentran en:
 
 `documentacion/capturas/`
+
+Capturas principales incluidas:
+
+- `01_estructura_proyecto.png`
+- `02_portada.png`
+- `03_formulario_requerimiento.png`
+- `04_mis_requerimientos.png`
+- `05_detalle_requerimiento.png`
+- `06_administracion_requerimientos.png`
+- `07_gestion_requerimiento.png`
+- `08_actualizacion_estado.png`
+- `09_eliminacion_requerimiento.png`
 
 ## Cómo ejecutar el proyecto
 
@@ -189,11 +279,28 @@ Las capturas del sistema se agregarán posteriormente en:
 
 ## Estado actual del proyecto
 
-El sistema permite registrar, listar, visualizar, administrar y actualizar requerimientos informáticos.
+El sistema permite registrar, listar, visualizar, administrar, actualizar y eliminar requerimientos informáticos.
 
 El flujo principal de requerimientos se encuentra funcionando:
 
-Crear requerimiento → Guardar en MySQL → Listar → Ver detalle → Gestionar → Actualizar estado y respuesta.
+Crear requerimiento → Guardar en MySQL → Listar → Ver detalle → Gestionar → Actualizar estado y respuesta → Eliminar requerimiento desde administración.
+
+## Relación con la rúbrica
+
+El proyecto cumple con los principales requerimientos de la evaluación:
+
+- Uso de Laravel y Blade.
+- Mínimo de 5 rutas.
+- Uso de rutas en `web.php`.
+- Uso de controlador.
+- Uso de modelo.
+- Uso de vistas Blade.
+- Uso de layout reutilizable.
+- Uso de componente reutilizable.
+- Aplicación de estilos CSS.
+- Uso de verbos HTTP GET, POST, PUT y DELETE.
+- Operaciones principales: listar, crear, mostrar detalle, actualizar y eliminar.
+- Presentación funcional mediante `php artisan serve`.
 
 ## Mejoras futuras
 
@@ -203,10 +310,13 @@ Crear requerimiento → Guardar en MySQL → Listar → Ver detalle → Gestiona
 - Protección de rutas mediante middleware.
 - Asociación del requerimiento al usuario autenticado.
 - Notificación por correo cuando cambie el estado del requerimiento.
-- Incorporación de capturas finales en la documentación.
+- Implementación de permisos para separar acceso funcionario y administrador.
+- Historial de cambios por requerimiento.
 
 ## Conclusión
 
 MesaTI Municipal permite centralizar la gestión de requerimientos informáticos internos, manteniendo un flujo ordenado entre funcionario y área de Informática.
 
-El proyecto aplica Laravel, MVC, Blade, MySQL, rutas, controlador, modelo, migraciones, validaciones básicas y doc
+El proyecto aplica Laravel, MVC, Blade, MySQL, rutas, controlador, modelo, migraciones, validaciones básicas, documentación técnica, capturas de evidencia y operaciones CRUD.
+
+La aplicación permite demostrar el funcionamiento de una solución web coherente con un contexto municipal real, cumpliendo los criterios técnicos principales de la evaluación.
