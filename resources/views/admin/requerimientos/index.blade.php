@@ -6,8 +6,8 @@
     <h1>Administración de requerimientos</h1>
 
     <p>
-        En esta sección el área de informática puede revisar los requerimientos
-        ingresados por los funcionarios municipales.
+        En esta sección el área de informática puede revisar, gestionar o eliminar
+        los requerimientos ingresados por los funcionarios municipales.
     </p>
 
     @if (session('success'))
@@ -32,7 +32,7 @@
                 <th>Prioridad</th>
                 <th>Estado</th>
                 <th>Fecha ingreso</th>
-                <th>Acción</th>
+                <th>Acciones</th>
             </tr>
         </thead>
 
@@ -51,6 +51,20 @@
                         <a href="{{ route('admin.requerimientos.edit', $requerimiento) }}" class="btn">
                             Gestionar
                         </a>
+
+                        <form
+                            action="{{ route('admin.requerimientos.destroy', $requerimiento) }}"
+                            method="POST"
+                            style="display: inline-block; margin-left: 8px;"
+                            onsubmit="return confirm('¿Está seguro/a de eliminar este requerimiento? Esta acción no se puede deshacer.');"
+                        >
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="submit" class="btn" style="background: #EF3E24;">
+                                Eliminar
+                            </button>
+                        </form>
                     </td>
                 </tr>
             @empty

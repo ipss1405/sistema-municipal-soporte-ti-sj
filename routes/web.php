@@ -48,6 +48,9 @@ Route::get('/admin/requerimientos/{requerimiento}/editar', [RequerimientoControl
 Route::put('/admin/requerimientos/{requerimiento}', [RequerimientoController::class, 'update'])
     ->name('admin.requerimientos.update');
 
+Route::delete('/admin/requerimientos/{requerimiento}', [RequerimientoController::class, 'destroy'])
+    ->name('admin.requerimientos.destroy');
+
 /*
 |--------------------------------------------------------------------------
 | Detalle de requerimiento funcionario

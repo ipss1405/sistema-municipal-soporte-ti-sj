@@ -65,4 +65,12 @@ class RequerimientoController extends Controller
         return redirect('/admin/requerimientos')
             ->with('success', 'Requerimiento actualizado correctamente.');
     }
+
+    public function destroy(Requerimiento $requerimiento)
+    {
+        $requerimiento->delete();
+
+        return redirect('/admin/requerimientos')
+            ->with('success', 'Requerimiento eliminado correctamente.');
+    }
 }
