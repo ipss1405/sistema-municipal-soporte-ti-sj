@@ -5,37 +5,39 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Requerimiento extends Model
+class Notificacion extends Model
 {
     use HasFactory;
 
+    protected $table = 'notificaciones';
+
     protected $fillable = [
         'user_id',
-        'categoria',
+        'requerimiento_id',
         'titulo',
-        'descripcion',
-        'prioridad',
-        'estado',
-        'respuesta_admin',
-        'fecha_cierre',
+        'mensaje',
+        'leida',
+        'fecha_leida',
     ];
 
     /**
-     * Un requerimiento pertenece a un usuario.
+     * Una notificación pertenece a un usuario.
      */
-    public function usuario(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
-     * Un requerimiento puede generar muchas notificaciones.
+     * Una notificación puede pertenecer a un requerimiento.
      */
-    public function notificaciones(): HasMany
+    public function requerimiento(): BelongsTo
     {
-        return $this->hasMany(Notificacion::class);
+        return $this->belongsTo(
+            Requerimiento::class,
+            'requerimiento_id'
+        );
     }
 
     /**
@@ -46,7 +48,8 @@ class Requerimiento extends Model
     protected function casts(): array
     {
         return [
-            'fecha_cierre' => 'datetime',
+            'leida' => 'boolean',
+            'fecha_leida' => 'datetime',
         ];
     }
 }

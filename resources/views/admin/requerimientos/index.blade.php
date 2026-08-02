@@ -10,23 +10,11 @@
         los requerimientos ingresados por los funcionarios municipales.
     </p>
 
-    @if (session('success'))
-        <div style="
-            background: #DCFCE7;
-            color: #166534;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            border-left: 5px solid #78BE20;
-        ">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <table>
         <thead>
             <tr>
                 <th>N°</th>
+                <th>Funcionario</th>
                 <th>Título</th>
                 <th>Categoría</th>
                 <th>Prioridad</th>
@@ -39,29 +27,56 @@
         <tbody>
             @forelse ($requerimientos as $requerimiento)
                 <tr>
-                    <td>{{ $requerimiento->id }}</td>
-                    <td>{{ $requerimiento->titulo }}</td>
-                    <td>{{ ucfirst($requerimiento->categoria) }}</td>
-                    <td>{{ ucfirst($requerimiento->prioridad) }}</td>
+                    <td>
+                        {{ $requerimiento->id }}
+                    </td>
+
+                    <td>
+                        {{ $requerimiento->usuario?->name ?? 'Usuario no disponible' }}
+                    </td>
+
+                    <td>
+                        {{ $requerimiento->titulo }}
+                    </td>
+
+                    <td>
+                        {{ ucfirst($requerimiento->categoria) }}
+                    </td>
+
+                    <td>
+                        {{ ucfirst($requerimiento->prioridad) }}
+                    </td>
+
                     <td>
                         <x-estado :estado="$requerimiento->estado" />
                     </td>
-                    <td>{{ $requerimiento->created_at->format('d-m-Y H:i') }}</td>
+
                     <td>
-                        <a href="{{ route('admin.requerimientos.edit', $requerimiento) }}" class="btn">
+                        {{ $requerimiento->created_at->format('d-m-Y H:i') }}
+                    </td>
+
+                    <td>
+                        <a
+                            href="{{ route('admin.requerimientos.edit', $requerimiento) }}"
+                            class="btn"
+                        >
                             Gestionar
                         </a>
 
                         <form
                             action="{{ route('admin.requerimientos.destroy', $requerimiento) }}"
                             method="POST"
+                            class="form-eliminar"
                             style="display: inline-block; margin-left: 8px;"
-                            onsubmit="return confirm('¿Está seguro/a de eliminar este requerimiento? Esta acción no se puede deshacer.');"
                         >
                             @csrf
                             @method('DELETE')
 
-                            <button type="submit" class="btn" style="background: #EF3E24;">
+                            <button
+                                type="submit"
+                                class="btn"
+                                style="background: #EF3E24;"
+                            >
                                 Eliminar
                             </button>
                         </form>
@@ -69,7 +84,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7">
+                    <td colspan="8">
                         No existen requerimientos registrados.
                     </td>
                 </tr>
@@ -79,9 +94,38 @@
 
     <br>
 
-    <a href="/" class="btn" style="background: #6B7280;">
+    <a
+        href="/"
+        class="btn"
+        style="background: #6B7280;"
+    >
         Volver al inicio
     </a>
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+    document.querySelectorAll('.form-eliminar').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: '¿Eliminar requerimiento?',
+                text: 'Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#EF3E24',
+                cancelButtonColor: '#6B7280'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
 @endsection

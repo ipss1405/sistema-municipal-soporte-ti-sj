@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MesaTI Municipal</title>
+    <title>Sistema Municipal de Soporte TI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -60,6 +62,11 @@
             font-weight: bold;
         }
 
+        .logo-link:hover {
+            color: white;
+            text-decoration: none;
+        }
+
         .logo-municipal {
             width: 145px;
             height: 58px;
@@ -72,7 +79,8 @@
         .menu {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 22px;
+            flex-wrap: wrap;
         }
 
         .menu a {
@@ -83,6 +91,79 @@
         }
 
         .menu a:hover {
+            text-decoration: underline;
+        }
+
+        .link-notificacion {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .contador-notificacion {
+            background: var(--verde-principal);
+            color: #ffffff;
+            border-radius: 999px;
+            min-width: 22px;
+            height: 22px;
+            padding: 2px 7px;
+            font-size: 12px;
+            font-weight: 800;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+        }
+
+        .link-notificacion.tiene-notificaciones .campana {
+            animation: campanaMovimiento 1.2s ease-in-out infinite;
+        }
+
+        @keyframes campanaMovimiento {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            20% {
+                transform: rotate(-12deg);
+            }
+
+            40% {
+                transform: rotate(12deg);
+            }
+
+            60% {
+                transform: rotate(-8deg);
+            }
+
+            80% {
+                transform: rotate(8deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        .form-logout {
+            display: inline;
+            margin: 0;
+        }
+
+        .btn-salir {
+            background: transparent;
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .btn-salir:hover {
+            color: var(--verde-principal);
             text-decoration: underline;
         }
 
@@ -303,6 +384,55 @@
             font-size: 14px;
         }
 
+        .badge-municipal {
+            background: #78BE20;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .btn-municipal {
+            background: #5B3F95;
+            color: #ffffff;
+            border: none;
+        }
+
+        .btn-municipal:hover {
+            background: #6B4BB0;
+            color: #ffffff;
+        }
+
+        .btn-municipal-outline {
+            border: 2px solid #5B3F95;
+            color: #5B3F95;
+            background: #ffffff;
+        }
+
+        .btn-municipal-outline:hover {
+            background: #5B3F95;
+            color: #ffffff;
+        }
+
+        .card-municipal {
+            border: none;
+            border-top: 6px solid #78BE20;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(91, 63, 149, 0.12);
+        }
+
+        .card-acceso {
+            border-radius: 24px;
+            border: none;
+            box-shadow: 0 12px 30px rgba(91, 63, 149, 0.15);
+        }
+
+        .titulo-municipal {
+            color: #1F2937;
+        }
+
+        .texto-municipal {
+            color: #374151;
+        }
+
         @media (max-width: 850px) {
             .navbar {
                 flex-direction: column;
@@ -317,6 +447,7 @@
 
             .menu {
                 gap: 15px;
+                justify-content: center;
             }
 
             .contenedor {
@@ -337,14 +468,47 @@
             <div class="logo-contenedor">
                 <a href="/" class="logo-link">
                     <img src="{{ asset('img/logo-municipal.png') }}" alt="Logo Municipal" class="logo-municipal">
-                    <span>MesaTI Municipal</span>
+                    <span>Sistema Municipal de Soporte TI</span>
                 </a>
             </div>
 
             <nav class="menu">
-                <a href="/">Inicio</a>
-                <a href="/login">Login</a>
-                <a href="/registro">Registro</a>
+
+                @auth
+                    @php
+                        $notificacionesPendientes = \App\Models\Notificacion::where('user_id', auth()->id())
+                            ->where('leida', false)
+                            ->count();
+                    @endphp
+
+                    <a href="/">Inicio</a>
+
+                    <a href="/notificaciones" class="link-notificacion" id="link-notificaciones">
+                        <span class="campana">🔔</span>
+                        <span>Notificaciones</span>
+
+                        <span
+                            id="contador-notificaciones"
+                            class="contador-notificacion"
+                            style="{{ $notificacionesPendientes > 0 ? 'display: inline-flex;' : 'display: none;' }}"
+                        >
+                            {{ $notificacionesPendientes }}
+                        </span>
+                    </a>
+
+                    <form action="{{ route('logout') }}" method="POST" class="form-logout">
+                        @csrf
+
+                        <button type="submit" class="btn-salir">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                @endauth
+
+                @guest
+                    <a href="/">Inicio</a>
+                @endguest
+
             </nav>
         </div>
     </header>
@@ -354,8 +518,79 @@
     </main>
 
     <footer class="footer">
-        MesaTI Municipal - Sistema interno de requerimientos informáticos
+        Sistema Municipal de Soporte TI - Sistema interno de requerimientos informáticos
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if(session('success'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Operación realizada',
+            text: @json(session('success')),
+            confirmButtonText: 'Aceptar'
+        });
+    </script>
+    @endif
+
+    @if(session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Ocurrió un problema',
+            text: @json(session('error')),
+            confirmButtonText: 'Aceptar'
+        });
+    </script>
+    @endif
+
+    @auth
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const contador = document.getElementById('contador-notificaciones');
+            const linkNotificaciones = document.getElementById('link-notificaciones');
+
+            async function actualizarContadorNotificaciones() {
+                try {
+                    const respuesta = await fetch("{{ route('notificaciones.contador') }}", {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!respuesta.ok) {
+                        return;
+                    }
+
+                    const datos = await respuesta.json();
+                    const total = Number(datos.total ?? 0);
+
+                    if (total > 0) {
+                        contador.textContent = total > 99 ? '99+' : total;
+                        contador.style.display = 'inline-flex';
+                        linkNotificaciones.classList.add('tiene-notificaciones');
+                    } else {
+                        contador.textContent = '0';
+                        contador.style.display = 'none';
+                        linkNotificaciones.classList.remove('tiene-notificaciones');
+                    }
+
+                } catch (error) {
+                    console.log('No se pudo actualizar el contador de notificaciones.');
+                }
+            }
+
+            actualizarContadorNotificaciones();
+
+            setInterval(actualizarContadorNotificaciones, 10000);
+        });
+    </script>
+    @endauth
+
+    @yield('scripts')
 </body>
 </html>

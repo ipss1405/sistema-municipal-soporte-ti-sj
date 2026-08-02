@@ -1,404 +1,671 @@
 # Casos de Prueba
 
-## Descripción general
+## 1. Descripción general
 
-Este documento presenta casos de prueba aplicados al sistema MesaTI Municipal, con el objetivo de verificar el correcto funcionamiento de las principales funcionalidades desarrolladas.
+Este documento contiene los casos de prueba funcionales del **Sistema Municipal de Soporte TI**.
 
-Las pruebas se enfocan en el flujo de requerimientos informáticos, desde el ingreso de una solicitud hasta su gestión por parte del área de Informática.
+Las pruebas se ejecutaron manualmente en el entorno local del proyecto. Cada caso debe registrar el resultado real y una captura en formato PNG como evidencia.
 
-## Objetivo de las pruebas
+## 2. Entorno de prueba
 
-El objetivo es comprobar que el sistema permita:
+```text
+Proyecto: Sistema Municipal de Soporte TI
+URL: http://127.0.0.1:8001
+Base de datos: sistema_soporte_ti_eva2
+Navegador: Google Chrome
+Servidor local: Laragon
+```
 
-- Registrar requerimientos informáticos.
-- Guardar información en la base de datos.
-- Listar requerimientos registrados.
-- Visualizar el detalle de un requerimiento.
-- Gestionar requerimientos desde administración.
-- Cambiar el estado de un requerimiento.
-- Registrar una respuesta del área informática.
-- Eliminar requerimientos desde administración.
-- Mostrar el seguimiento actualizado al funcionario.
+## 3. Usuarios de prueba
 
-## Alcance de las pruebas
+### Administradora
 
-Las pruebas consideran las siguientes secciones del sistema:
+```text
+Correo: rosa@sanjoaquin.cl
+Contraseña: Municipal2026!
+Rol: administrador
+```
 
-- Página principal.
-- Formulario de nuevo requerimiento.
-- Listado de mis requerimientos.
-- Detalle del requerimiento.
-- Administración de requerimientos.
-- Gestión administrativa del requerimiento.
-- Eliminación de requerimientos desde administración.
+### Funcionaria
 
-Actualmente el login y el registro se encuentran implementados de forma visual, por lo que no se incluyen pruebas de autenticación real.
+```text
+Correo: ana.martinez@sanjoaquin.cl
+Contraseña: Municipal2026!
+Rol: funcionario
+```
 
-## Caso de prueba 1: Carga de página principal
+## 4. Estados de los casos de prueba
 
-**Objetivo:** Verificar que la página principal cargue correctamente.
+Cada prueba debe finalizar con uno de estos estados:
 
-**Ruta:** `/`
+- **Pendiente:** todavía no se ejecuta.
+- **Aprobado:** el resultado obtenido coincide con el esperado.
+- **Rechazado:** el resultado obtenido no coincide con el esperado.
+- **Bloqueado:** no fue posible ejecutar la prueba por un problema previo.
 
-**Pasos:**
+---
 
-- Abrir el navegador.
-- Ingresar a `http://127.0.0.1:8000`.
-- Verificar que se muestre la portada del sistema.
+# CP-01: Inicio de sesión correcto del funcionario
 
-**Resultado esperado:**
+## Objetivo
 
-La página principal debe mostrar:
+Comprobar que una funcionaria registrada pueda iniciar sesión y acceder a su panel.
 
-- Logo municipal.
-- Nombre MesaTI Municipal.
-- Accesos rápidos.
-- Información del servicio.
-- Datos de contacto.
-- Bloques informativos del sistema.
+## Precondiciones
 
-**Resultado obtenido:**
+- El servidor debe estar funcionando.
+- La usuaria debe existir en la base de datos.
+- No debe existir otra sesión abierta.
 
-La página principal carga correctamente y muestra la información institucional del sistema.
+## Datos de prueba
 
-**Estado:** Aprobado.
+```text
+Correo: ana.martinez@sanjoaquin.cl
+Contraseña: Municipal2026!
+```
 
-## Caso de prueba 2: Carga de formulario de requerimiento
+## Pasos
 
-**Objetivo:** Verificar que el formulario para registrar requerimientos cargue correctamente.
+1. Abrir `http://127.0.0.1:8001/login`.
+2. Ingresar el correo.
+3. Ingresar la contraseña.
+4. Presionar **Iniciar sesión**.
 
-**Ruta:** `/requerimientos/crear`
+## Resultado esperado
 
-**Pasos:**
+El sistema permite el acceso y muestra el panel funcionario.
 
-- Ingresar a la ruta `/requerimientos/crear`.
-- Verificar que se muestre el formulario.
-- Revisar que existan los campos de categoría, título, descripción y prioridad.
+El usuario puede visualizar:
 
-**Resultado esperado:**
+- Crear requerimiento.
+- Mis requerimientos.
+- Campanita de notificaciones.
+- Cerrar sesión.
 
-El sistema debe mostrar el formulario de registro de requerimientos.
+La opción **Administración** no debe aparecer.
 
-**Resultado obtenido:**
+## Resultado obtenido
 
-El formulario carga correctamente y muestra todos los campos requeridos.
+```text
+Pendiente de ejecución.
+```
 
-**Estado:** Aprobado.
+## Estado
 
-## Caso de prueba 3: Registro de requerimiento
+**Pendiente**
 
-**Objetivo:** Verificar que el sistema permita registrar un requerimiento informático.
+## Evidencia
 
-**Ruta:** `/requerimientos/crear`
+```text
+CP01_login_funcionario_aprobado.png
+```
 
-**Datos de prueba:**
+---
 
-- Categoría: Internet / Red.
-- Título: Desconexión de red.
-- Descripción: El equipo presenta problemas de conexión a la red municipal.
-- Prioridad: Urgente.
+# CP-02: Inicio de sesión con contraseña incorrecta
 
-**Pasos:**
+## Objetivo
 
-- Ingresar al formulario de nuevo requerimiento.
-- Completar los campos obligatorios.
-- Presionar el botón Registrar requerimiento.
+Comprobar que el sistema rechace credenciales incorrectas.
 
-**Resultado esperado:**
+## Precondiciones
 
-El sistema debe guardar el requerimiento en MySQL y redirigir al listado de requerimientos.
+- La usuaria debe existir.
+- No debe existir una sesión abierta.
 
-**Resultado obtenido:**
+## Datos de prueba
 
-El requerimiento se guarda correctamente y aparece en la vista Mis requerimientos.
+```text
+Correo: ana.martinez@sanjoaquin.cl
+Contraseña: ClaveIncorrecta123
+```
 
-**Estado:** Aprobado.
+## Pasos
 
-## Caso de prueba 4: Validación de campos obligatorios
+1. Abrir la pantalla de inicio de sesión.
+2. Ingresar el correo correcto.
+3. Ingresar una contraseña incorrecta.
+4. Presionar **Iniciar sesión**.
 
-**Objetivo:** Verificar que el sistema valide los campos obligatorios del formulario.
+## Resultado esperado
 
-**Ruta:** `/requerimientos/crear`
+El sistema no permite el acceso y muestra un mensaje indicando que las credenciales no coinciden.
 
-**Pasos:**
+## Resultado obtenido
 
-- Ingresar al formulario de nuevo requerimiento.
-- Dejar campos obligatorios vacíos.
-- Presionar Registrar requerimiento.
+```text
+Pendiente de ejecución.
+```
 
-**Resultado esperado:**
+## Estado
 
-El sistema debe impedir el registro y mostrar mensajes de validación.
+**Pendiente**
 
-**Resultado obtenido:**
+## Evidencia
 
-Laravel valida los campos obligatorios antes de guardar el requerimiento.
+```text
+CP02_login_incorrecto.png
+```
 
-**Estado:** Aprobado.
+---
 
-## Caso de prueba 5: Listado de requerimientos
+# CP-03: Registro de un nuevo funcionario
 
-**Objetivo:** Verificar que el sistema muestre los requerimientos registrados en la base de datos.
+## Objetivo
 
-**Ruta:** `/mis-requerimientos`
+Comprobar que un usuario nuevo pueda registrarse y quede con rol funcionario.
 
-**Pasos:**
+## Precondiciones
 
-- Ingresar a la ruta `/mis-requerimientos`.
-- Revisar la tabla de requerimientos.
-- Verificar que aparezca el requerimiento registrado.
+- El correo utilizado no debe existir en la base de datos.
+- No debe existir una sesión abierta.
 
-**Resultado esperado:**
+## Datos de prueba
 
-El sistema debe mostrar los requerimientos almacenados en MySQL.
+```text
+Nombre: Usuario Prueba
+Correo: usuario.prueba@sanjoaquin.cl
+Contraseña: Municipal2026!
+Confirmación: Municipal2026!
+```
 
-**Resultado obtenido:**
+## Pasos
 
-El listado muestra correctamente los requerimientos registrados.
+1. Abrir la opción **Registro**.
+2. Completar todos los campos.
+3. Presionar el botón de registro.
+4. Verificar la redirección.
 
-**Estado:** Aprobado.
+## Resultado esperado
 
-## Caso de prueba 6: Visualización de detalle
+El sistema crea la cuenta, inicia la sesión y muestra el panel funcionario.
 
-**Objetivo:** Verificar que el sistema permita visualizar el detalle de un requerimiento.
+El usuario nuevo debe quedar con rol `funcionario`.
 
-**Ruta:** `/requerimientos/{id}`
+## Resultado obtenido
 
-**Pasos:**
+```text
+Pendiente de ejecución.
+```
 
-- Ingresar a Mis requerimientos.
-- Presionar el botón Ver detalle.
-- Revisar la información mostrada.
+## Estado
 
-**Resultado esperado:**
+**Pendiente**
 
-El sistema debe mostrar:
+## Evidencia
 
-- Número de requerimiento.
+```text
+CP03_registro_funcionario.png
+```
+
+---
+
+# CP-04: Creación correcta de un requerimiento
+
+## Objetivo
+
+Comprobar que una funcionaria pueda registrar un requerimiento válido.
+
+## Precondiciones
+
+- La funcionaria debe tener una sesión iniciada.
+- Debe estar disponible el formulario de creación.
+
+## Datos de prueba
+
+```text
+Categoría: Hardware
+Título: Teclado no responde
+Descripción: El teclado del equipo dejó de responder durante la jornada.
+Prioridad: Media
+```
+
+## Pasos
+
+1. Ingresar al panel funcionario.
+2. Presionar **Crear requerimiento**.
+3. Completar los campos.
+4. Presionar el botón para registrar.
+5. Revisar el listado de requerimientos.
+
+## Resultado esperado
+
+El sistema guarda el requerimiento en la base de datos.
+
+El registro debe:
+
+- Quedar asociado a la funcionaria autenticada.
+- Tener estado inicial `pendiente`.
+- Aparecer en **Mis requerimientos**.
+- Generar una notificación para la administradora.
+
+## Resultado obtenido
+
+```text
+Pendiente de ejecución.
+```
+
+## Estado
+
+**Pendiente**
+
+## Evidencia
+
+```text
+CP04_requerimiento_creado.png
+```
+
+---
+
+# CP-05: Validación de campos obligatorios
+
+## Objetivo
+
+Comprobar que el sistema no permita crear un requerimiento con campos obligatorios vacíos.
+
+## Precondiciones
+
+- La funcionaria debe tener una sesión iniciada.
+- Debe estar abierto el formulario de creación.
+
+## Datos de prueba
+
+```text
+Categoría: Sin seleccionar
+Título: Vacío
+Descripción: Vacío
+Prioridad: Sin seleccionar
+```
+
+## Pasos
+
+1. Abrir **Crear requerimiento**.
+2. Dejar los campos obligatorios sin completar.
+3. Presionar el botón para registrar.
+
+## Resultado esperado
+
+El sistema no guarda el requerimiento y muestra mensajes de validación en los campos obligatorios.
+
+## Resultado obtenido
+
+```text
+Pendiente de ejecución.
+```
+
+## Estado
+
+**Pendiente**
+
+## Evidencia
+
+```text
+CP05_validaciones_formulario.png
+```
+
+---
+
+# CP-06: Consulta de requerimientos propios
+
+## Objetivo
+
+Comprobar que una funcionaria visualice solamente los requerimientos asociados a su cuenta.
+
+## Precondiciones
+
+- La funcionaria debe tener una sesión iniciada.
+- Debe existir al menos un requerimiento de la usuaria.
+
+## Pasos
+
+1. Ingresar a **Mis requerimientos**.
+2. Revisar el listado.
+3. Abrir **Ver detalle** en una solicitud.
+
+## Resultado esperado
+
+El sistema muestra solamente los requerimientos de la funcionaria autenticada.
+
+El detalle debe mostrar:
+
+- Categoría.
 - Título.
+- Descripción.
+- Prioridad.
+- Estado.
+- Respuesta administrativa.
+- Fechas correspondientes.
+
+## Resultado obtenido
+
+```text
+Pendiente de ejecución.
+```
+
+## Estado
+
+**Pendiente**
+
+## Evidencia
+
+```text
+CP06_mis_requerimientos_detalle.png
+```
+
+---
+
+# CP-07: Acceso de la administradora
+
+## Objetivo
+
+Comprobar que la administradora pueda iniciar sesión y visualizar todos los requerimientos.
+
+## Precondiciones
+
+- La administradora debe existir.
+- No debe existir otra sesión abierta.
+
+## Datos de prueba
+
+```text
+Correo: rosa@sanjoaquin.cl
+Contraseña: Municipal2026!
+```
+
+## Pasos
+
+1. Abrir la pantalla de inicio de sesión.
+2. Ingresar las credenciales de administradora.
+3. Presionar **Iniciar sesión**.
+4. Revisar la vista administrativa.
+
+## Resultado esperado
+
+El sistema redirige a la administración de requerimientos.
+
+La vista debe mostrar:
+
+- Todos los requerimientos.
+- Nombre del funcionario.
 - Categoría.
 - Prioridad.
 - Estado.
-- Fecha de ingreso.
-- Descripción.
-- Respuesta de informática si existe.
-- Seguimiento.
+- Botones Gestionar y Eliminar.
+- Campanita de notificaciones.
 
-**Resultado obtenido:**
+## Resultado obtenido
 
-El detalle del requerimiento se muestra correctamente con datos reales.
+```text
+Pendiente de ejecución.
+```
 
-**Estado:** Aprobado.
+## Estado
 
-## Caso de prueba 7: Carga de administración
+**Pendiente**
 
-**Objetivo:** Verificar que la vista de administración muestre los requerimientos registrados.
+## Evidencia
 
-**Ruta:** `/admin/requerimientos`
+```text
+CP07_panel_administracion.png
+```
 
-**Pasos:**
+---
 
-- Ingresar a la ruta `/admin/requerimientos`.
-- Revisar el listado de requerimientos.
-- Verificar que exista la opción Gestionar.
+# CP-08: Actualización del estado y respuesta
 
-**Resultado esperado:**
+## Objetivo
 
-El sistema debe mostrar todos los requerimientos registrados y permitir acceder a su gestión.
+Comprobar que la administradora pueda cambiar el estado y registrar una respuesta.
 
-**Resultado obtenido:**
+## Precondiciones
 
-La vista de administración carga correctamente y muestra los requerimientos disponibles.
+- La administradora debe tener una sesión iniciada.
+- Debe existir un requerimiento pendiente.
 
-**Estado:** Aprobado.
+## Datos de prueba
 
-## Caso de prueba 8: Gestión de requerimiento
+```text
+Nuevo estado: En proceso
+Respuesta: Se revisará el equipo durante la jornada de mañana.
+```
 
-**Objetivo:** Verificar que administración pueda ingresar a la pantalla de gestión de un requerimiento.
+## Pasos
 
-**Ruta:** `/admin/requerimientos/{id}/editar`
+1. Ingresar a Administración.
+2. Seleccionar **Gestionar** en un requerimiento.
+3. Cambiar el estado.
+4. Escribir la respuesta.
+5. Guardar la actualización.
+6. Iniciar sesión como funcionaria.
+7. Revisar la campanita y el detalle.
 
-**Pasos:**
+## Resultado esperado
 
-- Ingresar a la vista de administración.
-- Presionar el botón Gestionar.
-- Revisar que se muestre la información del requerimiento.
+El sistema actualiza el estado y la respuesta.
 
-**Resultado esperado:**
+Además:
 
-El sistema debe mostrar la pantalla de gestión con los datos del requerimiento seleccionado.
+- La funcionaria recibe una notificación.
+- El nuevo estado aparece en el detalle.
+- La respuesta administrativa queda visible.
 
-**Resultado obtenido:**
+## Resultado obtenido
 
-La pantalla de gestión carga correctamente y muestra la información del requerimiento.
+```text
+Pendiente de ejecución.
+```
 
-**Estado:** Aprobado.
+## Estado
 
-## Caso de prueba 9: Actualización de estado
+**Pendiente**
 
-**Objetivo:** Verificar que administración pueda cambiar el estado de un requerimiento.
+## Evidencia
 
-**Ruta:** `/admin/requerimientos/{id}/editar`
+```text
+CP08_actualizacion_y_notificacion.png
+```
 
-**Datos de prueba:**
+---
 
-- Estado anterior: Pendiente.
-- Estado nuevo: En revisión.
+# CP-09: Bloqueo de acceso administrativo
 
-**Pasos:**
+## Objetivo
 
-- Ingresar a la pantalla de gestión.
-- Cambiar el estado del requerimiento.
-- Presionar Guardar actualización.
+Comprobar que una funcionaria no pueda acceder a la sección administrativa.
 
-**Resultado esperado:**
+## Precondiciones
 
-El sistema debe actualizar el estado del requerimiento y redirigir a la administración.
+- La funcionaria debe tener una sesión iniciada.
 
-**Resultado obtenido:**
+## Pasos
 
-El estado se actualiza correctamente y se visualiza en administración y en el detalle del requerimiento.
+1. Iniciar sesión como funcionaria.
+2. Escribir manualmente en el navegador:
 
-**Estado:** Aprobado.
+```text
+http://127.0.0.1:8001/admin/requerimientos
+```
 
-## Caso de prueba 10: Registro de respuesta administrativa
+3. Presionar Enter.
 
-**Objetivo:** Verificar que administración pueda registrar una respuesta para el funcionario.
+## Resultado esperado
 
-**Ruta:** `/admin/requerimientos/{id}/editar`
+El sistema bloquea el acceso y muestra un error:
 
-**Datos de prueba:**
+```text
+403 - Acceso no autorizado
+```
 
-Respuesta: Se revisa el requerimiento informado por el funcionario. El área de informática se encuentra verificando la conexión de red.
+La opción Administración tampoco debe aparecer en el menú.
 
-**Pasos:**
+## Resultado obtenido
 
-- Ingresar a la pantalla de gestión.
-- Escribir una respuesta en el campo Respuesta del área informática.
-- Guardar la actualización.
-- Ingresar al detalle del requerimiento.
+```text
+Pendiente de ejecución.
+```
 
-**Resultado esperado:**
+## Estado
 
-La respuesta debe quedar guardada y visible para el funcionario en el detalle del requerimiento.
+**Pendiente**
 
-**Resultado obtenido:**
+## Evidencia
 
-La respuesta se guarda correctamente y se muestra en la vista de detalle.
+```text
+CP09_acceso_bloqueado_403.png
+```
 
-**Estado:** Aprobado.
+---
 
-## Caso de prueba 11: Visualización de etiqueta de estado
+# CP-10: Cancelación de eliminación con SweetAlert2
 
-**Objetivo:** Verificar que los estados se muestren mediante el componente visual reutilizable.
+## Objetivo
 
-**Vistas revisadas:**
+Comprobar que la administradora pueda cancelar una eliminación y conservar el requerimiento.
 
-- `/mis-requerimientos`.
-- `/admin/requerimientos`.
-- `/requerimientos/{id}`.
-- `/admin/requerimientos/{id}/editar`.
+## Precondiciones
 
-**Pasos:**
+- La administradora debe tener una sesión iniciada.
+- Debe existir un requerimiento de prueba.
 
-- Ingresar a cada una de las vistas.
-- Revisar la visualización del estado.
-- Confirmar que aparezca como etiqueta de color.
+## Pasos
 
-**Resultado esperado:**
+1. Ingresar a Administración.
+2. Presionar **Eliminar** en un requerimiento.
+3. Revisar la ventana SweetAlert2.
+4. Presionar **Cancelar**.
+5. Revisar el listado.
 
-El estado debe mostrarse como una etiqueta visual diferenciada por color.
+## Resultado esperado
 
-**Resultado obtenido:**
+SweetAlert2 muestra una advertencia con las opciones de confirmar o cancelar.
 
-El componente de estado se muestra correctamente en las vistas revisadas.
+Al presionar **Cancelar**, el requerimiento permanece en el listado.
 
-**Estado:** Aprobado.
+## Resultado obtenido
 
-## Caso de prueba 12: Dinamismo visual de la portada
+```text
+Pendiente de ejecución.
+```
 
-**Objetivo:** Verificar que la portada muestre efectos visuales suaves.
+## Estado
 
-**Ruta:** `/`
+**Pendiente**
 
-**Pasos:**
+## Evidencia
 
-- Ingresar a la página principal.
-- Pasar el mouse sobre las tarjetas y accesos rápidos.
-- Observar el comportamiento visual.
+```text
+CP10_sweetalert_cancelar.png
+```
 
-**Resultado esperado:**
+---
 
-Las tarjetas deben mostrar un movimiento suave y sombras dinámicas al pasar el mouse.
+# CP-11: Confirmación de eliminación
 
-**Resultado obtenido:**
+## Objetivo
 
-Los efectos visuales se ejecutan correctamente sin afectar la navegación del sistema.
+Comprobar que la administradora pueda eliminar un requerimiento de prueba.
 
-**Estado:** Aprobado.
+## Precondiciones
 
-## Caso de prueba 13: Eliminar requerimiento desde administración
+- La administradora debe tener una sesión iniciada.
+- Debe utilizarse un registro creado exclusivamente para esta prueba.
 
-**Objetivo:** Verificar que el administrador pueda eliminar un requerimiento registrado utilizando la opción Eliminar desde la vista de administración.
+## Pasos
 
-**Ruta:** `/admin/requerimientos`
+1. Crear o identificar un requerimiento de prueba.
+2. Ingresar a Administración.
+3. Presionar **Eliminar**.
+4. Confirmar la eliminación en SweetAlert2.
+5. Revisar nuevamente el listado.
 
-**Datos de prueba:**
+## Resultado esperado
 
-- Requerimiento de prueba: Prueba eliminar.
-- Acción: Botón Eliminar.
-- Método utilizado: DELETE.
+El sistema elimina el requerimiento y muestra un mensaje de confirmación.
 
-**Precondiciones:**
+El registro ya no aparece en el listado administrativo.
 
-- El proyecto debe estar ejecutándose con `php artisan serve`.
-- Laragon debe tener MySQL iniciado.
-- Debe existir al menos un requerimiento de prueba registrado en el sistema.
-- El usuario debe estar ubicado en la vista de administración de requerimientos.
+## Resultado obtenido
 
-**Pasos:**
+```text
+Pendiente de ejecución.
+```
 
-- Ingresar a la ruta `/admin/requerimientos`.
-- Identificar un requerimiento de prueba en la tabla.
-- Presionar el botón Eliminar.
-- Confirmar la eliminación en la ventana emergente del navegador.
-- Verificar que el sistema redirige nuevamente a la administración.
-- Revisar que el requerimiento eliminado ya no aparezca en la tabla.
+## Estado
 
-**Resultado esperado:**
+**Pendiente**
 
-El sistema debe eliminar correctamente el requerimiento seleccionado, mostrar el mensaje `Requerimiento eliminado correctamente.` y quitar el registro de la tabla administrativa.
+## Evidencia
 
-**Resultado obtenido:**
+```text
+CP11_requerimiento_eliminado.png
+```
 
-El requerimiento fue eliminado correctamente desde administración. El sistema mostró el mensaje de confirmación y el registro ya no se visualizó en la tabla.
+---
 
-**Estado:** Aprobado.
+# CP-12: Notificaciones marcadas como leídas
 
-## Resumen de pruebas
+## Objetivo
 
-| N° | Prueba | Estado |
+Comprobar que las notificaciones del usuario se marquen como leídas al abrir la sección.
+
+## Precondiciones
+
+- El usuario debe tener una notificación sin leer.
+- Debe tener una sesión iniciada.
+
+## Pasos
+
+1. Revisar el número mostrado en la campanita.
+2. Abrir la sección de notificaciones.
+3. Volver a revisar el contador.
+
+## Resultado esperado
+
+El sistema muestra las notificaciones del usuario autenticado.
+
+Al abrir la sección:
+
+- Las notificaciones quedan marcadas como leídas.
+- Se registra la fecha de lectura.
+- El contador disminuye o queda en cero.
+
+## Resultado obtenido
+
+```text
+Pendiente de ejecución.
+```
+
+## Estado
+
+**Pendiente**
+
+## Evidencia
+
+```text
+CP12_notificaciones_leidas.png
+```
+
+---
+
+# Resumen de ejecución
+
+| Código | Caso de prueba | Estado |
 |---|---|---|
-| 1 | Carga de página principal | Aprobado |
-| 2 | Carga de formulario de requerimiento | Aprobado |
-| 3 | Registro de requerimiento | Aprobado |
-| 4 | Validación de campos obligatorios | Aprobado |
-| 5 | Listado de requerimientos | Aprobado |
-| 6 | Visualización de detalle | Aprobado |
-| 7 | Carga de administración | Aprobado |
-| 8 | Gestión de requerimiento | Aprobado |
-| 9 | Actualización de estado | Aprobado |
-| 10 | Registro de respuesta administrativa | Aprobado |
-| 11 | Visualización de etiqueta de estado | Aprobado |
-| 12 | Dinamismo visual de la portada | Aprobado |
-| 13 | Eliminar requerimiento desde administración | Aprobado |
+| CP-01 | Inicio de sesión correcto del funcionario | Pendiente |
+| CP-02 | Inicio de sesión con contraseña incorrecta | Pendiente |
+| CP-03 | Registro de un nuevo funcionario | Pendiente |
+| CP-04 | Creación correcta de un requerimiento | Pendiente |
+| CP-05 | Validación de campos obligatorios | Pendiente |
+| CP-06 | Consulta de requerimientos propios | Pendiente |
+| CP-07 | Acceso de la administradora | Pendiente |
+| CP-08 | Actualización del estado y respuesta | Pendiente |
+| CP-09 | Bloqueo de acceso administrativo | Pendiente |
+| CP-10 | Cancelación de eliminación con SweetAlert2 | Pendiente |
+| CP-11 | Confirmación de eliminación | Pendiente |
+| CP-12 | Notificaciones marcadas como leídas | Pendiente |
 
 ## Conclusión
 
-Las pruebas realizadas permiten comprobar que el sistema MesaTI Municipal cumple correctamente con el flujo principal de gestión de requerimientos informáticos.
+Los casos de prueba definidos permiten comprobar las funciones principales del Sistema Municipal de Soporte TI.
 
-El sistema permite crear, guardar, listar, visualizar, administrar, actualizar y eliminar requerimientos, además de mostrar el seguimiento y la respuesta del área informática al funcionario.
-
-La prueba de eliminación confirma que la funcionalidad DELETE fue implementada correctamente desde la vista administrativa, cumpliendo con las operaciones principales solicitadas en la evaluación.
-
----
+Los resultados obtenidos, estados y evidencias se completarán a medida que cada prueba sea ejecutada manualmente.

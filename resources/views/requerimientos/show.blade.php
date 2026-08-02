@@ -5,7 +5,12 @@
 <div class="card">
     <h1>Detalle del requerimiento</h1>
 
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px; align-items: start;">
+    <div style="
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 25px;
+        align-items: start;
+    ">
 
         <section>
             <h2>Información de la solicitud</h2>
@@ -74,13 +79,43 @@
                     border-radius: 6px;
                     border-left: 5px solid #F26B21;
                 ">
-                    El área de informática aún no ha ingresado una respuesta para este requerimiento.
+                    El área de informática aún no ha ingresado
+                    una respuesta para este requerimiento.
                 </p>
             @endif
 
-            <a href="/mis-requerimientos" class="btn" style="background: #6B7280;">
-                Volver al listado
-            </a>
+            {{-- Navegación diferente según el rol --}}
+            @if (auth()->user()->rol === 'administrador')
+
+                <a
+                    href="{{ route('admin.requerimientos.edit', $requerimiento) }}"
+                    class="btn"
+                >
+                    Gestionar requerimiento
+                </a>
+
+                <a
+                    href="{{ route('admin.requerimientos.index') }}"
+                    class="btn"
+                    style="
+                        background: #6B7280;
+                        margin-left: 10px;
+                    "
+                >
+                    Volver a administración
+                </a>
+
+            @else
+
+                <a
+                    href="{{ route('requerimientos.index') }}"
+                    class="btn"
+                    style="background: #6B7280;"
+                >
+                    Volver a mis requerimientos
+                </a>
+
+            @endif
         </section>
 
         <aside class="panel-accesos">
@@ -101,17 +136,15 @@
                 {{ $requerimiento->updated_at->format('d-m-Y H:i') }}
             </p>
 
-            @if ($requerimiento->fecha_cierre)
-                <p>
-                    <strong>Fecha de cierre:</strong><br>
-                    {{ $requerimiento->fecha_cierre }}
-                </p>
-            @else
-                <p>
-                    <strong>Fecha de cierre:</strong><br>
+            <p>
+                <strong>Fecha de cierre:</strong><br>
+
+                @if ($requerimiento->fecha_cierre)
+                    {{ $requerimiento->fecha_cierre->format('d-m-Y H:i') }}
+                @else
                     Pendiente
-                </p>
-            @endif
+                @endif
+            </p>
         </aside>
 
     </div>

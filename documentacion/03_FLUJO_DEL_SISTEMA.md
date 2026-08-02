@@ -2,109 +2,303 @@
 
 ## Descripción general
 
-El sistema MesaTI Municipal permite gestionar requerimientos informáticos internos desde el ingreso de la solicitud hasta su revisión y respuesta por parte del área de Informática.
+El Sistema Municipal de Soporte TI permite gestionar requerimientos informáticos internos desde el registro de la solicitud hasta su revisión, actualización y respuesta por parte del área de Informática.
 
-El flujo principal está pensado para dos tipos de uso:
+El sistema trabaja con dos tipos de usuario:
 
 - Funcionario municipal.
-- Área de Informática / administración.
+- Administrador del área de Informática.
 
-Actualmente el login y los roles reales se encuentran considerados como mejora futura, pero el flujo funcional de requerimientos ya se encuentra implementado.
+Cada usuario debe iniciar sesión y visualiza opciones diferentes según su rol.
+
+## Flujo de acceso al sistema
+
+El flujo de acceso es el siguiente:
+
+```text
+Usuario ingresa al sistema
+        ↓
+Completa correo y contraseña
+        ↓
+Laravel valida las credenciales
+        ↓
+El sistema revisa el rol
+        ↓
+Funcionario → Panel funcionario
+Administrador → Administración de requerimientos
+```
+
+Si las credenciales no son correctas, el sistema muestra un mensaje de error y no permite el acceso.
+
+## Flujo de registro de usuario
+
+El sistema permite registrar nuevos usuarios mediante el formulario de registro.
+
+El flujo es:
+
+```text
+Usuario completa el formulario
+        ↓
+Laravel valida nombre, correo y contraseña
+        ↓
+Se crea la cuenta en la tabla users
+        ↓
+El usuario recibe rol funcionario
+        ↓
+Se inicia la sesión
+        ↓
+El usuario accede al panel funcionario
+```
+
+Los usuarios registrados desde la interfaz no pueden asignarse el rol administrador.
 
 ## Flujo principal del funcionario
 
-El funcionario puede ingresar al sistema y registrar una solicitud de soporte informático.
+El funcionario puede:
 
-El flujo es el siguiente:
+- Iniciar sesión.
+- Acceder al panel funcionario.
+- Crear un requerimiento.
+- Consultar sus propios requerimientos.
+- Revisar el detalle de una solicitud.
+- Ver el estado y la respuesta administrativa.
+- Consultar sus notificaciones.
+- Cerrar sesión.
 
-- El funcionario ingresa a la página principal.
-- Accede al formulario de nuevo requerimiento.
-- Selecciona la categoría del requerimiento.
-- Ingresa el título.
-- Describe el problema o solicitud.
-- Selecciona la prioridad.
-- Envía el formulario.
-- El sistema registra el requerimiento en la base de datos.
-- El requerimiento queda con estado inicial Pendiente.
-- El funcionario puede revisar el listado de requerimientos.
-- El funcionario puede ingresar al detalle del requerimiento.
-- El funcionario puede ver el estado y la respuesta del área informática.
-
-## Flujo principal de administración
-
-El área de Informática puede revisar los requerimientos ingresados y gestionar su avance.
-
-El flujo es el siguiente:
-
-- Administración ingresa a la vista de requerimientos.
-- Revisa el listado completo de solicitudes registradas.
-- Selecciona un requerimiento mediante la opción Gestionar.
-- Revisa la información ingresada por el funcionario.
-- Cambia el estado del requerimiento.
-- Escribe una respuesta o gestión realizada.
-- Guarda la actualización.
-- El sistema actualiza la información en MySQL.
-- El funcionario puede visualizar el nuevo estado y la respuesta en el detalle del requerimiento.
-
-## Flujo técnico del sistema
-
-El flujo técnico aplicado en Laravel es el siguiente:
-
-- El usuario interactúa con una vista Blade.
-- La acción es enviada a una ruta definida en `routes/web.php`.
-- La ruta llama a un método del controlador `RequerimientoController`.
-- El controlador valida y procesa los datos.
-- El modelo `Requerimiento` se comunica con la base de datos.
-- MySQL almacena o actualiza la información.
-- Laravel retorna una vista con los datos actualizados.
+El funcionario no puede acceder a la administración ni visualizar requerimientos de otros usuarios.
 
 ## Flujo de creación de requerimiento
 
-Cuando se crea un requerimiento, el sistema realiza el siguiente proceso:
+Cuando un funcionario crea una solicitud, el sistema realiza el siguiente proceso:
 
-- El usuario completa el formulario en `resources/views/requerimientos/create.blade.php`.
-- El formulario envía los datos mediante método POST.
-- La ruta `POST /requerimientos` recibe la solicitud.
-- El método `store` del controlador valida los datos.
-- El modelo `Requerimiento` guarda la información.
-- El registro queda almacenado en la tabla `requerimientos`.
-- El sistema redirige al listado de requerimientos.
-- Se muestra el requerimiento recién creado.
+```text
+Funcionario abre el formulario
+        ↓
+Selecciona categoría y prioridad
+        ↓
+Ingresa título y descripción
+        ↓
+Envía el formulario mediante POST
+        ↓
+Laravel valida los datos
+        ↓
+El sistema asigna el user_id del funcionario
+        ↓
+El modelo Requerimiento guarda en MySQL
+        ↓
+Se notifica a los administradores
+        ↓
+El funcionario vuelve a su listado
+```
 
-## Flujo de visualización
+El formulario se encuentra en:
 
-Para visualizar los requerimientos, el sistema realiza el siguiente proceso:
+```text
+resources/views/requerimientos/create.blade.php
+```
 
-- El usuario ingresa a la ruta `/mis-requerimientos`.
-- El método `index` obtiene los registros desde MySQL.
-- Los datos se envían a la vista `resources/views/requerimientos/index.blade.php`.
-- La vista muestra el listado de requerimientos registrados.
-- Cada requerimiento tiene una opción para ver el detalle.
+La ruta utilizada es:
 
-## Flujo de detalle
+```text
+POST /requerimientos
+```
 
-Para revisar un requerimiento específico, el sistema realiza el siguiente proceso:
+El método responsable es:
 
-- El usuario selecciona Ver detalle.
-- El sistema ingresa a la ruta `/requerimientos/{id}`.
-- El método `show` recibe el requerimiento correspondiente.
-- La vista `resources/views/requerimientos/show.blade.php` muestra la información completa.
-- Se visualiza el estado, la descripción, la respuesta de informática y el seguimiento.
+```text
+store()
+```
+
+## Estado inicial del requerimiento
+
+Cuando se crea una solicitud, el estado inicial es:
+
+```text
+Pendiente
+```
+
+Esto indica que el requerimiento fue registrado, pero todavía no ha sido revisado por el área de Informática.
+
+## Flujo de notificación al administrador
+
+Después de crear el requerimiento:
+
+- El sistema busca a los usuarios con rol administrador.
+- Crea una notificación para cada administrador.
+- La campanita aumenta su contador.
+- El administrador puede abrir la sección de notificaciones.
+- Desde la notificación puede revisar la nueva solicitud.
+
+La notificación queda registrada en la tabla:
+
+```text
+notificaciones
+```
+
+## Flujo de visualización del funcionario
+
+Para consultar sus solicitudes, el funcionario ingresa a:
+
+```text
+GET /mis-requerimientos
+```
+
+El método `index()` obtiene solamente los registros asociados al usuario autenticado.
+
+El flujo es:
+
+```text
+Funcionario abre Mis requerimientos
+        ↓
+Controlador obtiene Auth::id()
+        ↓
+Consulta los requerimientos del usuario
+        ↓
+Envía los datos a la vista
+        ↓
+La vista muestra el listado
+```
+
+La vista utilizada es:
+
+```text
+resources/views/requerimientos/index.blade.php
+```
+
+## Flujo de detalle del requerimiento
+
+Cuando el usuario selecciona Ver detalle:
+
+```text
+Usuario selecciona un requerimiento
+        ↓
+Ingresa a /requerimientos/{requerimiento}
+        ↓
+El método show() revisa el acceso
+        ↓
+El sistema muestra la información
+```
+
+La vista se encuentra en:
+
+```text
+resources/views/requerimientos/show.blade.php
+```
+
+En esta pantalla se visualiza:
+
+- Número del requerimiento.
+- Funcionario.
+- Categoría.
+- Título.
+- Descripción.
+- Prioridad.
+- Estado.
+- Respuesta administrativa.
+- Fecha de creación.
+- Fecha de cierre.
+
+## Control de acceso al detalle
+
+El requerimiento puede ser consultado por:
+
+- El funcionario que lo creó.
+- Un administrador.
+
+Si otro funcionario intenta ingresar manualmente a una solicitud ajena, el sistema bloquea el acceso con error:
+
+```text
+403 - Acceso no autorizado
+```
+
+## Flujo principal del administrador
+
+El administrador puede:
+
+- Iniciar sesión.
+- Acceder directamente a Administración.
+- Consultar todos los requerimientos.
+- Identificar al funcionario que creó cada solicitud.
+- Abrir el detalle.
+- Gestionar el estado.
+- Registrar una respuesta.
+- Eliminar requerimientos.
+- Consultar notificaciones.
+- Cerrar sesión.
+
+## Flujo del listado administrativo
+
+El administrador ingresa a:
+
+```text
+GET /admin/requerimientos
+```
+
+El sistema realiza:
+
+```text
+Administrador abre la vista
+        ↓
+Se valida su rol
+        ↓
+El controlador consulta todos los requerimientos
+        ↓
+Eager Loading carga los usuarios relacionados
+        ↓
+La vista muestra la información
+```
+
+La consulta utiliza:
+
+```php
+Requerimiento::with('usuario')
+    ->orderBy('created_at', 'desc')
+    ->get();
+```
+
+Esto permite mostrar el nombre del funcionario y evitar consultas innecesarias.
 
 ## Flujo de gestión administrativa
 
-Para gestionar un requerimiento, el sistema realiza el siguiente proceso:
+Para gestionar un requerimiento:
 
-- Administración ingresa a `/admin/requerimientos`.
-- El sistema muestra todos los requerimientos registrados.
-- Administración selecciona Gestionar.
-- Se abre la vista `resources/views/admin/requerimientos/edit.blade.php`.
-- Administración cambia el estado del requerimiento.
-- Administración ingresa una respuesta.
-- El formulario envía la actualización mediante método PUT.
-- El método `update` del controlador guarda los cambios.
-- El sistema redirige nuevamente a administración.
-- El funcionario puede revisar el estado actualizado.
+```text
+Administrador selecciona Gestionar
+        ↓
+Se abre la vista de edición
+        ↓
+Cambia el estado
+        ↓
+Escribe una respuesta
+        ↓
+Envía el formulario mediante PUT
+        ↓
+Laravel valida la información
+        ↓
+El requerimiento se actualiza
+        ↓
+Se genera una notificación al funcionario
+        ↓
+El sistema vuelve a Administración
+```
+
+La vista de gestión se encuentra en:
+
+```text
+resources/views/admin/requerimientos/edit.blade.php
+```
+
+La ruta utilizada es:
+
+```text
+PUT /admin/requerimientos/{requerimiento}
+```
+
+El método responsable es:
+
+```text
+update()
+```
 
 ## Estados del requerimiento
 
@@ -117,46 +311,145 @@ El sistema utiliza los siguientes estados:
 - Cerrado.
 - Rechazado.
 
-Estos estados permiten representar el avance del requerimiento dentro del proceso de atención informática.
+Estos estados permiten representar el avance de la atención.
 
-## Seguimiento del requerimiento
+## Flujo de actualización del estado
 
-El seguimiento se muestra en la vista de detalle del requerimiento.
+Cuando el administrador cambia el estado:
 
-Esta sección permite revisar:
+- El sistema compara el estado anterior con el nuevo.
+- Guarda la actualización en MySQL.
+- Registra una respuesta si fue ingresada.
+- Asigna fecha de cierre cuando corresponde.
+- Crea una notificación para el funcionario.
 
-- Estado actual.
-- Fecha de ingreso.
-- Última actualización.
-- Fecha de cierre si corresponde.
-- Respuesta del área informática.
+Si el estado cambia a `resuelto` o `cerrado`, se registra la fecha de cierre.
 
-## Flujo resumido
+## Flujo de notificación al funcionario
 
-El flujo general del sistema puede resumirse así:
+Después de una actualización:
 
-- Funcionario registra requerimiento.
-- Sistema guarda en MySQL.
-- Funcionario visualiza el listado.
-- Funcionario revisa el detalle.
-- Administración gestiona el requerimiento.
-- Administración cambia estado y registra respuesta.
-- Sistema actualiza la información.
-- Funcionario visualiza el seguimiento actualizado.
+```text
+Administrador cambia el estado
+        ↓
+El sistema guarda los cambios
+        ↓
+Crea una notificación para el funcionario
+        ↓
+La campanita aumenta su contador
+        ↓
+El funcionario abre la notificación
+        ↓
+Consulta el estado actualizado
+```
 
-## Mejora futura
+Cada usuario puede ver solamente sus propias notificaciones.
 
-Como mejora futura se considera implementar:
+Cuando se abre la vista de notificaciones, estas quedan marcadas como leídas.
 
-- Login real de usuarios.
-- Registro real de funcionarios.
-- Roles de funcionario y administrador.
-- Protección de rutas.
-- Asociación del requerimiento al usuario autenticado.
-- Notificación por correo cuando cambie el estado del requerimiento.
+## Flujo de eliminación
+
+La eliminación está disponible solamente para el administrador.
+
+El flujo es:
+
+```text
+Administrador selecciona Eliminar
+        ↓
+SweetAlert2 solicita confirmación
+        ↓
+Administrador confirma o cancela
+        ↓
+El formulario envía DELETE
+        ↓
+El método destroy() elimina el registro
+        ↓
+El sistema vuelve al listado
+```
+
+La ruta utilizada es:
+
+```text
+DELETE /admin/requerimientos/{requerimiento}
+```
+
+El método responsable es:
+
+```text
+destroy()
+```
+
+Si el administrador cancela la operación, el registro no se elimina.
+
+## Flujo técnico general
+
+El flujo técnico aplicado en Laravel es:
+
+```text
+Vista Blade
+    ↓
+Ruta definida en routes/web.php
+    ↓
+Controlador
+    ↓
+Validación
+    ↓
+Modelo Eloquent
+    ↓
+Base de datos MySQL
+    ↓
+Redirección o vista actualizada
+```
+
+## Métodos HTTP utilizados
+
+El sistema utiliza:
+
+| Método | Uso |
+|---|---|
+| `GET` | Mostrar páginas y consultar datos |
+| `POST` | Crear requerimientos y registrar usuarios |
+| `PUT` | Actualizar estados y respuestas |
+| `DELETE` | Eliminar requerimientos |
+
+## Flujo resumido del sistema
+
+El flujo general puede resumirse así:
+
+```text
+Funcionario inicia sesión
+        ↓
+Crea un requerimiento
+        ↓
+El sistema guarda la solicitud
+        ↓
+Administrador recibe una notificación
+        ↓
+Administrador revisa y gestiona
+        ↓
+Cambia el estado y registra respuesta
+        ↓
+Funcionario recibe una notificación
+        ↓
+Funcionario revisa el seguimiento
+        ↓
+El requerimiento puede quedar resuelto o cerrado
+```
+
+## Mejoras futuras
+
+Como evolución del sistema se considera:
+
+- Incorporar una agenda para programar fecha y hora de atención.
+- Asignar requerimientos a técnicos del equipo de soporte.
+- Agregar comentarios e instrucciones para el técnico asignado.
+- Crear una bitácora con cambios, asignaciones y fechas.
+- Incorporar notificaciones del navegador cuando el sistema esté minimizado.
+- Implementar una vista de calendario.
+- Publicar el sistema en un servidor institucional.
 
 ## Conclusión
 
-El flujo del sistema permite representar un proceso completo de atención de requerimientos informáticos internos.
+El flujo del Sistema Municipal de Soporte TI permite representar un proceso completo de atención de requerimientos informáticos internos.
 
-MesaTI Municipal permite centralizar las solicitudes, mantener trazabilidad del estado y entregar una respuesta visible para el funcionario, apoyando la gestión del área informática municipal.
+El sistema incorpora autenticación, roles, creación de solicitudes, gestión administrativa, control de acceso, notificaciones internas, actualización de estados y eliminación segura, manteniendo la información centralizada en Laravel y MySQL.

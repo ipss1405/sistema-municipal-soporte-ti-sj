@@ -51,38 +51,100 @@
         </p>
     </div>
 
-    <form action="{{ route('admin.requerimientos.update', $requerimiento) }}" method="POST">
+    @if ($errors->any())
+        <div style="
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        ">
+            <strong>Revisa los datos ingresados:</strong>
+
+            <ul style="margin-bottom: 0;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form
+        action="{{ route('admin.requerimientos.update', $requerimiento) }}"
+        method="POST"
+    >
         @csrf
         @method('PUT')
 
-        <label for="estado">Estado del requerimiento</label>
-        <select name="estado" id="estado" required>
-            <option value="pendiente" {{ $requerimiento->estado == 'pendiente' ? 'selected' : '' }}>
+        {{-- Estado --}}
+        <label for="estado">
+            Estado del requerimiento
+        </label>
+
+        <select
+            name="estado"
+            id="estado"
+            required
+        >
+            <option
+                value="pendiente"
+                {{ old('estado', $requerimiento->estado) === 'pendiente' ? 'selected' : '' }}
+            >
                 Pendiente
             </option>
 
-            <option value="en_revision" {{ $requerimiento->estado == 'en_revision' ? 'selected' : '' }}>
+            <option
+                value="en_revision"
+                {{ old('estado', $requerimiento->estado) === 'en_revision' ? 'selected' : '' }}
+            >
                 En revisión
             </option>
 
-            <option value="en_proceso" {{ $requerimiento->estado == 'en_proceso' ? 'selected' : '' }}>
+            <option
+                value="en_proceso"
+                {{ old('estado', $requerimiento->estado) === 'en_proceso' ? 'selected' : '' }}
+            >
                 En proceso
             </option>
 
-            <option value="resuelto" {{ $requerimiento->estado == 'resuelto' ? 'selected' : '' }}>
+            <option
+                value="resuelto"
+                {{ old('estado', $requerimiento->estado) === 'resuelto' ? 'selected' : '' }}
+            >
                 Resuelto
             </option>
 
-            <option value="cerrado" {{ $requerimiento->estado == 'cerrado' ? 'selected' : '' }}>
+            <option
+                value="cerrado"
+                {{ old('estado', $requerimiento->estado) === 'cerrado' ? 'selected' : '' }}
+            >
                 Cerrado
             </option>
 
-            <option value="rechazado" {{ $requerimiento->estado == 'rechazado' ? 'selected' : '' }}>
+            <option
+                value="rechazado"
+                {{ old('estado', $requerimiento->estado) === 'rechazado' ? 'selected' : '' }}
+            >
                 Rechazado
             </option>
         </select>
 
-        <label for="respuesta_admin">Respuesta del área informática</label>
+        @error('estado')
+            <div style="
+                color: #B91C1C;
+                font-size: 14px;
+                margin-top: 5px;
+                margin-bottom: 10px;
+            ">
+                {{ $message }}
+            </div>
+        @enderror
+
+        {{-- Respuesta administrativa --}}
+        <label for="respuesta_admin">
+            Respuesta del área informática
+        </label>
+
         <textarea
             name="respuesta_admin"
             id="respuesta_admin"
@@ -90,11 +152,32 @@
             placeholder="Ingrese la respuesta o gestión realizada para este requerimiento"
         >{{ old('respuesta_admin', $requerimiento->respuesta_admin) }}</textarea>
 
-        <button type="submit" class="btn">
+        @error('respuesta_admin')
+            <div style="
+                color: #B91C1C;
+                font-size: 14px;
+                margin-top: 5px;
+                margin-bottom: 10px;
+            ">
+                {{ $message }}
+            </div>
+        @enderror
+
+        <button
+            type="submit"
+            class="btn"
+        >
             Guardar actualización
         </button>
 
-        <a href="/admin/requerimientos" class="btn" style="background: #6B7280; margin-left: 10px;">
+        <a
+            href="{{ route('admin.requerimientos.index') }}"
+            class="btn"
+            style="
+                background: #6B7280;
+                margin-left: 10px;
+            "
+        >
             Volver a administración
         </a>
     </form>

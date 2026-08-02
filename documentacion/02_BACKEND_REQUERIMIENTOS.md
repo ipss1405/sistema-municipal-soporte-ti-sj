@@ -2,120 +2,480 @@
 
 ## Descripción general
 
-El backend de MesaTI Municipal fue desarrollado utilizando Laravel, aplicando el patrón MVC para separar las responsabilidades del sistema.
+El backend del Sistema Municipal de Soporte TI fue desarrollado con Laravel y MySQL, aplicando el patrón MVC para separar las responsabilidades del sistema.
 
-El sistema permite registrar, listar, visualizar, administrar y actualizar requerimientos informáticos ingresados por funcionarios municipales.
+El sistema permite autenticar usuarios, registrar requerimientos, consultar información, gestionar estados, eliminar registros y generar notificaciones internas entre funcionarios y administradores.
 
 ## Patrón MVC aplicado
 
-Laravel trabaja bajo el patrón MVC:
+Laravel trabaja con el patrón Modelo, Vista y Controlador.
 
-- Modelo.
-- Vista.
-- Controlador.
+En este proyecto se aplica de la siguiente manera:
 
-En este proyecto se aplicó de la siguiente forma:
+- **Modelo:** representa las tablas de la base de datos mediante Eloquent ORM.
+- **Vista:** muestra la información al usuario mediante archivos Blade.
+- **Controlador:** procesa las solicitudes, valida los datos y ejecuta las operaciones.
+- **Ruta:** conecta una dirección URL y un método HTTP con una función del controlador.
+- **Base de datos:** almacena usuarios, requerimientos y notificaciones.
 
-- Las vistas Blade muestran la información al usuario.
-- Las rutas reciben las solicitudes del navegador.
-- El controlador procesa las acciones.
-- El modelo se comunica con la base de datos.
-- MySQL almacena la información de los requerimientos.
+Flujo general:
 
-## Modelo principal
+```text
+Vista Blade → Ruta → Controlador → Modelo Eloquent → Base de datos MySQL
+```
 
-El modelo utilizado para gestionar los requerimientos es `app/Models/Requerimiento.php`.
+## Modelos principales
 
-Este modelo representa la tabla `requerimientos` de la base de datos y permite trabajar con los datos mediante Eloquent ORM.
+El sistema utiliza los siguientes modelos:
 
-## Migración de la base de datos
+```text
+app/Models/User.php
+app/Models/Requerimiento.php
+app/Models/Notificacion.php
+```
 
-Se creó una migración para generar la tabla principal del sistema.
+### Modelo User
 
-La migración se encuentra en la carpeta `database/migrations`.
+El modelo `User` representa la tabla `users`.
 
-La tabla creada se llama `requerimientos`.
+Sus campos principales son:
 
-## Campos principales de la tabla
+- `name`
+- `email`
+- `password`
+- `rol`
+
+También contiene relaciones con requerimientos y notificaciones.
+
+```php
+public function requerimientos(): HasMany
+{
+    return $this->hasMany(Requerimiento::class);
+}
+
+public function notificaciones(): HasMany
+{
+    return $this->hasMany(Notificacion::class);
+}
+```
+
+### Modelo Requerimiento
+
+El modelo `Requerimiento` representa la tabla `requerimientos`.
+
+Sus campos asignables son:
+
+```php
+protected $fillable = [
+    'user_id',
+    'categoria',
+    'titulo',
+    'descripcion',
+    'prioridad',
+    'estado',
+    'respuesta_admin',
+    'fecha_cierre',
+];
+```
+
+El modelo pertenece a un usuario y puede tener varias notificaciones.
+
+```php
+public function usuario(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
+public function notificaciones(): HasMany
+{
+    return $this->hasMany(Notificacion::class);
+}
+```
+
+### Modelo Notificacion
+
+El modelo `Notificacion` representa la tabla `notificaciones`.
+
+Permite registrar avisos para funcionarios y administradores.
+
+```php
+protected $fillable = [
+    'user_id',
+    'requerimiento_id',
+    'titulo',
+    'mensaje',
+    'leida',
+    'fecha_leida',
+];
+```
+
+Cada notificación pertenece a un usuario y puede estar relacionada con un requerimiento.
+
+## Relaciones Eloquent
+
+Las relaciones implementadas son:
+
+```text
+Usuario → tiene muchos requerimientos
+Usuario → tiene muchas notificaciones
+Requerimiento → pertenece a un usuario
+Requerimiento → tiene muchas notificaciones
+Notificación → pertenece a un usuario
+Notificación → pertenece a un requerimiento
+```
+
+Para estas relaciones se utilizan:
+
+```php
+hasMany()
+belongsTo()
+```
+
+## Migraciones de la base de datos
+
+Las migraciones se encuentran en:
+
+```text
+database/migrations
+```
+
+La base de datos utilizada para la evaluación es:
+
+```text
+sistema_soporte_ti_eva2
+```
+
+Las tablas principales son:
+
+- `users`
+- `requerimientos`
+- `notificaciones`
+
+También existen las tablas internas de Laravel para caché, sesiones y trabajos.
+
+## Tabla users
+
+La tabla `users` almacena los datos de autenticación.
+
+Campos principales:
+
+- `id`
+- `name`
+- `email`
+- `password`
+- `rol`
+- `remember_token`
+- `created_at`
+- `updated_at`
+
+El campo `rol` utiliza por defecto el valor:
+
+```text
+funcionario
+```
+
+Los roles disponibles son:
+
+```text
+funcionario
+administrador
+```
+
+## Tabla requerimientos
 
 La tabla `requerimientos` contiene los siguientes campos:
 
-- id.
-- user_id.
-- categoria.
-- titulo.
-- descripcion.
-- prioridad.
-- estado.
-- respuesta_admin.
-- fecha_cierre.
-- created_at.
-- updated_at.
+- `id`
+- `user_id`
+- `categoria`
+- `titulo`
+- `descripcion`
+- `prioridad`
+- `estado`
+- `respuesta_admin`
+- `fecha_cierre`
+- `created_at`
+- `updated_at`
 
-Estos campos permiten registrar la información del requerimiento, su estado, la respuesta del área informática y las fechas de creación o actualización.
+El campo `user_id` relaciona cada requerimiento con el funcionario que lo creó.
 
-## Controlador principal
+## Tabla notificaciones
 
-El controlador utilizado es `app/Http/Controllers/RequerimientoController.php`.
+La tabla `notificaciones` contiene:
 
-Este controlador contiene la lógica principal del sistema.
+- `id`
+- `user_id`
+- `requerimiento_id`
+- `titulo`
+- `mensaje`
+- `leida`
+- `fecha_leida`
+- `created_at`
+- `updated_at`
 
-## Funciones implementadas en el controlador
+Esta tabla permite almacenar las notificaciones internas del sistema.
 
-El controlador permite:
+## Claves foráneas
 
-- Listar requerimientos.
-- Guardar nuevos requerimientos.
-- Mostrar el detalle de un requerimiento.
-- Mostrar la vista de administración.
-- Editar un requerimiento desde administración.
-- Actualizar el estado del requerimiento.
-- Registrar la respuesta del área informática.
+El sistema utiliza claves foráneas para mantener las relaciones entre las tablas.
+
+Ejemplo:
+
+```php
+$table->foreignId('user_id')
+    ->nullable()
+    ->constrained('users')
+    ->nullOnDelete();
+```
+
+Esto permite relacionar un requerimiento con su usuario y evitar errores de integridad en la base de datos.
+
+## Controladores utilizados
+
+Los controladores principales son:
+
+```text
+app/Http/Controllers/AuthController.php
+app/Http/Controllers/RequerimientoController.php
+app/Http/Controllers/NotificacionController.php
+```
+
+## AuthController
+
+El controlador `AuthController` administra:
+
+- Inicio de sesión.
+- Registro de usuarios.
+- Cierre de sesión.
+- Redirección según el rol.
+
+Después del inicio de sesión:
+
+```text
+Administrador → Administración de requerimientos
+Funcionario → Panel funcionario
+```
+
+Los usuarios creados mediante el formulario de registro reciben automáticamente el rol `funcionario`.
+
+Las contraseñas se almacenan mediante hash utilizando la configuración del modelo `User`.
+
+## RequerimientoController
+
+El controlador `RequerimientoController` contiene la lógica principal del CRUD.
+
+Sus funciones son:
+
+- `index()`
+- `create()`
+- `store()`
+- `show()`
+- `adminIndex()`
+- `edit()`
+- `update()`
+- `destroy()`
+
+### Método index
+
+Muestra solamente los requerimientos del funcionario autenticado.
+
+```php
+Requerimiento::where('user_id', Auth::id())
+    ->latest()
+    ->get();
+```
+
+### Método create
+
+Muestra el formulario para crear un nuevo requerimiento.
+
+### Método store
+
+Valida los datos y registra el requerimiento.
+
+También asigna automáticamente el identificador del usuario autenticado.
+
+Después de crear el requerimiento, genera una notificación para los administradores.
+
+### Método show
+
+Muestra el detalle de un requerimiento.
+
+El acceso está permitido solamente para:
+
+- El funcionario propietario del requerimiento.
+- Un usuario con rol administrador.
+
+Si otro usuario intenta ingresar, el sistema responde con error `403`.
+
+### Método adminIndex
+
+Muestra todos los requerimientos en la vista administrativa.
+
+Se utiliza Eager Loading para cargar los usuarios relacionados:
+
+```php
+Requerimiento::with('usuario')
+    ->orderBy('created_at', 'desc')
+    ->get();
+```
+
+### Método edit
+
+Muestra el formulario de gestión administrativa.
+
+El acceso está limitado al administrador.
+
+### Método update
+
+Permite:
+
+- Cambiar el estado.
+- Registrar una respuesta administrativa.
+- Asignar la fecha de cierre.
+- Generar una notificación para el funcionario.
+
+La fecha de cierre se registra cuando el estado cambia a `resuelto` o `cerrado`.
+
+### Método destroy
+
+Elimina un requerimiento desde la administración.
+
+```php
+$requerimiento->delete();
+```
+
+Después de eliminar, el sistema redirige a la lista administrativa con un mensaje de confirmación.
+
+## NotificacionController
+
+El controlador `NotificacionController` administra las notificaciones del usuario autenticado.
+
+Sus funciones principales son:
+
+- Mostrar las notificaciones.
+- Marcar las notificaciones como leídas.
+- Entregar el contador de notificaciones no leídas.
+
+Cada usuario puede consultar solamente sus propias notificaciones.
+
+Cuando se abre la vista de notificaciones, las que no han sido leídas se actualizan con:
+
+```text
+leida = true
+fecha_leida = fecha y hora actual
+```
+
+## Operaciones CRUD
+
+El sistema implementa las cuatro operaciones principales:
+
+| Operación | Método HTTP | Acción |
+|---|---|---|
+| Crear | `POST` | Registrar un requerimiento |
+| Leer | `GET` | Listar y mostrar requerimientos |
+| Actualizar | `PUT` | Cambiar estado y respuesta |
+| Eliminar | `DELETE` | Eliminar un requerimiento |
+
+## Rutas principales
+
+Las rutas se encuentran en:
+
+```text
+routes/web.php
+```
+
+Rutas utilizadas:
+
+```text
+GET     /mis-requerimientos
+GET     /requerimientos/crear
+POST    /requerimientos
+GET     /requerimientos/{requerimiento}
+GET     /admin/requerimientos
+GET     /admin/requerimientos/{requerimiento}/editar
+PUT     /admin/requerimientos/{requerimiento}
+DELETE  /admin/requerimientos/{requerimiento}
+GET     /notificaciones
+GET     /notificaciones/contador
+```
+
+Las rutas privadas utilizan autenticación.
 
 ## Registro de requerimientos
 
-El funcionario puede ingresar un nuevo requerimiento desde el formulario ubicado en `resources/views/requerimientos/create.blade.php`.
+El formulario se encuentra en:
 
-Al enviar el formulario, los datos se validan y se guardan en la base de datos MySQL.
+```text
+resources/views/requerimientos/create.blade.php
+```
+
+El funcionario ingresa:
+
+- Categoría.
+- Título.
+- Descripción.
+- Prioridad.
+
+Al enviar el formulario:
+
+```text
+Formulario → Ruta POST → store() → Validación → Modelo → MySQL
+```
 
 ## Listado de requerimientos
 
-Los requerimientos registrados se muestran en `resources/views/requerimientos/index.blade.php`.
+Los funcionarios consultan sus requerimientos en:
 
-Esta vista muestra los datos reales almacenados en la base de datos.
+```text
+resources/views/requerimientos/index.blade.php
+```
+
+El administrador consulta todos los registros en:
+
+```text
+resources/views/admin/requerimientos/index.blade.php
+```
+
+La vista administrativa también muestra el nombre del funcionario relacionado.
 
 ## Detalle del requerimiento
 
-Cada requerimiento puede revisarse en una vista de detalle ubicada en `resources/views/requerimientos/show.blade.php`.
+El detalle se encuentra en:
 
-En esta pantalla se visualiza:
+```text
+resources/views/requerimientos/show.blade.php
+```
 
-- Número de requerimiento.
-- Título.
+Muestra:
+
+- Número del requerimiento.
+- Funcionario.
 - Categoría.
+- Título.
+- Descripción.
 - Prioridad.
 - Estado.
-- Fecha de ingreso.
-- Descripción.
-- Respuesta del área informática.
-- Seguimiento.
+- Respuesta administrativa.
+- Fecha de creación.
+- Fecha de cierre.
 
-## Administración de requerimientos
+Los botones de navegación cambian según el rol del usuario.
 
-El área de informática cuenta con una vista de administración ubicada en `resources/views/admin/requerimientos/index.blade.php`.
+## Gestión administrativa
 
-Desde esta vista se pueden revisar todos los requerimientos ingresados.
+La vista de gestión se encuentra en:
 
-## Gestión del requerimiento
+```text
+resources/views/admin/requerimientos/edit.blade.php
+```
 
-La pantalla de gestión se encuentra en `resources/views/admin/requerimientos/edit.blade.php`.
+Desde esta pantalla, el administrador puede:
 
-Desde esta pantalla el área informática puede:
-
-- Cambiar el estado del requerimiento.
+- Cambiar el estado.
 - Registrar una respuesta.
 - Guardar la actualización.
-- Dejar seguimiento visible para el funcionario.
+- Notificar al funcionario.
 
 ## Estados disponibles
 
@@ -128,73 +488,178 @@ El sistema considera los siguientes estados:
 - Cerrado.
 - Rechazado.
 
-Estos estados permiten controlar el avance del requerimiento dentro del flujo de atención.
+Los estados permiten controlar el avance de la atención.
 
 ## Validaciones aplicadas
 
-El sistema valida los datos ingresados antes de guardarlos.
+El método `store()` valida:
 
-Entre las validaciones utilizadas se consideran:
-
-- Categoría obligatoria.
+- Categoría obligatoria y válida.
 - Título obligatorio.
 - Descripción obligatoria.
-- Prioridad obligatoria.
-- Estado válido al actualizar desde administración.
+- Prioridad obligatoria y válida.
 
-## Seguridad básica aplicada
+El método `update()` valida:
 
-El proyecto utiliza medidas básicas de seguridad propias de Laravel:
+- Estado obligatorio y válido.
+- Respuesta administrativa opcional.
 
-- Uso de `@csrf` en formularios.
-- Validación de datos desde el controlador.
-- Uso del archivo `.env` para la configuración de base de datos.
-- Separación de responsabilidades mediante MVC.
-- Uso de rutas definidas en `routes/web.php`.
+Las vistas utilizan:
+
+```blade
+@csrf
+@method('PUT')
+@method('DELETE')
+old()
+@error
+```
+
+Estas instrucciones permiten proteger formularios, conservar datos ingresados y mostrar mensajes de validación.
+
+## Seguridad aplicada
+
+El sistema incorpora:
+
+- Autenticación de usuarios.
+- Contraseñas almacenadas mediante hash.
+- Protección CSRF.
+- Validación de datos.
+- Separación de permisos según el rol.
+- Acceso restringido a requerimientos propios.
+- Bloqueo con error `403`.
+- Cierre seguro de sesión.
+- Sesión configurada con 30 minutos de duración.
+- Configuración de base de datos mediante `.env`.
+
+La validación del rol administrador se realiza dentro del controlador antes de ejecutar acciones administrativas.
+
+## Seeder
+
+El archivo principal se encuentra en:
+
+```text
+database/seeders/DatabaseSeeder.php
+```
+
+El Seeder crea:
+
+- 1 administradora.
+- 5 funcionarios.
+- 30 requerimientos.
+
+Esto permite disponer de datos suficientes para probar el sistema.
+
+## Factory
+
+La Factory se encuentra en:
+
+```text
+database/factories/RequerimientoFactory.php
+```
+
+Genera datos ficticios para:
+
+- Categoría.
+- Título.
+- Descripción.
+- Prioridad.
+- Estado.
+- Respuesta.
+- Fecha de cierre.
+- Usuario relacionado.
+
+Comando utilizado:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Este comando elimina las tablas existentes, ejecuta las migraciones y carga los datos del Seeder.
+
+## Eager Loading
+
+En la administración se utiliza:
+
+```php
+Requerimiento::with('usuario')->get();
+```
+
+Esto permite cargar los funcionarios relacionados junto con los requerimientos.
+
+Su uso evita el problema N+1, reduciendo consultas innecesarias a la base de datos.
 
 ## Flujo backend implementado
 
-El flujo principal del backend es:
+El flujo general para crear un requerimiento es:
 
-- Formulario Blade.
-- Ruta Laravel.
-- Controlador.
-- Modelo Requerimiento.
-- Base de datos MySQL.
-- Vista con datos reales.
+```text
+Funcionario completa formulario
+            ↓
+Ruta POST recibe la solicitud
+            ↓
+RequerimientoController valida los datos
+            ↓
+Modelo Requerimiento guarda en MySQL
+            ↓
+Se genera una notificación al administrador
+            ↓
+El funcionario vuelve a su listado
+```
 
----
+El flujo de actualización es:
+
+```text
+Administrador abre el requerimiento
+            ↓
+Cambia el estado y registra una respuesta
+            ↓
+Ruta PUT envía la información
+            ↓
+RequerimientoController actualiza el registro
+            ↓
+Se genera una notificación al funcionario
+            ↓
+El funcionario revisa el nuevo estado
+```
 
 ## Eliminación de requerimientos
 
-Se incorporó la funcionalidad de eliminación de requerimientos desde la sección administrativa del sistema.
+La eliminación se realiza mediante:
 
-Esta funcionalidad permite que el área de informática pueda eliminar un requerimiento registrado cuando corresponda a un registro de prueba, duplicado o ingresado por error.
+```text
+DELETE /admin/requerimientos/{requerimiento}
+```
 
-La eliminación se realiza utilizando el verbo HTTP `DELETE`, cumpliendo con la estructura esperada para una operación CRUD en Laravel.
+Esta ruta llama al método:
 
-La ruta utilizada es:
+```php
+destroy(Requerimiento $requerimiento)
+```
 
-`DELETE /admin/requerimientos/{requerimiento}`
+El formulario utiliza:
 
-Esta ruta llama al método `destroy` del controlador `RequerimientoController`.
+```blade
+@csrf
+@method('DELETE')
+```
 
-En el controlador, el método encargado de eliminar es:
+Antes de enviar la eliminación, SweetAlert2 solicita confirmación al administrador.
 
-`destroy(Requerimiento $requerimiento)`
+## Comandos utilizados
 
-Dentro de este método se ejecuta la eliminación del registro mediante:
+Comandos principales del proyecto:
 
-`$requerimiento->delete();`
-
-Después de eliminar el requerimiento, el sistema redirige nuevamente a la vista de administración y muestra el mensaje:
-
-`Requerimiento eliminado correctamente.`
-
-Esta funcionalidad complementa el CRUD del sistema, permitiendo listar, crear, visualizar, actualizar y eliminar requerimientos.
+```bash
+php artisan migrate
+php artisan migrate:fresh --seed
+php artisan route:list
+php artisan config:clear
+php artisan serve --port=8001
+php artisan tinker
+```
 
 ## Conclusión
 
-El backend de MesaTI Municipal permite gestionar requerimientos informáticos de forma funcional, utilizando Laravel, MySQL, rutas, controlador, modelo, migraciones y vistas Blade.
+El backend del Sistema Municipal de Soporte TI permite autenticar usuarios, gestionar requerimientos y enviar notificaciones internas mediante Laravel y MySQL.
 
-El sistema permite crear, listar, visualizar y actualizar requerimientos, entregando una base funcional para la gestión interna del área informática municipal.
+El proyecto aplica MVC, rutas, métodos HTTP, controladores, modelos Eloquent, relaciones, migraciones, validaciones, Seeder, Factory, Eager Loading, seguridad por roles y operaciones CRUD completas.

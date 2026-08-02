@@ -2,126 +2,245 @@
 
 ## Descripción general
 
-La interfaz de usuario de MesaTI Municipal fue diseñada con un enfoque institucional, considerando que el sistema está orientado al uso interno de funcionarios municipales.
+La interfaz del Sistema Municipal de Soporte TI fue diseñada para el uso interno de funcionarios municipales.
 
-El diseño utiliza una estructura clara, colores asociados a la Municipalidad de San Joaquín, logo institucional, accesos rápidos y bloques informativos que permiten orientar al usuario desde la página principal.
+El diseño utiliza colores institucionales, logo municipal, navegación simple, tarjetas informativas y accesos adaptados según el tipo de usuario.
 
 ## Objetivo de la interfaz
 
-El objetivo de la interfaz es permitir que el usuario comprenda rápidamente la finalidad del sistema y pueda acceder a las principales secciones disponibles.
+El objetivo es permitir que funcionarios y administradores comprendan rápidamente el funcionamiento del sistema y accedan fácilmente a las opciones correspondientes a su rol.
 
-La plataforma busca entregar una experiencia simple, ordenada y coherente con un entorno municipal, evitando una sobrecarga visual y priorizando la claridad de la información.
+La interfaz busca ser:
+
+- Clara.
+- Ordenada.
+- Fácil de utilizar.
+- Adaptable a distintos tamaños de pantalla.
+- Coherente con un entorno institucional municipal.
 
 ## Diseño institucional
 
-El diseño visual considera elementos propios de una plataforma institucional:
+La interfaz incorpora los siguientes elementos:
 
-- Logo municipal visible en el encabezado.
-- Barra superior con identificación del sistema.
-- Colores institucionales aplicados en encabezados, tarjetas y botones.
-- Menú de navegación simple.
-- Tarjetas de acceso rápido.
-- Información del servicio y datos de contacto.
-- Lenguaje formal y orientado al usuario funcionario.
+- Logo de la Municipalidad de San Joaquín.
+- Nombre del sistema en el encabezado.
+- Colores institucionales en botones y tarjetas.
+- Menú de navegación.
+- Accesos rápidos.
+- Información del servicio informático.
+- Diseño basado en tarjetas.
+- Efectos visuales suaves.
 
 ## Página principal
 
-La página principal presenta una portada institucional del sistema MesaTI Municipal.
+La página principal presenta información general sobre el Sistema Municipal de Soporte TI.
 
-Esta portada incluye:
+Está dividida en dos áreas principales:
 
-- Accesos rápidos para funcionario, administración y registro.
-- Información del servicio.
-- Datos de contacto del área informática.
-- Presentación general del sistema.
-- Resumen del flujo de registro, seguimiento y gestión TI.
+### Accesos rápidos
 
-La portada fue diseñada para entregar una primera impresión clara del sistema y facilitar la navegación hacia las funciones principales.
+Los accesos cambian según el estado de la sesión y el rol del usuario.
 
-## Inspiración visual
+#### Usuario sin iniciar sesión
 
-La distribución de la portada se trabajó tomando como referencia estilos actuales de prototipado de interfaces, similares a los diseños que pueden generarse con herramientas como Google Stitch.
+Puede visualizar:
 
-No se realizó una copia directa de una plantilla, sino que se tomó como inspiración el uso de tarjetas, bloques visuales, colores institucionales, microinteracciones y una distribución moderna adaptada al contexto municipal.
-
-## Dinamismo de la interfaz
-
-Se incorporaron efectos visuales suaves para mejorar la experiencia de usuario, tales como:
-
-- Animación de entrada en la portada.
-- Movimiento suave en tarjetas al pasar el mouse.
-- Efecto visual en accesos rápidos.
-- Sombras dinámicas.
-- Interacción visual en el bloque TI.
-
-Estos efectos buscan entregar una sensación más moderna sin perder el carácter formal e institucional del sistema.
-
-## Vistas desarrolladas
-
-Las principales vistas implementadas son:
-
-- Página principal.
-- Login visual.
-- Registro visual.
-- Panel funcionario.
-- Formulario de creación de requerimiento.
-- Listado de requerimientos.
-- Detalle de requerimiento.
-- Administración de requerimientos.
-- Gestión de requerimiento.
-
-## Layout reutilizable
-
-El sistema utiliza un layout principal reutilizable ubicado en `resources/views/layout.blade.php`.
-
-Este archivo contiene la estructura común del sistema:
-
-- Encabezado.
-- Logo municipal.
-- Barra de navegación.
-- Contenedor principal.
-- Footer.
-- Estilos generales.
-- Estilos para componentes visuales.
-- Estilos para etiquetas de estado.
-
-El uso de este layout permite mantener una apariencia uniforme en todas las páginas del sistema.
-
-## Componente reutilizable de estado
-
-Se creó un componente Blade reutilizable para mostrar el estado de los requerimientos.
-
-El archivo del componente se encuentra en `resources/views/components/estado.blade.php`.
-
-Este componente permite mostrar estados como:
-
-- Pendiente.
-- En revisión.
-- En proceso.
-- Resuelto.
-- Cerrado.
-- Rechazado.
-
-Cada estado se muestra mediante una etiqueta visual con color diferenciado, mejorando la lectura y comprensión del seguimiento del requerimiento.
-
-## Navegación del sistema
-
-La interfaz permite navegar entre las principales secciones del sistema mediante enlaces y botones.
-
-Las secciones principales son:
-
-- Inicio.
 - Login.
 - Registro.
+
+#### Funcionario autenticado
+
+Puede visualizar:
+
 - Panel funcionario.
 - Crear requerimiento.
 - Mis requerimientos.
-- Detalle del requerimiento.
-- Administración de requerimientos.
-- Gestión administrativa del requerimiento.
+
+#### Administrador autenticado
+
+Puede visualizar:
+
+- Panel funcionario.
+- Crear requerimiento.
+- Mis requerimientos.
+- Administración.
+
+De esta forma, cada usuario visualiza solamente las funciones que le corresponden.
+
+### Información del servicio
+
+La portada también muestra información del área de Informática:
+
+- Unidad responsable.
+- Dirección municipal.
+- Teléfono y anexos.
+- Correo electrónico.
+- Horario de atención.
+- Tipo de atención.
+
+## Login y registro
+
+El sistema cuenta con login y registro funcionales.
+
+El usuario debe ingresar su correo y contraseña para iniciar sesión.
+
+Después del ingreso, Laravel revisa el rol registrado en la base de datos:
+
+```text
+Funcionario → Panel funcionario
+Administrador → Administración de requerimientos
+```
+Los usuarios creados mediante el formulario de registro quedan automáticamente con rol funcionario.
+
+## Panel funcionario
+
+El panel funcionario permite acceder a las funciones principales:
+
+Crear un requerimiento.
+Consultar los requerimientos propios.
+Revisar el estado de las solicitudes.
+Acceder al detalle de un requerimiento.
+Consultar las notificaciones recibidas.
+
+Cada funcionario puede visualizar solamente los requerimientos asociados a su cuenta.
+
+## Administración de requerimientos
+
+La vista administrativa permite:
+
+Consultar todos los requerimientos.
+Identificar al funcionario que creó cada solicitud.
+Revisar categoría, prioridad y estado.
+Gestionar un requerimiento.
+Registrar una respuesta.
+Cambiar el estado.
+Eliminar un requerimiento.
+
+El acceso está limitado a usuarios con rol administrador.
+
+## Notificaciones internas
+
+La barra superior contiene una campanita con contador.
+
+El sistema genera notificaciones en ambos sentidos:
+
+El administrador recibe un aviso cuando un funcionario crea un requerimiento.
+El funcionario recibe un aviso cuando el administrador cambia el estado de su solicitud.
+
+Cada usuario puede consultar solamente sus propias notificaciones.
+
+## Navegación según el rol
+
+La interfaz muestra botones y enlaces diferentes según el rol del usuario.
+
+Un funcionario no visualiza la opción Administración.
+
+Aunque intente ingresar manualmente a la ruta administrativa, el sistema bloquea el acceso mediante un error 403.
+
+Esto permite combinar una navegación clara con control de acceso.
+
+## Layout reutilizable
+
+El sistema utiliza un layout principal ubicado en:
+
+resources/views/layout.blade.php
+
+Las vistas heredan esta estructura mediante:
+
+@extends('layout')
+
+Cada vista define su contenido con:
+
+@section('content')
+@endsection
+
+El layout incorpora el contenido mediante:
+
+@yield('content')
+
+Esto permite reutilizar:
+
+Encabezado.
+Logo.
+Barra de navegación.
+Estilos generales.
+Contenedor principal.
+Scripts.
+Pie de página.
+
+## Componente reutilizable de estado
+
+Se creó un componente Blade ubicado en:
+
+resources/views/components/estado.blade.php
+
+El componente permite mostrar los estados:
+
+Pendiente.
+En revisión.
+En proceso.
+Resuelto.
+Cerrado.
+Rechazado.
+
+Cada estado utiliza una etiqueta visual para facilitar su identificación.
+
+## Formularios
+
+Los formularios mantienen una estructura clara y muestran mensajes cuando existen datos incorrectos.
+
+Se utilizan instrucciones Blade como:
+
+@csrf
+@method('PUT')
+@method('DELETE')
+old()
+@error
+
+Estas instrucciones permiten:
+
+Proteger los formularios.
+Mantener los valores ingresados.
+Mostrar mensajes de validación.
+Actualizar registros.
+Eliminar registros.
+
+## Confirmación de eliminación
+
+La eliminación de requerimientos utiliza SweetAlert2.
+
+Antes de eliminar, el sistema muestra una ventana de confirmación con las opciones:
+
+Sí, eliminar.
+Cancelar.
+
+Esto ayuda a evitar eliminaciones accidentales.
+
+## Diseño adaptable
+
+La interfaz fue preparada para ajustarse a distintos tamaños de pantalla.
+
+En equipos grandes, los contenidos se muestran en columnas.
+
+En pantallas pequeñas, las tarjetas y accesos se organizan verticalmente para facilitar la navegación.
+
+## Vistas principales
+
+Las vistas principales del sistema son:
+
+resources/views/inicio.blade.php
+resources/views/auth/login.blade.php
+resources/views/auth/register.blade.php
+resources/views/funcionario/dashboard.blade.php
+resources/views/notificaciones/index.blade.php
+resources/views/requerimientos/create.blade.php
+resources/views/requerimientos/index.blade.php
+resources/views/requerimientos/show.blade.php
+resources/views/admin/requerimientos/index.blade.php
+resources/views/admin/requerimientos/edit.blade.php
 
 ## Conclusión
 
-La interfaz de MesaTI Municipal permite presentar el sistema de forma clara, ordenada e institucional.
+La interfaz del Sistema Municipal de Soporte TI permite que funcionarios y administradores utilicen la plataforma de manera clara y ordenada.
 
-La estructura visual facilita la navegación del usuario y entrega una base coherente para el funcionamiento del sistema, manteniendo una línea gráfica asociada al contexto municipal.
+La navegación se adapta al rol del usuario, facilita la creación y seguimiento de requerimientos e incorpora notificaciones, validaciones, confirmaciones y un diseño institucional adaptable.

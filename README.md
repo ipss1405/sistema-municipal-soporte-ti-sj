@@ -1,322 +1,236 @@
-# MesaTI Municipal
+# Sistema Municipal de Soporte TI
 
-Sistema web interno para la gestión de requerimientos informáticos municipales, desarrollado con Laravel, Blade y MySQL.
+Aplicación web desarrollada con Laravel para registrar, gestionar y hacer seguimiento a requerimientos informáticos de funcionarios municipales.
 
-## Descripción del proyecto
+## Objetivo
 
-MesaTI Municipal es una plataforma orientada al uso interno de funcionarios municipales. Permite registrar solicitudes de soporte informático, revisar su estado, visualizar el seguimiento y consultar la respuesta entregada por el área de Informática.
-
-El sistema también cuenta con una sección de administración donde el área informática puede revisar los requerimientos ingresados, cambiar su estado, registrar una respuesta para el funcionario y eliminar requerimientos cuando corresponda.
-
-## Objetivo general
-
-Desarrollar una plataforma web municipal para registrar, gestionar y hacer seguimiento a requerimientos informáticos internos, aplicando estructura MVC, vistas Blade, rutas, controladores, modelo y base de datos MySQL.
+Centralizar las solicitudes de soporte TI en una plataforma donde los funcionarios puedan registrar requerimientos y revisar su estado, mientras el administrador puede gestionarlos, responderlos y cerrarlos.
 
 ## Tecnologías utilizadas
 
-- Laravel.
-- PHP.
-- Blade.
-- MySQL.
-- Laragon.
-- Composer.
-- Git.
-- GitHub.
-- Visual Studio Code.
+- Laravel y PHP
+- Blade
+- MySQL
+- Bootstrap y CSS
+- Laragon
+- Composer
+- Git y GitHub
+- Visual Studio Code
+- SweetAlert2
 
 ## Funcionalidades principales
 
-- Página principal institucional.
-- Logo municipal incorporado al layout.
-- Login visual.
-- Registro visual.
-- Panel funcionario visual.
-- Formulario para registrar requerimientos.
-- Guardado de requerimientos en MySQL.
-- Listado de requerimientos registrados.
-- Visualización del detalle de un requerimiento.
-- Administración de requerimientos.
-- Cambio de estado del requerimiento.
-- Registro de respuesta del área informática.
-- Eliminación de requerimientos desde administración.
-- Seguimiento visible para el funcionario.
-- Componente reutilizable para mostrar estados.
-- Efectos visuales suaves en la portada.
-- Documentación técnica del sistema.
-- Capturas de evidencia del funcionamiento.
-
-## Estructura general del sistema
-
-El sistema utiliza el patrón MVC propio de Laravel:
-
-- **Modelo:** representa los datos del sistema.
-- **Vista:** muestra la información al usuario mediante Blade.
-- **Controlador:** procesa las solicitudes y coordina la lógica.
-- **Base de datos:** almacena la información en MySQL.
-
-La estructura principal utilizada es:
-
-- `routes/web.php`
-- `app/Http/Controllers/RequerimientoController.php`
-- `app/Models/Requerimiento.php`
-- `resources/views`
-- `resources/views/components`
-- `database/migrations`
-- `documentacion`
-
-## Modelo principal
-
-El modelo principal del sistema es `Requerimiento`.
-
-Archivo:
-
-`app/Models/Requerimiento.php`
-
-Este modelo permite trabajar con la tabla `requerimientos` mediante Eloquent ORM.
-
-El modelo contiene los campos permitidos para registro y actualización mediante `$fillable`.
-
-## Controlador principal
-
-El controlador principal es:
-
-`app/Http/Controllers/RequerimientoController.php`
+### Funcionario
 
-Este controlador permite:
+- Registrarse e iniciar sesión.
+- Crear requerimientos informáticos.
+- Consultar solamente sus propios requerimientos.
+- Revisar el estado y la respuesta de cada solicitud.
+- Recibir notificaciones cuando cambia el estado de un requerimiento.
 
-- Listar requerimientos.
-- Guardar nuevos requerimientos.
-- Mostrar el detalle de un requerimiento.
-- Mostrar la vista de administración.
-- Editar requerimientos desde administración.
-- Actualizar estado y respuesta.
-- Eliminar requerimientos desde administración.
-
-Métodos principales del controlador:
-
-- `index()`
-- `store()`
-- `show()`
-- `adminIndex()`
-- `edit()`
-- `update()`
-- `destroy()`
+### Administrador
 
-## Base de datos
+- Iniciar sesión y acceder directamente a Administración.
+- Consultar todos los requerimientos.
+- Identificar al funcionario que creó cada solicitud.
+- Cambiar el estado del requerimiento.
+- Registrar una respuesta administrativa.
+- Eliminar requerimientos con confirmación SweetAlert.
+- Recibir notificaciones cuando un funcionario crea una solicitud.
 
-Base de datos utilizada:
+## Roles y seguridad
 
-`mesa_ti_municipal`
+El sistema utiliza dos roles:
 
-Tabla principal:
+- `funcionario`
+- `administrador`
 
-`requerimientos`
+Las rutas privadas requieren una sesión iniciada. Además, las funciones administrativas validan el rol del usuario.
 
-Campos principales:
+Un funcionario no visualiza el acceso a Administración. Si intenta ingresar manualmente a la ruta administrativa, el sistema bloquea el acceso mediante un error `403`.
 
-- `id`
-- `user_id`
-- `categoria`
-- `titulo`
-- `descripcion`
-- `prioridad`
-- `estado`
-- `respuesta_admin`
-- `fecha_cierre`
-- `created_at`
-- `updated_at`
+También se implementaron:
 
-## Rutas principales
+- Protección de formularios con `@csrf`.
+- Validaciones desde los controladores.
+- Contraseñas almacenadas mediante hash.
+- Cierre seguro de sesión.
+- Sesión con 30 minutos de duración.
+- Navegación adaptada según el rol.
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/` | Página principal |
-| GET | `/login` | Login visual |
-| GET | `/registro` | Registro visual |
-| GET | `/funcionario` | Panel funcionario |
-| GET | `/requerimientos/crear` | Formulario para crear requerimiento |
-| POST | `/requerimientos` | Guarda un nuevo requerimiento |
-| GET | `/mis-requerimientos` | Listado de requerimientos |
-| GET | `/requerimientos/{requerimiento}` | Detalle del requerimiento |
-| GET | `/admin/requerimientos` | Administración de requerimientos |
-| GET | `/admin/requerimientos/{requerimiento}/editar` | Gestión administrativa del requerimiento |
-| PUT | `/admin/requerimientos/{requerimiento}` | Actualiza estado y respuesta |
-| DELETE | `/admin/requerimientos/{requerimiento}` | Elimina un requerimiento desde administración |
+## Arquitectura MVC
 
-## Verbos HTTP utilizados
+El proyecto utiliza el patrón MVC de Laravel:
 
-El proyecto utiliza los verbos HTTP solicitados para una estructura CRUD:
+- **Modelo:** representa y administra los datos mediante Eloquent.
+- **Vista:** muestra la interfaz mediante Blade.
+- **Controlador:** procesa solicitudes, valida datos y ejecuta operaciones.
+- **Ruta:** conecta una URL y un método HTTP con el controlador.
 
-- **GET:** mostrar vistas y consultar información.
-- **POST:** guardar nuevos requerimientos.
-- **PUT:** actualizar estado y respuesta administrativa.
-- **DELETE:** eliminar requerimientos desde administración.
+Flujo general:
 
-## Flujo principal del sistema
+```text
+```
+Vista → Ruta → Controlador → Modelo → Base de datos
+Herencia de vistas Blade
 
-1. El funcionario ingresa un requerimiento.
-2. El sistema guarda la solicitud en MySQL.
-3. El requerimiento queda con estado inicial Pendiente.
-4. El funcionario puede revisar el listado y detalle.
-5. El área de Informática revisa el requerimiento.
-6. Administración cambia el estado y registra una respuesta.
-7. El funcionario visualiza el seguimiento actualizado.
-8. Administración puede eliminar un requerimiento si corresponde.
+Las vistas reutilizan el diseño principal mediante:
 
-## Estados del requerimiento
+@extends('layout')
+@section('content')
+@endsection
 
-El sistema considera los siguientes estados:
+El archivo layout.blade.php recibe el contenido mediante:
 
-- Pendiente.
-- En revisión.
-- En proceso.
-- Resuelto.
-- Cerrado.
-- Rechazado.
+@yield('content')
 
-Estos estados se muestran mediante un componente visual reutilizable ubicado en:
+Esto evita repetir el encabezado, navegación, estilos y pie de página en cada vista.
 
-`resources/views/components/estado.blade.php`
+CRUD de requerimientos
 
-El componente se utiliza en distintas vistas para mantener una visualización consistente del estado del requerimiento.
+El sistema implementa las operaciones principales:
 
-## Vistas principales
+Operación	Método HTTP	Acción
+Crear	    POST	Registrar un requerimiento
+Consultar	GET	    Listar y mostrar detalles
+Actualizar	PUT	    Cambiar estado y respuesta
+Eliminar	DELETE	Eliminar un requerimiento
 
-El sistema cuenta con las siguientes vistas Blade:
+Rutas principales:
 
-- `resources/views/inicio.blade.php`
-- `resources/views/auth/login.blade.php`
-- `resources/views/auth/register.blade.php`
-- `resources/views/funcionario/dashboard.blade.php`
-- `resources/views/requerimientos/create.blade.php`
-- `resources/views/requerimientos/index.blade.php`
-- `resources/views/requerimientos/show.blade.php`
-- `resources/views/admin/requerimientos/index.blade.php`
-- `resources/views/admin/requerimientos/edit.blade.php`
+GET     /mis-requerimientos
+GET     /requerimientos/crear
+POST    /requerimientos
+GET     /requerimientos/{requerimiento}
+GET     /admin/requerimientos
+GET     /admin/requerimientos/{requerimiento}/editar
+PUT     /admin/requerimientos/{requerimiento}
+DELETE  /admin/requerimientos/{requerimiento}
+Base de datos
 
-## Layout y componente reutilizable
+Base utilizada en la copia de evaluación:
 
-El sistema utiliza un layout principal ubicado en:
+sistema_soporte_ti_eva2
 
-`resources/views/layout.blade.php`
+Tablas principales:
 
-Este layout contiene la estructura general del sitio:
+users
+requerimientos
+notificaciones
 
-- Encabezado.
-- Logo institucional.
-- Menú de navegación.
-- Estilos CSS.
-- Contenedor principal.
-- Pie de página.
+Relaciones implementadas:
 
-También se creó un componente reutilizable para mostrar los estados:
+Usuario → muchos requerimientos
+Usuario → muchas notificaciones
+Requerimiento → pertenece a un usuario
+Requerimiento → muchas notificaciones
 
-`resources/views/components/estado.blade.php`
+Los modelos utilizan relaciones Eloquent como:
 
-Este componente permite mostrar el estado del requerimiento con texto y color correspondiente.
+hasMany()
+belongsTo()
+Migraciones, Seeder y Factory
 
-## Diseño de interfaz
+Las migraciones crean las tablas, columnas y claves foráneas.
 
-La interfaz fue diseñada con enfoque institucional municipal, utilizando logo, colores asociados a la Municipalidad de San Joaquín, accesos rápidos, bloques informativos y navegación simple.
+La Factory genera requerimientos ficticios con:
 
-La portada incorpora una distribución moderna basada en tarjetas, microinteracciones y efectos visuales suaves, inspirada en estilos actuales de prototipado de interfaces como Google Stitch, adaptados al contexto municipal.
+Categoría
+Título
+Descripción
+Prioridad
+Estado
+Fechas
+Usuario relacionado
 
-## Seguridad básica aplicada
+El Seeder crea automáticamente:
 
-El sistema utiliza medidas básicas propias de Laravel:
+1 administradora
+5 funcionarios
+30 requerimientos
 
-- Uso de `@csrf` en formularios.
-- Validación de datos desde el controlador.
-- Uso del archivo `.env` para configuración local.
-- Separación de responsabilidades mediante MVC.
-- Rutas definidas en `routes/web.php`.
-- Uso de `@method('PUT')` para actualización.
-- Uso de `@method('DELETE')` para eliminación.
+Comando utilizado:
 
-## Documentación del proyecto
+php artisan migrate:fresh --seed
 
-La documentación complementaria se encuentra en la carpeta:
+Este comando elimina y vuelve a crear las tablas de la base configurada en .env.
 
-`documentacion/`
+Eager Loading
 
-Archivos incluidos:
+En la administración se utiliza:
 
-- `01_INTERFAZ_USUARIO.md`
-- `02_BACKEND_REQUERIMIENTOS.md`
-- `03_FLUJO_DEL_SISTEMA.md`
-- `04_CASOS_DE_PRUEBA.md`
-- `05_GUIA_PRESENTACION.md`
+Requerimiento::with('usuario')->get();
 
-Las capturas del sistema se encuentran en:
+Esto carga anticipadamente los usuarios relacionados y evita el problema N+1, reduciendo consultas innecesarias a la base de datos.
 
-`documentacion/capturas/`
+Validaciones
 
-Capturas principales incluidas:
+Los métodos store() y update() validan los datos antes de guardarlos.
 
-- `01_estructura_proyecto.png`
-- `02_portada.png`
-- `03_formulario_requerimiento.png`
-- `04_mis_requerimientos.png`
-- `05_detalle_requerimiento.png`
-- `06_administracion_requerimientos.png`
-- `07_gestion_requerimiento.png`
-- `08_actualizacion_estado.png`
-- `09_eliminacion_requerimiento.png`
+Las vistas utilizan:
 
-## Cómo ejecutar el proyecto
+@csrf
+@method('PUT')
+@method('DELETE')
+old()
+@error
 
-1. Abrir Laragon.
-2. Iniciar los servicios con **Start All**.
-3. Abrir el proyecto en Visual Studio Code.
-4. Abrir una terminal en la carpeta del proyecto.
-5. Ejecutar:
+Estas instrucciones protegen los formularios, permiten actualizar o eliminar registros y muestran mensajes cuando los datos son incorrectos.
 
-`php artisan serve`
+Ejecución del proyecto
+Iniciar Apache y MySQL desde Laragon.
+Abrir una terminal en la carpeta del proyecto.
+Ejecutar:
+composer install
+php artisan config:clear
+php artisan migrate:fresh --seed
+php artisan serve --port=8001
+Abrir:
+http://127.0.0.1:8001
+Credenciales de demostración
+Administradora
+Correo: rosa@sanjoaquin.cl
+Contraseña: Municipal2026!
+Funcionaria
+Correo: ana.martinez@sanjoaquin.cl
+Contraseña: Municipal2026!
+Documentación
 
-6. Abrir en el navegador:
+La documentación complementaria se encuentra en:
 
-`http://127.0.0.1:8000`
+documentacion/
 
-## Estado actual del proyecto
+Incluye información sobre:
 
-El sistema permite registrar, listar, visualizar, administrar, actualizar y eliminar requerimientos informáticos.
+Interfaz de usuario
+Backend y CRUD
+Flujo del sistema
+Casos de prueba
+Guía de presentación
 
-El flujo principal de requerimientos se encuentra funcionando:
+Las evidencias de la Evaluación 2 se incorporarán en:
 
-Crear requerimiento → Guardar en MySQL → Listar → Ver detalle → Gestionar → Actualizar estado y respuesta → Eliminar requerimiento desde administración.
+documentacion/EVIDENCIAS_EVA2_SISTEMA_SOPORTE_TI.pdf
+Estado del proyecto
 
-## Relación con la rúbrica
+El desarrollo principal se encuentra terminado y funcionando.
 
-El proyecto cumple con los principales requerimientos de la evaluación:
-
-- Uso de Laravel y Blade.
-- Mínimo de 5 rutas.
-- Uso de rutas en `web.php`.
-- Uso de controlador.
-- Uso de modelo.
-- Uso de vistas Blade.
-- Uso de layout reutilizable.
-- Uso de componente reutilizable.
-- Aplicación de estilos CSS.
-- Uso de verbos HTTP GET, POST, PUT y DELETE.
-- Operaciones principales: listar, crear, mostrar detalle, actualizar y eliminar.
-- Presentación funcional mediante `php artisan serve`.
+El sistema permite autenticar usuarios, separar permisos por rol, realizar el CRUD de requerimientos, generar datos mediante Seeder y Factory, utilizar relaciones Eloquent y enviar notificaciones entre funcionarios y administración.
 
 ## Mejoras futuras
-
-- Login real de usuarios.
-- Registro real de funcionarios.
-- Roles de funcionario y administrador.
-- Protección de rutas mediante middleware.
-- Asociación del requerimiento al usuario autenticado.
-- Notificación por correo cuando cambie el estado del requerimiento.
-- Implementación de permisos para separar acceso funcionario y administrador.
-- Historial de cambios por requerimiento.
+- Incorporar una agenda para programar la fecha y hora de atención de cada requerimiento.
+- Asignar los requerimientos a funcionarios o técnicos del equipo de soporte.
+- Permitir que el administrador agregue comentarios e instrucciones para el técnico asignado.
+- Crear una bitácora con los cambios de estado, asignaciones, fechas y comentarios realizados.
+- Implementar notificaciones del navegador para avisar sobre nuevos requerimientos aunque la plataforma esté minimizada.
+- Incorporar una vista de calendario para organizar las atenciones programadas.
+- Publicar el sistema en un servidor institucional.
 
 ## Conclusión
 
-MesaTI Municipal permite centralizar la gestión de requerimientos informáticos internos, manteniendo un flujo ordenado entre funcionario y área de Informática.
+El Sistema Municipal de Soporte TI permite organizar y dar seguimiento a solicitudes informáticas internas.
 
-El proyecto aplica Laravel, MVC, Blade, MySQL, rutas, controlador, modelo, migraciones, validaciones básicas, documentación técnica, capturas de evidencia y operaciones CRUD.
+El proyecto aplica Laravel, MVC, Blade, MySQL, migraciones, modelos Eloquent, relaciones, validaciones, Seeder, Factory, Eager Loading, roles, seguridad y operaciones CRUD.
 
-La aplicación permite demostrar el funcionamiento de una solución web coherente con un contexto municipal real, cumpliendo los criterios técnicos principales de la evaluación.
+
+Esta versión conserva lo importante, explica lo que realmente desarrollamos y elimina la repetición. Además, está escrita para que puedas leerla y defenderla sin necesitar un traductor oficial de Laravel 😄.

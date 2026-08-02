@@ -1,61 +1,116 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RequerimientoController;
+use App\Http\Controllers\NotificacionController;
+
+/*
+|--------------------------------------------------------------------------
+| Ruta principal
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('inicio');
-})->name('inicio');
-
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-Route::get('/registro', function () {
-    return view('auth.register');
-})->name('registro');
-
-Route::get('/funcionario', function () {
-    return view('funcionario.dashboard');
-})->name('funcionario.dashboard');
-
-Route::get('/requerimientos/crear', function () {
-    return view('requerimientos.create');
-})->name('requerimientos.create');
-
-Route::get('/requerimientos', function () {
-    return redirect('/mis-requerimientos');
 });
 
-Route::post('/requerimientos', [RequerimientoController::class, 'store'])
-    ->name('requerimientos.store');
-
-Route::get('/mis-requerimientos', [RequerimientoController::class, 'index'])
-    ->name('requerimientos.index');
-
 /*
 |--------------------------------------------------------------------------
-| Rutas de administración
+| Rutas de autenticación
 |--------------------------------------------------------------------------
 */
 
-Route::get('/admin/requerimientos', [RequerimientoController::class, 'adminIndex'])
-    ->name('admin.requerimientos.index');
+Route::get('/login', [AuthController::class, 'showLogin'])
+    ->name('login');
 
-Route::get('/admin/requerimientos/{requerimiento}/editar', [RequerimientoController::class, 'edit'])
-    ->name('admin.requerimientos.edit');
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login.procesar');
 
-Route::put('/admin/requerimientos/{requerimiento}', [RequerimientoController::class, 'update'])
-    ->name('admin.requerimientos.update');
+Route::get('/registro', [AuthController::class, 'showRegister'])
+    ->name('registro');
 
-Route::delete('/admin/requerimientos/{requerimiento}', [RequerimientoController::class, 'destroy'])
-    ->name('admin.requerimientos.destroy');
+Route::post('/registro', [AuthController::class, 'register'])
+    ->name('registro.procesar');
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| Detalle de requerimiento funcionario
+| Rutas protegidas del sistema
 |--------------------------------------------------------------------------
+| Estas rutas requieren que el usuario haya iniciado sesión.
 */
 
-Route::get('/requerimientos/{requerimiento}', [RequerimientoController::class, 'show'])
-    ->name('requerimientos.show');
+Route::middleware('auth')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Panel funcionario
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/funcionario', function () {
+        return view('funcionario.dashboard');
+    })->name('funcionario.dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notificaciones
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/notificaciones', [NotificacionController::class, 'index'])
+        ->name('notificaciones.index');
+
+    Route::get('/notificaciones/contador', [NotificacionController::class, 'contador'])
+        ->name('notificaciones.contador');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Requerimientos del funcionario
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/requerimientos/crear', [RequerimientoController::class, 'create'])
+        ->name('requerimientos.create');
+
+    Route::post('/requerimientos', [RequerimientoController::class, 'store'])
+        ->name('requerimientos.store');
+
+    Route::get('/mis-requerimientos', [RequerimientoController::class, 'index'])
+        ->name('requerimientos.index');
+
+    Route::get('/requerimientos', function () {
+        return redirect('/mis-requerimientos');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Administración de requerimientos
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/admin/requerimientos', [RequerimientoController::class, 'adminIndex'])
+        ->name('admin.requerimientos.index');
+
+    Route::get('/admin/requerimientos/{requerimiento}/editar', [RequerimientoController::class, 'edit'])
+        ->name('admin.requerimientos.edit');
+
+    Route::put('/admin/requerimientos/{requerimiento}', [RequerimientoController::class, 'update'])
+        ->name('admin.requerimientos.update');
+
+    Route::delete('/admin/requerimientos/{requerimiento}', [RequerimientoController::class, 'destroy'])
+        ->name('admin.requerimientos.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Detalle de requerimiento
+    |--------------------------------------------------------------------------
+    | Esta ruta va al final para no chocar con otras rutas.
+    */
+
+    Route::get('/requerimientos/{requerimiento}', [RequerimientoController::class, 'show'])
+        ->name('requerimientos.show');
+});
