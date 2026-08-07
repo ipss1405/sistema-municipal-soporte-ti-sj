@@ -45,8 +45,8 @@ Los accesos cambian según el estado de la sesión y el rol del usuario.
 
 Puede visualizar:
 
-- Login.
-- Registro.
+- Iniciar sesión.
+- Registrarse.
 
 #### Funcionario autenticado
 
@@ -65,7 +65,7 @@ Puede visualizar:
 - Mis requerimientos.
 - Administración.
 
-De esta forma, cada usuario visualiza solamente las funciones que le corresponden.
+De esta forma, cada usuario visualiza los accesos correspondientes a su sesión y rol.
 
 ### Información del servicio
 
@@ -90,17 +90,18 @@ Después del ingreso, Laravel revisa el rol registrado en la base de datos:
 Funcionario → Panel funcionario
 Administrador → Administración de requerimientos
 ```
-Los usuarios creados mediante el formulario de registro quedan automáticamente con rol funcionario.
+
+Los usuarios creados mediante el formulario de registro quedan automáticamente con rol `funcionario`.
 
 ## Panel funcionario
 
 El panel funcionario permite acceder a las funciones principales:
 
-Crear un requerimiento.
-Consultar los requerimientos propios.
-Revisar el estado de las solicitudes.
-Acceder al detalle de un requerimiento.
-Consultar las notificaciones recibidas.
+- Crear un requerimiento.
+- Consultar los requerimientos propios.
+- Revisar el estado de las solicitudes.
+- Acceder al detalle de un requerimiento.
+- Consultar las notificaciones recibidas.
 
 Cada funcionario puede visualizar solamente los requerimientos asociados a su cuenta.
 
@@ -108,15 +109,15 @@ Cada funcionario puede visualizar solamente los requerimientos asociados a su cu
 
 La vista administrativa permite:
 
-Consultar todos los requerimientos.
-Identificar al funcionario que creó cada solicitud.
-Revisar categoría, prioridad y estado.
-Gestionar un requerimiento.
-Registrar una respuesta.
-Cambiar el estado.
-Eliminar un requerimiento.
+- Consultar todos los requerimientos.
+- Identificar al funcionario que creó cada solicitud.
+- Revisar categoría, prioridad y estado.
+- Gestionar un requerimiento.
+- Registrar una respuesta.
+- Cambiar el estado.
+- Eliminar un requerimiento.
 
-El acceso está limitado a usuarios con rol administrador.
+El acceso está limitado a usuarios con rol `administrador`.
 
 ## Notificaciones internas
 
@@ -124,8 +125,8 @@ La barra superior contiene una campanita con contador.
 
 El sistema genera notificaciones en ambos sentidos:
 
-El administrador recibe un aviso cuando un funcionario crea un requerimiento.
-El funcionario recibe un aviso cuando el administrador cambia el estado de su solicitud.
+- El administrador recibe un aviso cuando un funcionario crea un requerimiento.
+- El funcionario recibe un aviso cuando el administrador cambia el estado de su solicitud.
 
 Cada usuario puede consultar solamente sus propias notificaciones.
 
@@ -135,7 +136,7 @@ La interfaz muestra botones y enlaces diferentes según el rol del usuario.
 
 Un funcionario no visualiza la opción Administración.
 
-Aunque intente ingresar manualmente a la ruta administrativa, el sistema bloquea el acceso mediante un error 403.
+Aunque intente ingresar manualmente a la ruta administrativa, el sistema bloquea el acceso mediante un error `403`.
 
 Esto permite combinar una navegación clara con control de acceso.
 
@@ -143,45 +144,55 @@ Esto permite combinar una navegación clara con control de acceso.
 
 El sistema utiliza un layout principal ubicado en:
 
+```text
 resources/views/layout.blade.php
+```
 
 Las vistas heredan esta estructura mediante:
 
+```blade
 @extends('layout')
+```
 
 Cada vista define su contenido con:
 
+```blade
 @section('content')
 @endsection
+```
 
 El layout incorpora el contenido mediante:
 
+```blade
 @yield('content')
+```
 
 Esto permite reutilizar:
 
-Encabezado.
-Logo.
-Barra de navegación.
-Estilos generales.
-Contenedor principal.
-Scripts.
-Pie de página.
+- Encabezado.
+- Logo.
+- Barra de navegación.
+- Estilos generales.
+- Contenedor principal.
+- Scripts.
+- Pie de página.
 
 ## Componente reutilizable de estado
 
 Se creó un componente Blade ubicado en:
 
+```text
 resources/views/components/estado.blade.php
+```
 
 El componente permite mostrar los estados:
 
-Pendiente.
-En revisión.
-En proceso.
-Resuelto.
-Cerrado.
-Rechazado.
+- Pendiente.
+- En revisión.
+- En proceso.
+- Resuelto.
+- Cerrado.
+- Rechazado.
 
 Cada estado utiliza una etiqueta visual para facilitar su identificación.
 
@@ -191,19 +202,21 @@ Los formularios mantienen una estructura clara y muestran mensajes cuando existe
 
 Se utilizan instrucciones Blade como:
 
+```blade
 @csrf
 @method('PUT')
 @method('DELETE')
 old()
 @error
+```
 
 Estas instrucciones permiten:
 
-Proteger los formularios.
-Mantener los valores ingresados.
-Mostrar mensajes de validación.
-Actualizar registros.
-Eliminar registros.
+- Proteger los formularios.
+- Mantener los valores ingresados.
+- Mostrar mensajes de validación.
+- Actualizar registros.
+- Eliminar registros.
 
 ## Confirmación de eliminación
 
@@ -211,8 +224,10 @@ La eliminación de requerimientos utiliza SweetAlert2.
 
 Antes de eliminar, el sistema muestra una ventana de confirmación con las opciones:
 
-Sí, eliminar.
-Cancelar.
+- Sí, eliminar.
+- Cancelar.
+
+SweetAlert2 realiza la confirmación visual antes de que el formulario envíe la solicitud de eliminación.
 
 Esto ayuda a evitar eliminaciones accidentales.
 
@@ -228,6 +243,7 @@ En pantallas pequeñas, las tarjetas y accesos se organizan verticalmente para f
 
 Las vistas principales del sistema son:
 
+```text
 resources/views/inicio.blade.php
 resources/views/auth/login.blade.php
 resources/views/auth/register.blade.php
@@ -238,6 +254,7 @@ resources/views/requerimientos/index.blade.php
 resources/views/requerimientos/show.blade.php
 resources/views/admin/requerimientos/index.blade.php
 resources/views/admin/requerimientos/edit.blade.php
+```
 
 ## Conclusión
 

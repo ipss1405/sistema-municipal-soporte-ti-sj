@@ -1,455 +1,671 @@
-# Flujo del Sistema
+# Casos de Prueba
 
-## Descripción general
+## 1. Descripción general
 
-El Sistema Municipal de Soporte TI permite gestionar requerimientos informáticos internos desde el registro de la solicitud hasta su revisión, actualización y respuesta por parte del área de Informática.
+Este documento contiene los casos de prueba funcionales del **Sistema Municipal de Soporte TI**.
 
-El sistema trabaja con dos tipos de usuario:
+Las pruebas se ejecutaron manualmente en el entorno local del proyecto. Cada caso debe registrar el resultado real y una captura en formato PNG como evidencia.
 
-- Funcionario municipal.
-- Administrador del área de Informática.
-
-Cada usuario debe iniciar sesión y visualiza opciones diferentes según su rol.
-
-## Flujo de acceso al sistema
-
-El flujo de acceso es el siguiente:
+## 2. Entorno de prueba
 
 ```text
-Usuario ingresa al sistema
-        ↓
-Completa correo y contraseña
-        ↓
-Laravel valida las credenciales
-        ↓
-El sistema revisa el rol
-        ↓
-Funcionario → Panel funcionario
-Administrador → Administración de requerimientos
+Proyecto: Sistema Municipal de Soporte TI
+URL: http://127.0.0.1:8001
+Base de datos: sistema_soporte_ti_eva2
+Navegador: Google Chrome
+Servidor local: Laragon
 ```
 
-Si las credenciales no son correctas, el sistema muestra un mensaje de error y no permite el acceso.
+## 3. Usuarios de prueba
 
-## Flujo de registro de usuario
-
-El sistema permite registrar nuevos usuarios mediante el formulario de registro.
-
-El flujo es:
+### Administradora
 
 ```text
-Usuario completa el formulario
-        ↓
-Laravel valida nombre, correo y contraseña
-        ↓
-Se crea la cuenta en la tabla users
-        ↓
-El usuario recibe rol funcionario
-        ↓
-Se inicia la sesión
-        ↓
-El usuario accede al panel funcionario
+Correo: rosa@sanjoaquin.cl
+Contraseña: Municipal2026!
+Rol: administrador
 ```
 
-Los usuarios registrados desde la interfaz no pueden asignarse el rol administrador.
+### Funcionaria
 
-## Flujo principal del funcionario
+```text
+Correo: ana.martinez@sanjoaquin.cl
+Contraseña: Municipal2026!
+Rol: funcionario
+```
 
-El funcionario puede:
+## 4. Estados de los casos de prueba
 
-- Iniciar sesión.
-- Acceder al panel funcionario.
-- Crear un requerimiento.
-- Consultar sus propios requerimientos.
-- Revisar el detalle de una solicitud.
-- Ver el estado y la respuesta administrativa.
-- Consultar sus notificaciones.
+Cada prueba debe finalizar con uno de estos estados:
+
+- **Pendiente:** todavía no se ejecuta.
+- **Aprobado:** el resultado obtenido coincide con el esperado.
+- **Rechazado:** el resultado obtenido no coincide con el esperado.
+- **Bloqueado:** no fue posible ejecutar la prueba por un problema previo.
+
+---
+
+# CP-01: Inicio de sesión correcto del funcionario
+
+## Objetivo
+
+Comprobar que una funcionaria registrada pueda iniciar sesión y acceder a su panel.
+
+## Precondiciones
+
+- El servidor debe estar funcionando.
+- La usuaria debe existir en la base de datos.
+- No debe existir otra sesión abierta.
+
+## Datos de prueba
+
+```text
+Correo: ana.martinez@sanjoaquin.cl
+Contraseña: Municipal2026!
+```
+
+## Pasos
+
+1. Abrir `http://127.0.0.1:8001/login`.
+2. Ingresar el correo.
+3. Ingresar la contraseña.
+4. Presionar **Iniciar sesión**.
+
+## Resultado esperado
+
+El sistema permite el acceso y muestra el panel funcionario.
+
+El usuario puede visualizar:
+
+- Crear requerimiento.
+- Mis requerimientos.
+- Campanita de notificaciones.
 - Cerrar sesión.
 
-El funcionario no puede acceder a la administración ni visualizar requerimientos de otros usuarios.
+La opción **Administración** no debe aparecer.
 
-## Flujo de creación de requerimiento
-
-Cuando un funcionario crea una solicitud, el sistema realiza el siguiente proceso:
+## Resultado obtenido
 
 ```text
-Funcionario abre el formulario
-        ↓
-Selecciona categoría y prioridad
-        ↓
-Ingresa título y descripción
-        ↓
-Envía el formulario mediante POST
-        ↓
-Laravel valida los datos
-        ↓
-El sistema asigna el user_id del funcionario
-        ↓
-El modelo Requerimiento guarda en MySQL
-        ↓
-Se notifica a los administradores
-        ↓
-El funcionario vuelve a su listado
+Pendiente de ejecución.
 ```
 
-El formulario se encuentra en:
+## Estado
+
+**Pendiente**
+
+## Evidencia
 
 ```text
-resources/views/requerimientos/create.blade.php
+CP01_login_funcionario_aprobado.png
 ```
 
-La ruta utilizada es:
+---
+
+# CP-02: Inicio de sesión con contraseña incorrecta
+
+## Objetivo
+
+Comprobar que el sistema rechace credenciales incorrectas.
+
+## Precondiciones
+
+- La usuaria debe existir.
+- No debe existir una sesión abierta.
+
+## Datos de prueba
 
 ```text
-POST /requerimientos
+Correo: ana.martinez@sanjoaquin.cl
+Contraseña: ClaveIncorrecta123
 ```
 
-El método responsable es:
+## Pasos
+
+1. Abrir la pantalla de inicio de sesión.
+2. Ingresar el correo correcto.
+3. Ingresar una contraseña incorrecta.
+4. Presionar **Iniciar sesión**.
+
+## Resultado esperado
+
+El sistema no permite el acceso y muestra un mensaje indicando que las credenciales no coinciden.
+
+## Resultado obtenido
 
 ```text
-store()
+Pendiente de ejecución.
 ```
 
-## Estado inicial del requerimiento
+## Estado
 
-Cuando se crea una solicitud, el estado inicial es:
+**Pendiente**
+
+## Evidencia
 
 ```text
-Pendiente
+CP02_login_incorrecto.png
 ```
 
-Esto indica que el requerimiento fue registrado, pero todavía no ha sido revisado por el área de Informática.
+---
 
-## Flujo de notificación al administrador
+# CP-03: Registro de un nuevo funcionario
 
-Después de crear el requerimiento:
+## Objetivo
 
-- El sistema busca a los usuarios con rol administrador.
-- Crea una notificación para cada administrador.
-- La campanita aumenta su contador.
-- El administrador puede abrir la sección de notificaciones.
-- Desde la notificación puede revisar la nueva solicitud.
+Comprobar que un usuario nuevo pueda registrarse y quede con rol funcionario.
 
-La notificación queda registrada en la tabla:
+## Precondiciones
+
+- El correo utilizado no debe existir en la base de datos.
+- No debe existir una sesión abierta.
+
+## Datos de prueba
 
 ```text
-notificaciones
+Nombre: Usuario Prueba
+Correo: usuario.prueba@sanjoaquin.cl
+Contraseña: Municipal2026!
+Confirmación: Municipal2026!
 ```
 
-## Flujo de visualización del funcionario
+## Pasos
 
-Para consultar sus solicitudes, el funcionario ingresa a:
+1. Abrir la opción **Registro**.
+2. Completar todos los campos.
+3. Presionar el botón de registro.
+4. Verificar la redirección.
+
+## Resultado esperado
+
+El sistema crea la cuenta, inicia la sesión y muestra el panel funcionario.
+
+El usuario nuevo debe quedar con rol `funcionario`.
+
+## Resultado obtenido
 
 ```text
-GET /mis-requerimientos
+Pendiente de ejecución.
 ```
 
-El método `index()` obtiene solamente los registros asociados al usuario autenticado.
+## Estado
 
-El flujo es:
+**Pendiente**
+
+## Evidencia
 
 ```text
-Funcionario abre Mis requerimientos
-        ↓
-Controlador obtiene Auth::id()
-        ↓
-Consulta los requerimientos del usuario
-        ↓
-Envía los datos a la vista
-        ↓
-La vista muestra el listado
+CP03_registro_funcionario.png
 ```
 
-La vista utilizada es:
+---
+
+# CP-04: Creación correcta de un requerimiento
+
+## Objetivo
+
+Comprobar que una funcionaria pueda registrar un requerimiento válido.
+
+## Precondiciones
+
+- La funcionaria debe tener una sesión iniciada.
+- Debe estar disponible el formulario de creación.
+
+## Datos de prueba
 
 ```text
-resources/views/requerimientos/index.blade.php
+Categoría: Hardware
+Título: Teclado no responde
+Descripción: El teclado del equipo dejó de responder durante la jornada.
+Prioridad: Media
 ```
 
-## Flujo de detalle del requerimiento
+## Pasos
 
-Cuando el usuario selecciona Ver detalle:
+1. Ingresar al panel funcionario.
+2. Presionar **Crear requerimiento**.
+3. Completar los campos.
+4. Presionar el botón para registrar.
+5. Revisar el listado de requerimientos.
+
+## Resultado esperado
+
+El sistema guarda el requerimiento en la base de datos.
+
+El registro debe:
+
+- Quedar asociado a la funcionaria autenticada.
+- Tener estado inicial `pendiente`.
+- Aparecer en **Mis requerimientos**.
+- Generar una notificación para la administradora.
+
+## Resultado obtenido
 
 ```text
-Usuario selecciona un requerimiento
-        ↓
-Ingresa a /requerimientos/{requerimiento}
-        ↓
-El método show() revisa el acceso
-        ↓
-El sistema muestra la información
+Pendiente de ejecución.
 ```
 
-La vista se encuentra en:
+## Estado
+
+**Pendiente**
+
+## Evidencia
 
 ```text
-resources/views/requerimientos/show.blade.php
+CP04_requerimiento_creado.png
 ```
 
-En esta pantalla se visualiza:
+---
 
-- Número del requerimiento.
-- Funcionario.
+# CP-05: Validación de campos obligatorios
+
+## Objetivo
+
+Comprobar que el sistema no permita crear un requerimiento con campos obligatorios vacíos.
+
+## Precondiciones
+
+- La funcionaria debe tener una sesión iniciada.
+- Debe estar abierto el formulario de creación.
+
+## Datos de prueba
+
+```text
+Categoría: Sin seleccionar
+Título: Vacío
+Descripción: Vacío
+Prioridad: Sin seleccionar
+```
+
+## Pasos
+
+1. Abrir **Crear requerimiento**.
+2. Dejar los campos obligatorios sin completar.
+3. Presionar el botón para registrar.
+
+## Resultado esperado
+
+El sistema no guarda el requerimiento y muestra mensajes de validación en los campos obligatorios.
+
+## Resultado obtenido
+
+```text
+Pendiente de ejecución.
+```
+
+## Estado
+
+**Pendiente**
+
+## Evidencia
+
+```text
+CP05_validaciones_formulario.png
+```
+
+---
+
+# CP-06: Consulta de requerimientos propios
+
+## Objetivo
+
+Comprobar que una funcionaria visualice solamente los requerimientos asociados a su cuenta.
+
+## Precondiciones
+
+- La funcionaria debe tener una sesión iniciada.
+- Debe existir al menos un requerimiento de la usuaria.
+
+## Pasos
+
+1. Ingresar a **Mis requerimientos**.
+2. Revisar el listado.
+3. Abrir **Ver detalle** en una solicitud.
+
+## Resultado esperado
+
+El sistema muestra solamente los requerimientos de la funcionaria autenticada.
+
+El detalle debe mostrar:
+
 - Categoría.
 - Título.
 - Descripción.
 - Prioridad.
 - Estado.
 - Respuesta administrativa.
-- Fecha de creación.
-- Fecha de cierre.
+- Fechas correspondientes.
 
-## Control de acceso al detalle
+## Resultado obtenido
 
-El requerimiento puede ser consultado por:
+```text
+Pendiente de ejecución.
+```
 
-- El funcionario que lo creó.
-- Un administrador.
+## Estado
 
-Si otro funcionario intenta ingresar manualmente a una solicitud ajena, el sistema bloquea el acceso con error:
+**Pendiente**
+
+## Evidencia
+
+```text
+CP06_mis_requerimientos_detalle.png
+```
+
+---
+
+# CP-07: Acceso de la administradora
+
+## Objetivo
+
+Comprobar que la administradora pueda iniciar sesión y visualizar todos los requerimientos.
+
+## Precondiciones
+
+- La administradora debe existir.
+- No debe existir otra sesión abierta.
+
+## Datos de prueba
+
+```text
+Correo: rosa@sanjoaquin.cl
+Contraseña: Municipal2026!
+```
+
+## Pasos
+
+1. Abrir la pantalla de inicio de sesión.
+2. Ingresar las credenciales de administradora.
+3. Presionar **Iniciar sesión**.
+4. Revisar la vista administrativa.
+
+## Resultado esperado
+
+El sistema redirige a la administración de requerimientos.
+
+La vista debe mostrar:
+
+- Todos los requerimientos.
+- Nombre del funcionario.
+- Categoría.
+- Prioridad.
+- Estado.
+- Botones Gestionar y Eliminar.
+- Campanita de notificaciones.
+
+## Resultado obtenido
+
+```text
+Pendiente de ejecución.
+```
+
+## Estado
+
+**Pendiente**
+
+## Evidencia
+
+```text
+CP07_panel_administracion.png
+```
+
+---
+
+# CP-08: Actualización del estado y respuesta
+
+## Objetivo
+
+Comprobar que la administradora pueda cambiar el estado y registrar una respuesta.
+
+## Precondiciones
+
+- La administradora debe tener una sesión iniciada.
+- Debe existir un requerimiento pendiente.
+
+## Datos de prueba
+
+```text
+Nuevo estado: En proceso
+Respuesta: Se revisará el equipo durante la jornada de mañana.
+```
+
+## Pasos
+
+1. Ingresar a Administración.
+2. Seleccionar **Gestionar** en un requerimiento.
+3. Cambiar el estado.
+4. Escribir la respuesta.
+5. Guardar la actualización.
+6. Iniciar sesión como funcionaria.
+7. Revisar la campanita y el detalle.
+
+## Resultado esperado
+
+El sistema actualiza el estado y la respuesta.
+
+Además:
+
+- La funcionaria recibe una notificación.
+- El nuevo estado aparece en el detalle.
+- La respuesta administrativa queda visible.
+
+## Resultado obtenido
+
+```text
+Pendiente de ejecución.
+```
+
+## Estado
+
+**Pendiente**
+
+## Evidencia
+
+```text
+CP08_actualizacion_y_notificacion.png
+```
+
+---
+
+# CP-09: Bloqueo de acceso administrativo
+
+## Objetivo
+
+Comprobar que una funcionaria no pueda acceder a la sección administrativa.
+
+## Precondiciones
+
+- La funcionaria debe tener una sesión iniciada.
+
+## Pasos
+
+1. Iniciar sesión como funcionaria.
+2. Escribir manualmente en el navegador:
+
+```text
+http://127.0.0.1:8001/admin/requerimientos
+```
+
+3. Presionar Enter.
+
+## Resultado esperado
+
+El sistema bloquea el acceso y muestra un error:
 
 ```text
 403 - Acceso no autorizado
 ```
 
-## Flujo principal del administrador
+La opción Administración tampoco debe aparecer en el menú.
 
-El administrador puede:
-
-- Iniciar sesión.
-- Acceder directamente a Administración.
-- Consultar todos los requerimientos.
-- Identificar al funcionario que creó cada solicitud.
-- Abrir el detalle.
-- Gestionar el estado.
-- Registrar una respuesta.
-- Eliminar requerimientos.
-- Consultar notificaciones.
-- Cerrar sesión.
-
-## Flujo del listado administrativo
-
-El administrador ingresa a:
+## Resultado obtenido
 
 ```text
-GET /admin/requerimientos
+Pendiente de ejecución.
 ```
 
-El sistema realiza:
+## Estado
+
+**Pendiente**
+
+## Evidencia
 
 ```text
-Administrador abre la vista
-        ↓
-Se valida su rol
-        ↓
-El controlador consulta todos los requerimientos
-        ↓
-Eager Loading carga los usuarios relacionados
-        ↓
-La vista muestra la información
+CP09_acceso_bloqueado_403.png
 ```
 
-La consulta utiliza:
+---
 
-```php
-Requerimiento::with('usuario')
-    ->orderBy('created_at', 'desc')
-    ->get();
-```
+# CP-10: Cancelación de eliminación con SweetAlert2
 
-Esto permite mostrar el nombre del funcionario y evitar consultas innecesarias.
+## Objetivo
 
-## Flujo de gestión administrativa
+Comprobar que la administradora pueda cancelar una eliminación y conservar el requerimiento.
 
-Para gestionar un requerimiento:
+## Precondiciones
+
+- La administradora debe tener una sesión iniciada.
+- Debe existir un requerimiento de prueba.
+
+## Pasos
+
+1. Ingresar a Administración.
+2. Presionar **Eliminar** en un requerimiento.
+3. Revisar la ventana SweetAlert2.
+4. Presionar **Cancelar**.
+5. Revisar el listado.
+
+## Resultado esperado
+
+SweetAlert2 muestra una advertencia con las opciones de confirmar o cancelar.
+
+Al presionar **Cancelar**, el requerimiento permanece en el listado.
+
+## Resultado obtenido
 
 ```text
-Administrador selecciona Gestionar
-        ↓
-Se abre la vista de edición
-        ↓
-Cambia el estado
-        ↓
-Escribe una respuesta
-        ↓
-Envía el formulario mediante PUT
-        ↓
-Laravel valida la información
-        ↓
-El requerimiento se actualiza
-        ↓
-Se genera una notificación al funcionario
-        ↓
-El sistema vuelve a Administración
+Pendiente de ejecución.
 ```
 
-La vista de gestión se encuentra en:
+## Estado
+
+**Pendiente**
+
+## Evidencia
 
 ```text
-resources/views/admin/requerimientos/edit.blade.php
+CP10_sweetalert_cancelar.png
 ```
 
-La ruta utilizada es:
+---
+
+# CP-11: Confirmación de eliminación
+
+## Objetivo
+
+Comprobar que la administradora pueda eliminar un requerimiento de prueba.
+
+## Precondiciones
+
+- La administradora debe tener una sesión iniciada.
+- Debe utilizarse un registro creado exclusivamente para esta prueba.
+
+## Pasos
+
+1. Crear o identificar un requerimiento de prueba.
+2. Ingresar a Administración.
+3. Presionar **Eliminar**.
+4. Confirmar la eliminación en SweetAlert2.
+5. Revisar nuevamente el listado.
+
+## Resultado esperado
+
+El sistema elimina el requerimiento y muestra un mensaje de confirmación.
+
+El registro ya no aparece en el listado administrativo.
+
+## Resultado obtenido
 
 ```text
-PUT /admin/requerimientos/{requerimiento}
+Pendiente de ejecución.
 ```
 
-El método responsable es:
+## Estado
+
+**Pendiente**
+
+## Evidencia
 
 ```text
-update()
+CP11_requerimiento_eliminado.png
 ```
 
-## Estados del requerimiento
+---
 
-El sistema utiliza los siguientes estados:
+# CP-12: Notificaciones marcadas como leídas
 
-- Pendiente.
-- En revisión.
-- En proceso.
-- Resuelto.
-- Cerrado.
-- Rechazado.
+## Objetivo
 
-Estos estados permiten representar el avance de la atención.
+Comprobar que las notificaciones del usuario se marquen como leídas al abrir la sección.
 
-## Flujo de actualización del estado
+## Precondiciones
 
-Cuando el administrador cambia el estado:
+- El usuario debe tener una notificación sin leer.
+- Debe tener una sesión iniciada.
 
-- El sistema compara el estado anterior con el nuevo.
-- Guarda la actualización en MySQL.
-- Registra una respuesta si fue ingresada.
-- Asigna fecha de cierre cuando corresponde.
-- Crea una notificación para el funcionario.
+## Pasos
 
-Si el estado cambia a `resuelto` o `cerrado`, se registra la fecha de cierre.
+1. Revisar el número mostrado en la campanita.
+2. Abrir la sección de notificaciones.
+3. Volver a revisar el contador.
 
-## Flujo de notificación al funcionario
+## Resultado esperado
 
-Después de una actualización:
+El sistema muestra las notificaciones del usuario autenticado.
+
+Al abrir la sección:
+
+- Las notificaciones quedan marcadas como leídas.
+- Se registra la fecha de lectura.
+- El contador disminuye o queda en cero.
+
+## Resultado obtenido
 
 ```text
-Administrador cambia el estado
-        ↓
-El sistema guarda los cambios
-        ↓
-Crea una notificación para el funcionario
-        ↓
-La campanita aumenta su contador
-        ↓
-El funcionario abre la notificación
-        ↓
-Consulta el estado actualizado
+Pendiente de ejecución.
 ```
 
-Cada usuario puede ver solamente sus propias notificaciones.
+## Estado
 
-Cuando se abre la vista de notificaciones, estas quedan marcadas como leídas.
+**Pendiente**
 
-## Flujo de eliminación
-
-La eliminación está disponible solamente para el administrador.
-
-El flujo es:
+## Evidencia
 
 ```text
-Administrador selecciona Eliminar
-        ↓
-SweetAlert2 solicita confirmación
-        ↓
-Administrador confirma o cancela
-        ↓
-El formulario envía DELETE
-        ↓
-El método destroy() elimina el registro
-        ↓
-El sistema vuelve al listado
+CP12_notificaciones_leidas.png
 ```
 
-La ruta utilizada es:
+---
 
-```text
-DELETE /admin/requerimientos/{requerimiento}
-```
+# Resumen de ejecución
 
-El método responsable es:
-
-```text
-destroy()
-```
-
-Si el administrador cancela la operación, el registro no se elimina.
-
-## Flujo técnico general
-
-El flujo técnico aplicado en Laravel es:
-
-```text
-Vista Blade
-    ↓
-Ruta definida en routes/web.php
-    ↓
-Controlador
-    ↓
-Validación
-    ↓
-Modelo Eloquent
-    ↓
-Base de datos MySQL
-    ↓
-Redirección o vista actualizada
-```
-
-## Métodos HTTP utilizados
-
-El sistema utiliza:
-
-| Método | Uso |
-|---|---|
-| `GET` | Mostrar páginas y consultar datos |
-| `POST` | Crear requerimientos y registrar usuarios |
-| `PUT` | Actualizar estados y respuestas |
-| `DELETE` | Eliminar requerimientos |
-
-## Flujo resumido del sistema
-
-El flujo general puede resumirse así:
-
-```text
-Funcionario inicia sesión
-        ↓
-Crea un requerimiento
-        ↓
-El sistema guarda la solicitud
-        ↓
-Administrador recibe una notificación
-        ↓
-Administrador revisa y gestiona
-        ↓
-Cambia el estado y registra respuesta
-        ↓
-Funcionario recibe una notificación
-        ↓
-Funcionario revisa el seguimiento
-        ↓
-El requerimiento puede quedar resuelto o cerrado
-```
-
-## Mejoras futuras
-
-Como evolución del sistema se considera:
-
-- Incorporar una agenda para programar fecha y hora de atención.
-- Asignar requerimientos a técnicos del equipo de soporte.
-- Agregar comentarios e instrucciones para el técnico asignado.
-- Crear una bitácora con cambios, asignaciones y fechas.
-- Incorporar notificaciones del navegador cuando el sistema esté minimizado.
-- Implementar una vista de calendario.
-- Publicar el sistema en un servidor institucional.
+| Código | Caso de prueba | Estado |
+|---|---|---|
+| CP-01 | Inicio de sesión correcto del funcionario | Pendiente |
+| CP-02 | Inicio de sesión con contraseña incorrecta | Pendiente |
+| CP-03 | Registro de un nuevo funcionario | Pendiente |
+| CP-04 | Creación correcta de un requerimiento | Pendiente |
+| CP-05 | Validación de campos obligatorios | Pendiente |
+| CP-06 | Consulta de requerimientos propios | Pendiente |
+| CP-07 | Acceso de la administradora | Pendiente |
+| CP-08 | Actualización del estado y respuesta | Pendiente |
+| CP-09 | Bloqueo de acceso administrativo | Pendiente |
+| CP-10 | Cancelación de eliminación con SweetAlert2 | Pendiente |
+| CP-11 | Confirmación de eliminación | Pendiente |
+| CP-12 | Notificaciones marcadas como leídas | Pendiente |
 
 ## Conclusión
 
-El flujo del Sistema Municipal de Soporte TI permite representar un proceso completo de atención de requerimientos informáticos internos.
+Los casos de prueba definidos permiten comprobar las funciones principales del Sistema Municipal de Soporte TI.
 
-El sistema incorpora autenticación, roles, creación de solicitudes, gestión administrativa, control de acceso, notificaciones internas, actualización de estados y eliminación segura, manteniendo la información centralizada en Laravel y MySQL.
+Los resultados obtenidos, estados y evidencias se completarán a medida que cada prueba sea ejecutada manualmente.

@@ -21,7 +21,19 @@ En este proyecto se aplica de la siguiente manera:
 Flujo general:
 
 ```text
-Vista Blade → Ruta → Controlador → Modelo Eloquent → Base de datos MySQL
+Navegador
+    ↓
+Ruta
+    ↓
+Controlador
+    ↓
+Modelo Eloquent
+    ↓
+Base de datos MySQL
+    ↓
+Vista Blade
+    ↓
+Usuario
 ```
 
 ## Modelos principales
@@ -131,6 +143,38 @@ hasMany()
 belongsTo()
 ```
 
+## Evolución de la base de datos
+
+En la primera etapa del proyecto se trabajó con las tablas principales `users` y `requerimientos`, creadas inicialmente para permitir la autenticación de usuarios y el registro de solicitudes.
+
+Posteriormente, al incorporar nuevas funcionalidades, fue necesario ampliar la estructura mediante migraciones de Laravel:
+
+- Se agregó el campo `rol` a la tabla `users` para diferenciar usuarios `funcionario` y `administrador`.
+- Se creó la tabla `notificaciones` para almacenar avisos internos.
+- La tabla `notificaciones` se relacionó con `users` y `requerimientos` mediante claves foráneas.
+
+La evolución general fue:
+
+```text
+Primera etapa
+users
+requerimientos
+        ↓
+Nueva necesidad: separar permisos
+        ↓
+Migración para agregar rol a users
+        ↓
+Nueva necesidad: avisos internos
+        ↓
+Migración para crear notificaciones
+        ↓
+Seeder + Factory
+        ↓
+Datos de prueba automáticos
+```
+
+Las migraciones posteriores permitieron que la estructura de la base de datos quedara documentada y reproducible desde el proyecto.
+
 ## Migraciones de la base de datos
 
 Las migraciones se encuentran en:
@@ -151,9 +195,9 @@ Las tablas principales son:
 - `requerimientos`
 - `notificaciones`
 
-También existen las tablas internas de Laravel para caché, sesiones y trabajos.
+También existen tablas internas de Laravel para caché, sesiones y trabajos.
 
-## Tabla users
+### Tabla users
 
 La tabla `users` almacena los datos de autenticación.
 
@@ -181,9 +225,9 @@ funcionario
 administrador
 ```
 
-## Tabla requerimientos
+### Tabla requerimientos
 
-La tabla `requerimientos` contiene los siguientes campos:
+La tabla `requerimientos` contiene:
 
 - `id`
 - `user_id`
@@ -199,7 +243,7 @@ La tabla `requerimientos` contiene los siguientes campos:
 
 El campo `user_id` relaciona cada requerimiento con el funcionario que lo creó.
 
-## Tabla notificaciones
+### Tabla notificaciones
 
 La tabla `notificaciones` contiene:
 
@@ -228,7 +272,15 @@ $table->foreignId('user_id')
     ->nullOnDelete();
 ```
 
-Esto permite relacionar un requerimiento con su usuario y evitar errores de integridad en la base de datos.
+Esto permite relacionar un requerimiento con su usuario y mantener la integridad de la base de datos.
+
+Relaciones principales:
+
+```text
+requerimientos.user_id → users.id
+notificaciones.user_id → users.id
+notificaciones.requerimiento_id → requerimientos.id
+```
 
 ## Controladores utilizados
 
@@ -258,7 +310,7 @@ Funcionario → Panel funcionario
 
 Los usuarios creados mediante el formulario de registro reciben automáticamente el rol `funcionario`.
 
-Las contraseñas se almacenan mediante hash utilizando la configuración del modelo `User`.
+Las contraseñas se almacenan mediante hash.
 
 ## RequerimientoController
 
@@ -275,7 +327,7 @@ Sus funciones son:
 - `update()`
 - `destroy()`
 
-### Método index
+### Método index()
 
 Muestra solamente los requerimientos del funcionario autenticado.
 
@@ -285,19 +337,19 @@ Requerimiento::where('user_id', Auth::id())
     ->get();
 ```
 
-### Método create
+### Método create()
 
 Muestra el formulario para crear un nuevo requerimiento.
 
-### Método store
+### Método store()
 
 Valida los datos y registra el requerimiento.
 
-También asigna automáticamente el identificador del usuario autenticado.
+También asigna automáticamente el identificador del usuario autenticado mediante `Auth::id()`.
 
 Después de crear el requerimiento, genera una notificación para los administradores.
 
-### Método show
+### Método show()
 
 Muestra el detalle de un requerimiento.
 
@@ -308,7 +360,7 @@ El acceso está permitido solamente para:
 
 Si otro usuario intenta ingresar, el sistema responde con error `403`.
 
-### Método adminIndex
+### Método adminIndex()
 
 Muestra todos los requerimientos en la vista administrativa.
 
@@ -320,24 +372,24 @@ Requerimiento::with('usuario')
     ->get();
 ```
 
-### Método edit
+### Método edit()
 
 Muestra el formulario de gestión administrativa.
 
 El acceso está limitado al administrador.
 
-### Método update
+### Método update()
 
 Permite:
 
 - Cambiar el estado.
 - Registrar una respuesta administrativa.
-- Asignar la fecha de cierre.
-- Generar una notificación para el funcionario.
+- Asignar la fecha de cierre cuando corresponde.
+- Generar una notificación para el funcionario cuando cambia el estado.
 
-La fecha de cierre se registra cuando el estado cambia a `resuelto` o `cerrado`.
+La fecha de cierre se registra cuando el estado corresponde a una condición final como `resuelto` o `cerrado`.
 
-### Método destroy
+### Método destroy()
 
 Elimina un requerimiento desde la administración.
 
@@ -400,7 +452,7 @@ GET     /notificaciones
 GET     /notificaciones/contador
 ```
 
-Las rutas privadas utilizan autenticación.
+Las rutas privadas utilizan autenticación mediante middleware `auth`.
 
 ## Registro de requerimientos
 
@@ -420,7 +472,17 @@ El funcionario ingresa:
 Al enviar el formulario:
 
 ```text
-Formulario → Ruta POST → store() → Validación → Modelo → MySQL
+Formulario
+    ↓
+Ruta POST
+    ↓
+store()
+    ↓
+Validación
+    ↓
+Modelo Requerimiento
+    ↓
+MySQL
 ```
 
 ## Listado de requerimientos
@@ -576,6 +638,8 @@ php artisan migrate:fresh --seed
 
 Este comando elimina las tablas existentes, ejecuta las migraciones y carga los datos del Seeder.
 
+> La tabla `notificaciones` se crea mediante migración, pero sus registros se generan principalmente durante el uso real del sistema: al crear un requerimiento o al cambiar su estado.
+
 ## Eager Loading
 
 En la administración se utiliza:
@@ -644,6 +708,12 @@ El formulario utiliza:
 ```
 
 Antes de enviar la eliminación, SweetAlert2 solicita confirmación al administrador.
+
+SweetAlert2 realiza la confirmación visual; la eliminación real se ejecuta en `destroy()` mediante:
+
+```php
+$requerimiento->delete();
+```
 
 ## Comandos utilizados
 
