@@ -22,20 +22,20 @@ Porcentaje de aprobación: 100 %
 
 ## 3. Evidencias oficiales
 
-| Código | Caso de prueba | Evidencia principal | Estado |
-|---|---|---|---|
-| CP-01 | Inicio de sesión correcto del funcionario | `CP01_login_funcionario_aprobado.png` | Aprobado |
-| CP-02 | Inicio de sesión con contraseña incorrecta | `CP02_login_incorrecto.png` | Aprobado |
-| CP-03 | Registro de un nuevo funcionario | `CP03_registro_funcionario.png` | Aprobado |
-| CP-04 | Creación correcta de un requerimiento | `CP04_requerimiento_creado.png` | Aprobado |
-| CP-05 | Validación de campo obligatorio | `CP05_validaciones_formulario.png` | Aprobado |
-| CP-06 | Consulta de requerimientos propios | `CP06_mis_requerimientos_detalle.png` | Aprobado |
-| CP-07 | Acceso de la administradora | `CP07_panel_administracion.png` | Aprobado |
-| CP-08 | Actualización de estado y notificación al funcionario | `CP08_actualizacion_y_notificacion.png` | Aprobado |
-| CP-09 | Bloqueo de acceso administrativo | `CP09_acceso_bloqueado_403.png` | Aprobado |
-| CP-10 | Cancelación de eliminación con SweetAlert2 | `CP10_sweetalert_cancelar.png` | Aprobado |
-| CP-11 | Confirmación de eliminación | `CP11_requerimiento_eliminado.png` | Aprobado |
-| CP-12 | Notificaciones marcadas como leídas | `CP12_notificaciones_leidas.png` | Aprobado |
+| Código | Caso de prueba                                        | Evidencia principal                     | Estado   |
+| ------ | ----------------------------------------------------- | --------------------------------------- | -------- |
+| CP-01  | Inicio de sesión correcto del funcionario             | `CP01_login_funcionario_aprobado.png`   | Aprobado |
+| CP-02  | Inicio de sesión con contraseña incorrecta            | `CP02_login_incorrecto.png`             | Aprobado |
+| CP-03  | Registro de un nuevo funcionario                      | `CP03_registro_funcionario.png`         | Aprobado |
+| CP-04  | Creación correcta de un requerimiento                 | `CP04_requerimiento_creado.png`         | Aprobado |
+| CP-05  | Validación de campo obligatorio                       | `CP05_validaciones_formulario.png`      | Aprobado |
+| CP-06  | Consulta de requerimientos propios                    | `CP06_mis_requerimientos_detalle.png`   | Aprobado |
+| CP-07  | Acceso de la administradora                           | `CP07_panel_administracion.png`         | Aprobado |
+| CP-08  | Actualización de estado y notificación al funcionario | `CP08_actualizacion_y_notificacion.png` | Aprobado |
+| CP-09  | Bloqueo de acceso administrativo                      | `CP09_acceso_bloqueado_403.png`         | Aprobado |
+| CP-10  | Cancelación de eliminación con SweetAlert2            | `CAP10_sweetalert_confirmacion.png`      | Aprobado |
+| CP-11  | Confirmación de eliminación                           | `CP11_requerimiento_eliminado.png`      | Aprobado |
+| CP-12  | Notificaciones marcadas como leídas                   | `CP12_notificaciones_leidas.png`        | Aprobado |
 
 ## 4. Evidencias complementarias
 

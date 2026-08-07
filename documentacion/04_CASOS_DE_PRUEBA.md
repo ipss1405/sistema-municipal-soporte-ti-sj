@@ -214,8 +214,7 @@ SweetAlert2 mostró la confirmación de eliminación. Al seleccionar Cancelar, e
 
 ## Evidencia
 
-- `CAP10_sweetalert_confirmacion.png`
-- `CP10_sweetalert_cancelar.png`
+`CAP10_sweetalert_confirmacion.png`
 
 ---
 
@@ -253,20 +252,20 @@ Antes de abrir la sección, la campanita mostraba una notificación pendiente. D
 
 # Resumen de ejecución
 
-| Código | Caso de prueba | Estado |
-|---|---|---|
-| CP-01 | Inicio de sesión correcto del funcionario | Aprobado |
-| CP-02 | Inicio de sesión con contraseña incorrecta | Aprobado |
-| CP-03 | Registro de un nuevo funcionario | Aprobado |
-| CP-04 | Creación correcta de un requerimiento | Aprobado |
-| CP-05 | Validación de campo obligatorio | Aprobado |
-| CP-06 | Consulta de requerimientos propios | Aprobado |
-| CP-07 | Acceso de la administradora | Aprobado |
-| CP-08 | Actualización de estado y notificación al funcionario | Aprobado |
-| CP-09 | Bloqueo de acceso administrativo | Aprobado |
-| CP-10 | Cancelación de eliminación con SweetAlert2 | Aprobado |
-| CP-11 | Confirmación de eliminación | Aprobado |
-| CP-12 | Notificaciones marcadas como leídas | Aprobado |
+| Código | Caso de prueba                                        | Estado   |
+| ------ | ----------------------------------------------------- | -------- |
+| CP-01  | Inicio de sesión correcto del funcionario             | Aprobado |
+| CP-02  | Inicio de sesión con contraseña incorrecta            | Aprobado |
+| CP-03  | Registro de un nuevo funcionario                      | Aprobado |
+| CP-04  | Creación correcta de un requerimiento                 | Aprobado |
+| CP-05  | Validación de campo obligatorio                       | Aprobado |
+| CP-06  | Consulta de requerimientos propios                    | Aprobado |
+| CP-07  | Acceso de la administradora                           | Aprobado |
+| CP-08  | Actualización de estado y notificación al funcionario | Aprobado |
+| CP-09  | Bloqueo de acceso administrativo                      | Aprobado |
+| CP-10  | Cancelación de eliminación con SweetAlert2            | Aprobado |
+| CP-11  | Confirmación de eliminación                           | Aprobado |
+| CP-12  | Notificaciones marcadas como leídas                   | Aprobado |
 
 ## Resultado general
 
