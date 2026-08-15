@@ -177,19 +177,115 @@ class RequerimientoController extends Controller
     }
 
     /**
-     * Muestra todos los requerimientos al administrador.
+     * Muestra los requerimientos al administrador
+     * y permite filtrarlos por estado, prioridad,
+     * categoría y funcionario.
      */
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
         $this->verificarAdministrador();
 
-        $requerimientos = Requerimiento::with('usuario')
+        /*
+         * Se validan los filtros recibidos desde
+         * la URL mediante parámetros GET.
+         */
+        $filtros = $request->validate([
+            'estado' => [
+                'nullable',
+                'string',
+                'in:pendiente,en_revision,en_proceso,resuelto,cerrado,rechazado',
+            ],
+
+            'prioridad' => [
+                'nullable',
+                'string',
+                'in:sin_asignar,baja,media,alta,urgente',
+            ],
+
+            'categoria' => [
+                'nullable',
+                'string',
+                'in:computador,correo,internet,impresora,sistema,firma,usuario,otro',
+            ],
+
+            'funcionario' => [
+                'nullable',
+                'integer',
+                'exists:users,id',
+            ],
+        ]);
+
+        /*
+         * Se inicia la consulta cargando también
+         * la relación con el funcionario.
+         */
+        $consulta = Requerimiento::with('usuario');
+
+        /*
+         * Filtro por estado.
+         */
+        if (!empty($filtros['estado'])) {
+            $consulta->where(
+                'estado',
+                $filtros['estado']
+            );
+        }
+
+        /*
+         * Filtro por prioridad.
+         */
+        if (!empty($filtros['prioridad'])) {
+            $consulta->where(
+                'prioridad',
+                $filtros['prioridad']
+            );
+        }
+
+        /*
+         * Filtro por categoría.
+         */
+        if (!empty($filtros['categoria'])) {
+            $consulta->where(
+                'categoria',
+                $filtros['categoria']
+            );
+        }
+
+        /*
+         * Filtro por funcionario.
+         */
+        if (!empty($filtros['funcionario'])) {
+            $consulta->where(
+                'user_id',
+                $filtros['funcionario']
+            );
+        }
+
+        /*
+         * Los resultados se ordenan desde
+         * el requerimiento más reciente.
+         */
+        $requerimientos = $consulta
             ->orderBy('created_at', 'desc')
+            ->get();
+
+        /*
+         * Lista de funcionarios utilizada
+         * en el selector del filtro.
+         */
+        $funcionarios = User::where(
+            'rol',
+            'funcionario'
+        )
+            ->orderBy('name')
             ->get();
 
         return view(
             'admin.requerimientos.index',
-            compact('requerimientos')
+            compact(
+                'requerimientos',
+                'funcionarios'
+            )
         );
     }
 
