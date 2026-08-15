@@ -53,6 +53,9 @@ class RequerimientoController extends Controller
     /**
      * Guarda un requerimiento nuevo y notifica
      * a los administradores del sistema.
+     *
+     * La prioridad queda pendiente de clasificación
+     * por parte del administrador.
      */
     public function store(Request $request)
     {
@@ -74,12 +77,6 @@ class RequerimientoController extends Controller
                     'required',
                     'string',
                 ],
-
-                'prioridad' => [
-                    'required',
-                    'string',
-                    'in:baja,media,alta,urgente',
-                ],
             ],
             [
                 'categoria.required' =>
@@ -96,34 +93,24 @@ class RequerimientoController extends Controller
 
                 'descripcion.required' =>
                     'Debe ingresar una descripción.',
-
-                'prioridad.required' =>
-                    'Debe seleccionar una prioridad.',
-
-                'prioridad.in' =>
-                    'La prioridad seleccionada no es válida.',
             ]
         );
 
         /*
          * Se crea el requerimiento asociado
-         * al usuario que inició sesión.
+         * al usuario autenticado.
          */
         $requerimiento = Requerimiento::create([
             'user_id' => Auth::id(),
             'categoria' => $datos['categoria'],
             'titulo' => $datos['titulo'],
             'descripcion' => $datos['descripcion'],
-            'prioridad' => $datos['prioridad'],
+            'prioridad' => 'sin_asignar',
             'estado' => 'pendiente',
         ]);
 
         /*
-         * Se buscan todos los administradores.
-         *
-         * Se excluye al usuario actual para evitar
-         * que un administrador se notifique a sí mismo
-         * cuando registra un requerimiento.
+         * Se buscan los administradores.
          */
         $administradores = User::where(
             'rol',
@@ -133,8 +120,7 @@ class RequerimientoController extends Controller
             ->get();
 
         /*
-         * Se crea una notificación para cada
-         * administrador encontrado.
+         * Se notifica a los administradores.
          */
         foreach ($administradores as $administrador) {
             Notificacion::create([
@@ -148,11 +134,11 @@ class RequerimientoController extends Controller
 
                 'mensaje' =>
                     Auth::user()->name .
-                    ' registró el requerimiento "' .
+                    ' registró el requerimiento N.º ' .
+                    $requerimiento->id .
+                    ' "' .
                     $requerimiento->titulo .
-                    '" con prioridad ' .
-                    ucfirst($requerimiento->prioridad) .
-                    '.',
+                    '". Pendiente de clasificación de prioridad.',
 
                 'leida' => false,
             ]);
@@ -192,10 +178,6 @@ class RequerimientoController extends Controller
 
     /**
      * Muestra todos los requerimientos al administrador.
-     *
-     * Se utiliza Eager Loading para cargar
-     * anticipadamente la relación con el usuario
-     * y evitar el problema N+1.
      */
     public function adminIndex()
     {
@@ -226,10 +208,10 @@ class RequerimientoController extends Controller
     }
 
     /**
-     * Actualiza el estado y la respuesta administrativa.
+     * Actualiza prioridad, estado y respuesta administrativa.
      *
-     * Cuando cambia el estado, se notifica
-     * al funcionario propietario.
+     * Si cambia la prioridad o el estado,
+     * se notifica al funcionario propietario.
      */
     public function update(
         Request $request,
@@ -239,6 +221,12 @@ class RequerimientoController extends Controller
 
         $datos = $request->validate(
             [
+                'prioridad' => [
+                    'required',
+                    'string',
+                    'in:sin_asignar,baja,media,alta,urgente',
+                ],
+
                 'estado' => [
                     'required',
                     'string',
@@ -251,6 +239,12 @@ class RequerimientoController extends Controller
                 ],
             ],
             [
+                'prioridad.required' =>
+                    'Debe seleccionar una prioridad.',
+
+                'prioridad.in' =>
+                    'La prioridad seleccionada no es válida.',
+
                 'estado.required' =>
                     'Debe seleccionar un estado.',
 
@@ -259,13 +253,16 @@ class RequerimientoController extends Controller
             ]
         );
 
+        /*
+         * Se guardan los valores anteriores
+         * para detectar si hubo cambios.
+         */
         $estadoAnterior = $requerimiento->estado;
+        $prioridadAnterior = $requerimiento->prioridad;
 
         /*
          * Si el requerimiento queda resuelto o cerrado,
          * se registra la fecha de cierre.
-         *
-         * Si vuelve a otro estado, la fecha se elimina.
          */
         if (
             in_array(
@@ -280,7 +277,12 @@ class RequerimientoController extends Controller
             $fechaCierre = null;
         }
 
+        /*
+         * Se actualiza el requerimiento.
+         */
         $requerimiento->update([
+            'prioridad' => $datos['prioridad'],
+
             'estado' => $datos['estado'],
 
             'respuesta_admin' =>
@@ -290,13 +292,25 @@ class RequerimientoController extends Controller
         ]);
 
         /*
-         * Se crea una notificación solo cuando
-         * el estado realmente cambió.
+         * Se construye el mensaje de notificación
+         * según los cambios realizados.
          */
-        if (
-            $requerimiento->user_id &&
-            $estadoAnterior !== $datos['estado']
-        ) {
+        $cambios = [];
+
+        if ($prioridadAnterior !== $datos['prioridad']) {
+            $nombrePrioridad = ucfirst(
+                str_replace(
+                    '_',
+                    ' ',
+                    $datos['prioridad']
+                )
+            );
+
+            $cambios[] =
+                'prioridad: ' . $nombrePrioridad;
+        }
+
+        if ($estadoAnterior !== $datos['estado']) {
             $nombreEstado = ucfirst(
                 str_replace(
                     '_',
@@ -305,6 +319,18 @@ class RequerimientoController extends Controller
                 )
             );
 
+            $cambios[] =
+                'estado: ' . $nombreEstado;
+        }
+
+        /*
+         * Se notifica al funcionario cuando
+         * cambia prioridad o estado.
+         */
+        if (
+            $requerimiento->user_id &&
+            count($cambios) > 0
+        ) {
             Notificacion::create([
                 'user_id' =>
                     $requerimiento->user_id,
@@ -318,8 +344,13 @@ class RequerimientoController extends Controller
                 'mensaje' =>
                     'Su requerimiento "' .
                     $requerimiento->titulo .
-                    '" cambió de estado a: ' .
-                    $nombreEstado .
+                    '" fue actualizado. ' .
+                    ucfirst(
+                        implode(
+                            ' | ',
+                            $cambios
+                        )
+                    ) .
                     '.',
 
                 'leida' => false,

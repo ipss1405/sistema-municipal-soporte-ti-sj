@@ -11,6 +11,18 @@
         <strong>Pendiente</strong>.
     </p>
 
+    <div style="
+        background: #EEF2FF;
+        color: #3730A3;
+        padding: 12px;
+        border-left: 4px solid #5B21B6;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    ">
+        <strong>Asignación de prioridad:</strong>
+        La prioridad del requerimiento será evaluada y asignada por el área de Informática.
+    </div>
+
     @if ($errors->any())
         <div style="
             background: #FEE2E2;
@@ -157,60 +169,6 @@
         >{{ old('descripcion') }}</textarea>
 
         @error('descripcion')
-            <div style="
-                color: #B91C1C;
-                font-size: 14px;
-                margin-top: 5px;
-                margin-bottom: 10px;
-            ">
-                {{ $message }}
-            </div>
-        @enderror
-
-        {{-- Prioridad --}}
-        <label for="prioridad">
-            Prioridad
-        </label>
-
-        <select
-            name="prioridad"
-            id="prioridad"
-            required
-        >
-            <option value="">
-                Seleccione prioridad
-            </option>
-
-            <option
-                value="baja"
-                {{ old('prioridad') === 'baja' ? 'selected' : '' }}
-            >
-                Baja
-            </option>
-
-            <option
-                value="media"
-                {{ old('prioridad') === 'media' ? 'selected' : '' }}
-            >
-                Media
-            </option>
-
-            <option
-                value="alta"
-                {{ old('prioridad') === 'alta' ? 'selected' : '' }}
-            >
-                Alta
-            </option>
-
-            <option
-                value="urgente"
-                {{ old('prioridad') === 'urgente' ? 'selected' : '' }}
-            >
-                Urgente
-            </option>
-        </select>
-
-        @error('prioridad')
             <div style="
                 color: #B91C1C;
                 font-size: 14px;

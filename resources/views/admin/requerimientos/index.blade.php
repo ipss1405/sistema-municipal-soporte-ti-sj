@@ -6,8 +6,8 @@
     <h1>Administración de requerimientos</h1>
 
     <p>
-        En esta sección el área de informática puede revisar, gestionar o eliminar
-        los requerimientos ingresados por los funcionarios municipales.
+        En esta sección el área de informática puede revisar, asignar prioridades,
+        gestionar o eliminar los requerimientos ingresados por los funcionarios municipales.
     </p>
 
     <table>
@@ -44,7 +44,20 @@
                     </td>
 
                     <td>
-                        {{ ucfirst($requerimiento->prioridad) }}
+                        @if ($requerimiento->prioridad === 'sin_asignar')
+                            <span style="
+                                background: #FEF3C7;
+                                color: #92400E;
+                                padding: 5px 10px;
+                                border-radius: 20px;
+                                font-weight: bold;
+                                white-space: nowrap;
+                            ">
+                                Sin asignar
+                            </span>
+                        @else
+                            {{ ucfirst($requerimiento->prioridad) }}
+                        @endif
                     </td>
 
                     <td>

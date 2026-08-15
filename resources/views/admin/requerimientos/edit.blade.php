@@ -6,8 +6,9 @@
     <h1>Gestionar requerimiento</h1>
 
     <p>
-        En esta sección el área de informática puede actualizar el estado del requerimiento
-        y registrar una respuesta para el funcionario.
+        En esta sección el área de informática puede asignar la prioridad,
+        actualizar el estado del requerimiento y registrar una respuesta
+        para el funcionario.
     </p>
 
     <div style="
@@ -33,8 +34,21 @@
         </p>
 
         <p>
-            <strong>Prioridad:</strong>
-            {{ ucfirst($requerimiento->prioridad) }}
+            <strong>Prioridad actual:</strong>
+
+            @if ($requerimiento->prioridad === 'sin_asignar')
+                <span style="
+                    background: #FEF3C7;
+                    color: #92400E;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                    font-weight: bold;
+                ">
+                    Sin asignar
+                </span>
+            @else
+                {{ ucfirst($requerimiento->prioridad) }}
+            @endif
         </p>
 
         <p>
@@ -75,6 +89,63 @@
     >
         @csrf
         @method('PUT')
+
+        {{-- Prioridad --}}
+        <label for="prioridad">
+            Prioridad del requerimiento
+        </label>
+
+        <select
+            name="prioridad"
+            id="prioridad"
+            required
+        >
+            <option
+                value="sin_asignar"
+                {{ old('prioridad', $requerimiento->prioridad) === 'sin_asignar' ? 'selected' : '' }}
+            >
+                Sin asignar
+            </option>
+
+            <option
+                value="baja"
+                {{ old('prioridad', $requerimiento->prioridad) === 'baja' ? 'selected' : '' }}
+            >
+                Baja
+            </option>
+
+            <option
+                value="media"
+                {{ old('prioridad', $requerimiento->prioridad) === 'media' ? 'selected' : '' }}
+            >
+                Media
+            </option>
+
+            <option
+                value="alta"
+                {{ old('prioridad', $requerimiento->prioridad) === 'alta' ? 'selected' : '' }}
+            >
+                Alta
+            </option>
+
+            <option
+                value="urgente"
+                {{ old('prioridad', $requerimiento->prioridad) === 'urgente' ? 'selected' : '' }}
+            >
+                Urgente
+            </option>
+        </select>
+
+        @error('prioridad')
+            <div style="
+                color: #B91C1C;
+                font-size: 14px;
+                margin-top: 5px;
+                margin-bottom: 10px;
+            ">
+                {{ $message }}
+            </div>
+        @enderror
 
         {{-- Estado --}}
         <label for="estado">

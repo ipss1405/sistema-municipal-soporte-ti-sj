@@ -39,14 +39,48 @@
         <tbody>
             @forelse ($requerimientos as $requerimiento)
                 <tr>
-                    <td>{{ $requerimiento->id }}</td>
-                    <td>{{ $requerimiento->titulo }}</td>
-                    <td>{{ ucfirst($requerimiento->categoria) }}</td>
-                    <td>{{ ucfirst($requerimiento->prioridad) }}</td>
-                    <td><x-estado :estado="$requerimiento->estado" /></td>
-                    <td>{{ $requerimiento->created_at->format('d-m-Y H:i') }}</td>
                     <td>
-                        <a href="{{ route('requerimientos.show', $requerimiento) }}" class="btn">
+                        {{ $requerimiento->id }}
+                    </td>
+
+                    <td>
+                        {{ $requerimiento->titulo }}
+                    </td>
+
+                    <td>
+                        {{ ucfirst($requerimiento->categoria) }}
+                    </td>
+
+                    <td>
+                        @if ($requerimiento->prioridad === 'sin_asignar')
+                            <span style="
+                                background: #FEF3C7;
+                                color: #92400E;
+                                padding: 5px 10px;
+                                border-radius: 20px;
+                                font-weight: bold;
+                                white-space: nowrap;
+                            ">
+                                Sin asignar
+                            </span>
+                        @else
+                            {{ ucfirst($requerimiento->prioridad) }}
+                        @endif
+                    </td>
+
+                    <td>
+                        <x-estado :estado="$requerimiento->estado" />
+                    </td>
+
+                    <td>
+                        {{ $requerimiento->created_at->format('d-m-Y H:i') }}
+                    </td>
+
+                    <td>
+                        <a
+                            href="{{ route('requerimientos.show', $requerimiento) }}"
+                            class="btn"
+                        >
                             Ver detalle
                         </a>
                     </td>
@@ -63,11 +97,19 @@
 
     <br>
 
-    <a href="/funcionario" class="btn" style="background: #6B7280;">
+    <a
+        href="/funcionario"
+        class="btn"
+        style="background: #6B7280;"
+    >
         Volver al panel
     </a>
 
-    <a href="/requerimientos/crear" class="btn" style="margin-left: 10px;">
+    <a
+        href="/requerimientos/crear"
+        class="btn"
+        style="margin-left: 10px;"
+    >
         Nuevo requerimiento
     </a>
 </div>
