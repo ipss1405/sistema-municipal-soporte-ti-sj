@@ -22,6 +22,11 @@
         margin-bottom: 10px;
     }
 
+    .acciones-superiores {
+        margin-top: 18px;
+        margin-bottom: 25px;
+    }
+
     .notificacion-item {
         background: #F9FAFB;
         border-left: 6px solid #5B3F95;
@@ -84,10 +89,26 @@
         padding: 12px 20px;
         text-decoration: none;
         display: inline-block;
-        margin-top: 20px;
     }
 
     .btn-volver:hover {
+        background: #78BE20;
+        color: #ffffff;
+    }
+
+    .btn-requerimiento {
+        background: #5B3F95;
+        color: #ffffff;
+        border: none;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 10px 18px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 12px;
+    }
+
+    .btn-requerimiento:hover {
         background: #78BE20;
         color: #ffffff;
     }
@@ -106,10 +127,35 @@
             </p>
         @else
             <p>
-                Aquí se muestran las actualizaciones de estado
-                de sus requerimientos informáticos.
+                Aquí se muestran las actualizaciones de prioridad,
+                estado y gestión de sus requerimientos informáticos.
             </p>
         @endif
+
+        {{-- Botón de regreso según el rol --}}
+        <div class="acciones-superiores">
+
+            @if (auth()->user()->rol === 'administrador')
+
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="btn-volver"
+                >
+                    Volver al panel de administración
+                </a>
+
+            @else
+
+                <a
+                    href="{{ route('funcionario.dashboard') }}"
+                    class="btn-volver"
+                >
+                    Volver al panel funcionario
+                </a>
+
+            @endif
+
+        </div>
 
         <hr>
 
@@ -121,13 +167,17 @@
             >
 
                 <div class="notificacion-titulo">
+
                     🔔 {{ $notificacion->titulo }}
 
                     @if (!$notificacion->leida)
+
                         <span class="badge-nueva">
                             Nueva
                         </span>
+
                     @endif
+
                 </div>
 
                 <div class="notificacion-mensaje">
@@ -135,22 +185,29 @@
                 </div>
 
                 <div class="notificacion-fecha">
+
                     Recibida el
+
                     {{ $notificacion->created_at->format('d-m-Y H:i') }}
+
                 </div>
 
                 @if ($notificacion->requerimiento_id)
-                    <div class="mt-3">
+
+                    <div>
+
                         <a
                             href="{{ route(
                                 'requerimientos.show',
                                 $notificacion->requerimiento_id
                             ) }}"
-                            class="btn-volver"
+                            class="btn-requerimiento"
                         >
                             Ver requerimiento
                         </a>
+
                     </div>
+
                 @endif
 
             </div>
@@ -162,22 +219,6 @@
             </div>
 
         @endforelse
-
-        @if (auth()->user()->rol === 'administrador')
-            <a
-                href="{{ route('admin.requerimientos.index') }}"
-                class="btn-volver"
-            >
-                Volver a administración
-            </a>
-        @else
-            <a
-                href="{{ route('funcionario.dashboard') }}"
-                class="btn-volver"
-            >
-                Volver al panel funcionario
-            </a>
-        @endif
 
     </div>
 

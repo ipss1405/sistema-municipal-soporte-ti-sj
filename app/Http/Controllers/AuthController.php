@@ -51,7 +51,7 @@ class AuthController extends Controller
              */
             if (Auth::user()->rol === 'administrador') {
                 return redirect()
-                    ->route('admin.requerimientos.index')
+                    ->route('admin.dashboard')
                     ->with(
                         'success',
                         'Sesión iniciada como administrador.'

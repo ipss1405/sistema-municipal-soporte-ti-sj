@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RequerimientoController;
 use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,15 +58,30 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | Panel administrador
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/admin/dashboard',
+        [AdminDashboardController::class, 'index']
+    )->name('admin.dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
     | Notificaciones
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/notificaciones', [NotificacionController::class, 'index'])
-        ->name('notificaciones.index');
+    Route::get(
+        '/notificaciones',
+        [NotificacionController::class, 'index']
+    )->name('notificaciones.index');
 
-    Route::get('/notificaciones/contador', [NotificacionController::class, 'contador'])
-        ->name('notificaciones.contador');
+    Route::get(
+        '/notificaciones/contador',
+        [NotificacionController::class, 'contador']
+    )->name('notificaciones.contador');
 
     /*
     |--------------------------------------------------------------------------
@@ -73,14 +89,20 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/requerimientos/crear', [RequerimientoController::class, 'create'])
-        ->name('requerimientos.create');
+    Route::get(
+        '/requerimientos/crear',
+        [RequerimientoController::class, 'create']
+    )->name('requerimientos.create');
 
-    Route::post('/requerimientos', [RequerimientoController::class, 'store'])
-        ->name('requerimientos.store');
+    Route::post(
+        '/requerimientos',
+        [RequerimientoController::class, 'store']
+    )->name('requerimientos.store');
 
-    Route::get('/mis-requerimientos', [RequerimientoController::class, 'index'])
-        ->name('requerimientos.index');
+    Route::get(
+        '/mis-requerimientos',
+        [RequerimientoController::class, 'index']
+    )->name('requerimientos.index');
 
     Route::get('/requerimientos', function () {
         return redirect('/mis-requerimientos');
@@ -92,17 +114,25 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/admin/requerimientos', [RequerimientoController::class, 'adminIndex'])
-        ->name('admin.requerimientos.index');
+    Route::get(
+        '/admin/requerimientos',
+        [RequerimientoController::class, 'adminIndex']
+    )->name('admin.requerimientos.index');
 
-    Route::get('/admin/requerimientos/{requerimiento}/editar', [RequerimientoController::class, 'edit'])
-        ->name('admin.requerimientos.edit');
+    Route::get(
+        '/admin/requerimientos/{requerimiento}/editar',
+        [RequerimientoController::class, 'edit']
+    )->name('admin.requerimientos.edit');
 
-    Route::put('/admin/requerimientos/{requerimiento}', [RequerimientoController::class, 'update'])
-        ->name('admin.requerimientos.update');
+    Route::put(
+        '/admin/requerimientos/{requerimiento}',
+        [RequerimientoController::class, 'update']
+    )->name('admin.requerimientos.update');
 
-    Route::delete('/admin/requerimientos/{requerimiento}', [RequerimientoController::class, 'destroy'])
-        ->name('admin.requerimientos.destroy');
+    Route::delete(
+        '/admin/requerimientos/{requerimiento}',
+        [RequerimientoController::class, 'destroy']
+    )->name('admin.requerimientos.destroy');
 
     /*
     |--------------------------------------------------------------------------
@@ -111,6 +141,8 @@ Route::middleware('auth')->group(function () {
     | Esta ruta va al final para no chocar con otras rutas.
     */
 
-    Route::get('/requerimientos/{requerimiento}', [RequerimientoController::class, 'show'])
-        ->name('requerimientos.show');
+    Route::get(
+        '/requerimientos/{requerimiento}',
+        [RequerimientoController::class, 'show']
+    )->name('requerimientos.show');
 });

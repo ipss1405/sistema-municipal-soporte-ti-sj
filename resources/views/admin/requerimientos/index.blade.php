@@ -10,6 +10,17 @@
         gestionar o eliminar los requerimientos ingresados por los funcionarios municipales.
     </p>
 
+    <a
+        href="{{ route('admin.dashboard') }}"
+        class="btn"
+        style="
+            background: #6B7280;
+            margin-bottom: 20px;
+        "
+    >
+        Volver al panel de administración
+    </a>
+
     <table>
         <thead>
             <tr>
@@ -104,16 +115,6 @@
             @endforelse
         </tbody>
     </table>
-
-    <br>
-
-    <a
-        href="/"
-        class="btn"
-        style="background: #6B7280;"
-    >
-        Volver al inicio
-    </a>
 </div>
 
 @endsection
