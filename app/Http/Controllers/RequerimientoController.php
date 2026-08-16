@@ -7,6 +7,7 @@ use App\Models\Requerimiento;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class RequerimientoController extends Controller
 {
@@ -217,9 +218,12 @@ class RequerimientoController extends Controller
 
         /*
          * Se inicia la consulta cargando también
-         * la relación con el funcionario.
+         * las relaciones con funcionario y técnico.
          */
-        $consulta = Requerimiento::with('usuario');
+        $consulta = Requerimiento::with([
+            'usuario',
+            'tecnico',
+        ]);
 
         /*
          * Filtro por estado.
@@ -291,23 +295,47 @@ class RequerimientoController extends Controller
 
     /**
      * Muestra el formulario administrativo
-     * para gestionar un requerimiento.
+     * para gestionar y derivar un requerimiento.
      */
     public function edit(Requerimiento $requerimiento)
     {
         $this->verificarAdministrador();
 
+        /*
+         * Se obtienen solamente los usuarios
+         * que poseen rol técnico.
+         */
+        $tecnicos = User::where(
+            'rol',
+            'tecnico'
+        )
+            ->orderBy('name')
+            ->get();
+
+        /*
+         * Se cargan los datos de derivación
+         * actualmente asociados al requerimiento.
+         */
+        $requerimiento->load([
+            'tecnico',
+            'asignadoPor',
+        ]);
+
         return view(
             'admin.requerimientos.edit',
-            compact('requerimiento')
+            compact(
+                'requerimiento',
+                'tecnicos'
+            )
         );
     }
 
     /**
-     * Actualiza prioridad, estado y respuesta administrativa.
+     * Actualiza prioridad, estado, derivación TI
+     * y respuesta administrativa.
      *
-     * Si cambia la prioridad o el estado,
-     * se notifica al funcionario propietario.
+     * La fecha de asignación y el administrador
+     * responsable se registran automáticamente.
      */
     public function update(
         Request $request,
@@ -329,6 +357,26 @@ class RequerimientoController extends Controller
                     'in:pendiente,en_revision,en_proceso,resuelto,cerrado,rechazado',
                 ],
 
+                'tecnico_id' => [
+                    'nullable',
+                    'integer',
+                    Rule::exists('users', 'id')
+                        ->where(
+                            fn ($query) =>
+                                $query->where(
+                                    'rol',
+                                    'tecnico'
+                                )
+                        ),
+                ],
+
+                'tarea_asignada' => [
+                    'nullable',
+                    'required_with:tecnico_id',
+                    'string',
+                    'max:2000',
+                ],
+
                 'respuesta_admin' => [
                     'nullable',
                     'string',
@@ -346,15 +394,77 @@ class RequerimientoController extends Controller
 
                 'estado.in' =>
                     'El estado seleccionado no es válido.',
+
+                'tecnico_id.exists' =>
+                    'El técnico seleccionado no es válido.',
+
+                'tarea_asignada.required_with' =>
+                    'Debe indicar la tarea que realizará el técnico.',
+
+                'tarea_asignada.max' =>
+                    'La tarea asignada no puede superar los 2000 caracteres.',
             ]
         );
 
         /*
          * Se guardan los valores anteriores
-         * para detectar si hubo cambios.
+         * para detectar cambios.
          */
-        $estadoAnterior = $requerimiento->estado;
-        $prioridadAnterior = $requerimiento->prioridad;
+        $estadoAnterior =
+            $requerimiento->estado;
+
+        $prioridadAnterior =
+            $requerimiento->prioridad;
+
+        $tecnicoAnterior =
+            $requerimiento->tecnico_id;
+
+        /*
+         * Se determina el técnico seleccionado.
+         */
+        $tecnicoNuevo = !empty($datos['tecnico_id'])
+            ? (int) $datos['tecnico_id']
+            : null;
+
+        $cambioTecnico =
+            $tecnicoAnterior !== $tecnicoNuevo;
+
+        /*
+         * Gestión automática de la derivación.
+         *
+         * Si se selecciona un técnico por primera vez
+         * o se cambia de técnico, se registra una nueva
+         * fecha y hora de asignación.
+         */
+        if ($tecnicoNuevo) {
+
+            if (
+                $cambioTecnico ||
+                !$requerimiento->fecha_asignacion
+            ) {
+                $fechaAsignacion = now();
+                $asignadoPorId = Auth::id();
+            } else {
+                $fechaAsignacion =
+                    $requerimiento->fecha_asignacion;
+
+                $asignadoPorId =
+                    $requerimiento->asignado_por_id;
+            }
+
+            $tareaAsignada =
+                $datos['tarea_asignada'];
+
+        } else {
+
+            /*
+             * Si se retira la derivación,
+             * los datos asociados quedan vacíos.
+             */
+            $fechaAsignacion = null;
+            $asignadoPorId = null;
+            $tareaAsignada = null;
+        }
 
         /*
          * Si el requerimiento queda resuelto o cerrado,
@@ -377,23 +487,41 @@ class RequerimientoController extends Controller
          * Se actualiza el requerimiento.
          */
         $requerimiento->update([
-            'prioridad' => $datos['prioridad'],
+            'prioridad' =>
+                $datos['prioridad'],
 
-            'estado' => $datos['estado'],
+            'estado' =>
+                $datos['estado'],
+
+            'tecnico_id' =>
+                $tecnicoNuevo,
+
+            'asignado_por_id' =>
+                $asignadoPorId,
+
+            'fecha_asignacion' =>
+                $fechaAsignacion,
+
+            'tarea_asignada' =>
+                $tareaAsignada,
 
             'respuesta_admin' =>
                 $datos['respuesta_admin'] ?? null,
 
-            'fecha_cierre' => $fechaCierre,
+            'fecha_cierre' =>
+                $fechaCierre,
         ]);
 
         /*
          * Se construye el mensaje de notificación
-         * según los cambios realizados.
+         * para el funcionario según los cambios.
          */
         $cambios = [];
 
-        if ($prioridadAnterior !== $datos['prioridad']) {
+        if (
+            $prioridadAnterior !==
+            $datos['prioridad']
+        ) {
             $nombrePrioridad = ucfirst(
                 str_replace(
                     '_',
@@ -403,10 +531,14 @@ class RequerimientoController extends Controller
             );
 
             $cambios[] =
-                'prioridad: ' . $nombrePrioridad;
+                'prioridad: ' .
+                $nombrePrioridad;
         }
 
-        if ($estadoAnterior !== $datos['estado']) {
+        if (
+            $estadoAnterior !==
+            $datos['estado']
+        ) {
             $nombreEstado = ucfirst(
                 str_replace(
                     '_',
@@ -416,12 +548,35 @@ class RequerimientoController extends Controller
             );
 
             $cambios[] =
-                'estado: ' . $nombreEstado;
+                'estado: ' .
+                $nombreEstado;
+        }
+
+        /*
+         * Si cambió el técnico responsable,
+         * también se informa al funcionario.
+         */
+        if ($cambioTecnico) {
+
+            if ($tecnicoNuevo) {
+
+                $tecnico =
+                    User::find($tecnicoNuevo);
+
+                $cambios[] =
+                    'derivado a TI: ' .
+                    $tecnico->name;
+
+            } else {
+
+                $cambios[] =
+                    'derivación TI retirada';
+            }
         }
 
         /*
          * Se notifica al funcionario cuando
-         * cambia prioridad o estado.
+         * existe algún cambio relevante.
          */
         if (
             $requerimiento->user_id &&
@@ -438,7 +593,9 @@ class RequerimientoController extends Controller
                     'Actualización de requerimiento',
 
                 'mensaje' =>
-                    'Su requerimiento "' .
+                    'Su requerimiento N.º ' .
+                    $requerimiento->id .
+                    ' "' .
                     $requerimiento->titulo .
                     '" fue actualizado. ' .
                     ucfirst(

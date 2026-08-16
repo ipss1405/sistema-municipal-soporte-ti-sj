@@ -27,11 +27,38 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * Un usuario puede tener muchos requerimientos.
+     * Requerimientos creados por el funcionario.
      */
     public function requerimientos(): HasMany
     {
-        return $this->hasMany(Requerimiento::class);
+        return $this->hasMany(
+            Requerimiento::class,
+            'user_id'
+        );
+    }
+
+    /**
+     * Requerimientos asignados al usuario
+     * cuando cumple el rol de técnico TI.
+     */
+    public function requerimientosAsignados(): HasMany
+    {
+        return $this->hasMany(
+            Requerimiento::class,
+            'tecnico_id'
+        );
+    }
+
+    /**
+     * Derivaciones realizadas por el usuario
+     * cuando cumple el rol de administrador.
+     */
+    public function asignacionesRealizadas(): HasMany
+    {
+        return $this->hasMany(
+            Requerimiento::class,
+            'asignado_por_id'
+        );
     }
 
     /**
@@ -39,7 +66,9 @@ class User extends Authenticatable
      */
     public function notificaciones(): HasMany
     {
-        return $this->hasMany(Notificacion::class);
+        return $this->hasMany(
+            Notificacion::class
+        );
     }
 
     /**

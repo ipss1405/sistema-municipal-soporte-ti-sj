@@ -18,16 +18,51 @@ class Requerimiento extends Model
         'descripcion',
         'prioridad',
         'estado',
+
+        /*
+         * Datos de derivación TI.
+         */
+        'tecnico_id',
+        'asignado_por_id',
+        'fecha_asignacion',
+        'tarea_asignada',
+
         'respuesta_admin',
         'fecha_cierre',
     ];
 
     /**
-     * Un requerimiento pertenece a un usuario.
+     * Funcionario que creó el requerimiento.
      */
     public function usuario(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(
+            User::class,
+            'user_id'
+        );
+    }
+
+    /**
+     * Técnico TI responsable del requerimiento.
+     */
+    public function tecnico(): BelongsTo
+    {
+        return $this->belongsTo(
+            User::class,
+            'tecnico_id'
+        );
+    }
+
+    /**
+     * Administrador que realizó la asignación
+     * del requerimiento al técnico.
+     */
+    public function asignadoPor(): BelongsTo
+    {
+        return $this->belongsTo(
+            User::class,
+            'asignado_por_id'
+        );
     }
 
     /**
@@ -35,7 +70,9 @@ class Requerimiento extends Model
      */
     public function notificaciones(): HasMany
     {
-        return $this->hasMany(Notificacion::class);
+        return $this->hasMany(
+            Notificacion::class
+        );
     }
 
     /**
@@ -46,6 +83,7 @@ class Requerimiento extends Model
     protected function casts(): array
     {
         return [
+            'fecha_asignacion' => 'datetime',
             'fecha_cierre' => 'datetime',
         ];
     }
