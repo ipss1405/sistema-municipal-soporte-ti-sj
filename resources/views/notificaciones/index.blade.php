@@ -55,6 +55,7 @@
     .notificacion-mensaje {
         color: #374151;
         margin-bottom: 8px;
+        line-height: 1.5;
     }
 
     .notificacion-fecha {
@@ -114,28 +115,55 @@
     }
 </style>
 
+
+@php
+    $rolUsuario = auth()->user()->rol;
+@endphp
+
+
 <div class="container notificaciones-wrapper">
 
     <div class="notificaciones-card">
 
         <h1>Notificaciones</h1>
 
-        @if (auth()->user()->rol === 'administrador')
+
+        {{-- TEXTO SEGÚN EL ROL --}}
+
+        @if ($rolUsuario === 'administrador')
+
             <p>
-                Aquí se muestran los nuevos requerimientos registrados
-                por los funcionarios municipales.
+                Aquí se muestran los nuevos requerimientos y las
+                actualizaciones realizadas durante la gestión
+                administrativa y técnica de las solicitudes.
             </p>
+
+
+        @elseif ($rolUsuario === 'tecnico')
+
+            <p>
+                Aquí se muestran los avisos relacionados con los
+                requerimientos derivados a su atención y las
+                actualizaciones correspondientes a su gestión técnica.
+            </p>
+
+
         @else
+
             <p>
-                Aquí se muestran las actualizaciones de prioridad,
-                estado y gestión de sus requerimientos informáticos.
+                Aquí se muestran las actualizaciones relacionadas con
+                sus requerimientos, incluyendo prioridad, estado,
+                responsable TI, avance y seguimiento de la atención.
             </p>
+
         @endif
 
-        {{-- Botón de regreso según el rol --}}
+
+        {{-- BOTÓN DE REGRESO SEGÚN EL ROL --}}
+
         <div class="acciones-superiores">
 
-            @if (auth()->user()->rol === 'administrador')
+            @if ($rolUsuario === 'administrador')
 
                 <a
                     href="{{ route('admin.dashboard') }}"
@@ -143,6 +171,17 @@
                 >
                     Volver al panel de administración
                 </a>
+
+
+            @elseif ($rolUsuario === 'tecnico')
+
+                <a
+                    href="{{ route('tecnico.dashboard') }}"
+                    class="btn-volver"
+                >
+                    Volver al Panel Técnico
+                </a>
+
 
             @else
 
@@ -157,7 +196,11 @@
 
         </div>
 
+
         <hr>
+
+
+        {{-- LISTADO DE NOTIFICACIONES --}}
 
         @forelse ($notificaciones as $notificacion)
 
@@ -180,9 +223,11 @@
 
                 </div>
 
+
                 <div class="notificacion-mensaje">
                     {{ $notificacion->mensaje }}
                 </div>
+
 
                 <div class="notificacion-fecha">
 
@@ -191,6 +236,7 @@
                     {{ $notificacion->created_at->format('d-m-Y H:i') }}
 
                 </div>
+
 
                 @if ($notificacion->requerimiento_id)
 
@@ -215,7 +261,7 @@
         @empty
 
             <div class="sin-notificaciones">
-                No tienes notificaciones por el momento.
+                No hay notificaciones por el momento.
             </div>
 
         @endforelse

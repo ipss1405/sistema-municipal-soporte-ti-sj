@@ -20,16 +20,36 @@ class Requerimiento extends Model
         'estado',
 
         /*
-         * Datos de derivación TI.
+         * Derivación TI
          */
         'tecnico_id',
         'asignado_por_id',
         'fecha_asignacion',
         'tarea_asignada',
 
+        /*
+         * Gestión técnica
+         */
+        'avance_tecnico',
+        'requiere_materiales',
+        'materiales_requeridos',
+        'tiempo_estimado',
+
+        /*
+         * Respuesta y cierre
+         */
         'respuesta_admin',
         'fecha_cierre',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'fecha_asignacion' => 'datetime',
+            'fecha_cierre' => 'datetime',
+            'requiere_materiales' => 'boolean',
+        ];
+    }
 
     /**
      * Funcionario que creó el requerimiento.
@@ -54,8 +74,7 @@ class Requerimiento extends Model
     }
 
     /**
-     * Administrador que realizó la asignación
-     * del requerimiento al técnico.
+     * Administrador que realizó la asignación.
      */
     public function asignadoPor(): BelongsTo
     {
@@ -66,25 +85,13 @@ class Requerimiento extends Model
     }
 
     /**
-     * Un requerimiento puede generar muchas notificaciones.
+     * Notificaciones asociadas al requerimiento.
      */
     public function notificaciones(): HasMany
     {
         return $this->hasMany(
-            Notificacion::class
+            Notificacion::class,
+            'requerimiento_id'
         );
-    }
-
-    /**
-     * Conversión automática de atributos.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'fecha_asignacion' => 'datetime',
-            'fecha_cierre' => 'datetime',
-        ];
     }
 }

@@ -58,6 +58,26 @@
         overflow-x: auto;
     }
 
+    .acciones-requerimiento {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        align-items: center;
+        min-width: 300px;
+    }
+
+    .acciones-requerimiento form {
+        margin: 0;
+    }
+
+    .btn-detalle {
+        background: #6B7280;
+    }
+
+    .btn-detalle:hover {
+        background: #4B5563;
+    }
+
     @media (max-width: 950px) {
         .filtros-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -81,8 +101,10 @@
     <h1>Administración de requerimientos</h1>
 
     <p>
-        En esta sección el área de informática puede revisar, asignar prioridades,
-        gestionar o eliminar los requerimientos ingresados por los funcionarios municipales.
+        En esta sección el área de Informática puede revisar,
+        asignar prioridades, consultar la gestión técnica,
+        gestionar o eliminar los requerimientos ingresados
+        por los funcionarios municipales.
     </p>
 
     <a
@@ -95,6 +117,7 @@
     >
         Volver al panel de administración
     </a>
+
 
     {{-- =========================
          FILTROS
@@ -124,6 +147,7 @@
                         name="estado"
                         id="estado"
                     >
+
                         <option value="">
                             Todos
                         </option>
@@ -169,9 +193,11 @@
                         >
                             Rechazado
                         </option>
+
                     </select>
 
                 </div>
+
 
                 {{-- Prioridad --}}
                 <div class="filtro-campo">
@@ -184,6 +210,7 @@
                         name="prioridad"
                         id="prioridad"
                     >
+
                         <option value="">
                             Todas
                         </option>
@@ -222,9 +249,11 @@
                         >
                             Urgente
                         </option>
+
                     </select>
 
                 </div>
+
 
                 {{-- Categoría --}}
                 <div class="filtro-campo">
@@ -237,6 +266,7 @@
                         name="categoria"
                         id="categoria"
                     >
+
                         <option value="">
                             Todas
                         </option>
@@ -296,9 +326,11 @@
                         >
                             Otro
                         </option>
+
                     </select>
 
                 </div>
+
 
                 {{-- Funcionario --}}
                 <div class="filtro-campo">
@@ -311,6 +343,7 @@
                         name="funcionario"
                         id="funcionario"
                     >
+
                         <option value="">
                             Todos
                         </option>
@@ -325,11 +358,13 @@
                             </option>
 
                         @endforeach
+
                     </select>
 
                 </div>
 
             </div>
+
 
             <div class="filtros-acciones">
 
@@ -351,14 +386,19 @@
 
         </form>
 
+
         <div class="resultado-filtros">
+
             Requerimientos encontrados:
+
             <strong>
                 {{ $requerimientos->count() }}
             </strong>
+
         </div>
 
     </div>
+
 
     {{-- =========================
          TABLA
@@ -369,6 +409,7 @@
         <table>
 
             <thead>
+
                 <tr>
                     <th>N°</th>
                     <th>Funcionario</th>
@@ -379,6 +420,7 @@
                     <th>Fecha ingreso</th>
                     <th>Acciones</th>
                 </tr>
+
             </thead>
 
             <tbody>
@@ -391,17 +433,21 @@
                             {{ $requerimiento->id }}
                         </td>
 
+
                         <td>
                             {{ $requerimiento->usuario?->name ?? 'Usuario no disponible' }}
                         </td>
+
 
                         <td>
                             {{ $requerimiento->titulo }}
                         </td>
 
+
                         <td>
                             {{ ucfirst($requerimiento->categoria) }}
                         </td>
+
 
                         <td>
 
@@ -426,44 +472,60 @@
 
                         </td>
 
+
                         <td>
                             <x-estado :estado="$requerimiento->estado" />
                         </td>
+
 
                         <td>
                             {{ $requerimiento->created_at->format('d-m-Y H:i') }}
                         </td>
 
+
                         <td>
 
-                            <a
-                                href="{{ route('admin.requerimientos.edit', $requerimiento) }}"
-                                class="btn"
-                            >
-                                Gestionar
-                            </a>
+                            <div class="acciones-requerimiento">
 
-                            <form
-                                action="{{ route('admin.requerimientos.destroy', $requerimiento) }}"
-                                method="POST"
-                                class="form-eliminar"
-                                style="
-                                    display: inline-block;
-                                    margin-left: 8px;
-                                "
-                            >
-                                @csrf
-                                @method('DELETE')
-
-                                <button
-                                    type="submit"
-                                    class="btn"
-                                    style="background: #EF3E24;"
+                                {{-- VER DETALLE --}}
+                                <a
+                                    href="{{ route('requerimientos.show', $requerimiento) }}"
+                                    class="btn btn-detalle"
                                 >
-                                    Eliminar
-                                </button>
+                                    Ver detalle
+                                </a>
 
-                            </form>
+
+                                {{-- GESTIONAR --}}
+                                <a
+                                    href="{{ route('admin.requerimientos.edit', $requerimiento) }}"
+                                    class="btn"
+                                >
+                                    Gestionar
+                                </a>
+
+
+                                {{-- ELIMINAR --}}
+                                <form
+                                    action="{{ route('admin.requerimientos.destroy', $requerimiento) }}"
+                                    method="POST"
+                                    class="form-eliminar"
+                                >
+
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button
+                                        type="submit"
+                                        class="btn"
+                                        style="background: #EF3E24;"
+                                    >
+                                        Eliminar
+                                    </button>
+
+                                </form>
+
+                            </div>
 
                         </td>
 
@@ -472,9 +534,12 @@
                 @empty
 
                     <tr>
+
                         <td colspan="8">
-                            No se encontraron requerimientos con los filtros seleccionados.
+                            No se encontraron requerimientos
+                            con los filtros seleccionados.
                         </td>
+
                     </tr>
 
                 @endforelse

@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RequerimientoController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\TecnicoDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +42,6 @@ Route::post('/logout', [AuthController::class, 'logout'])
 |--------------------------------------------------------------------------
 | Rutas protegidas del sistema
 |--------------------------------------------------------------------------
-| Estas rutas requieren que el usuario haya iniciado sesión.
 */
 
 Route::middleware('auth')->group(function () {
@@ -55,6 +55,33 @@ Route::middleware('auth')->group(function () {
     Route::get('/funcionario', function () {
         return view('funcionario.dashboard');
     })->name('funcionario.dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Panel técnico TI
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/tecnico',
+        [TecnicoDashboardController::class, 'index']
+    )->name('tecnico.dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Gestión técnica de requerimientos
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/tecnico/requerimientos/{requerimiento}/gestionar',
+        [TecnicoDashboardController::class, 'gestionar']
+    )->name('tecnico.requerimientos.gestionar');
+
+    Route::put(
+        '/tecnico/requerimientos/{requerimiento}/gestionar',
+        [TecnicoDashboardController::class, 'actualizarGestion']
+    )->name('tecnico.requerimientos.update');
 
     /*
     |--------------------------------------------------------------------------
@@ -138,7 +165,7 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     | Detalle de requerimiento
     |--------------------------------------------------------------------------
-    | Esta ruta va al final para no chocar con otras rutas.
+    | Debe permanecer al final para evitar conflictos.
     */
 
     Route::get(

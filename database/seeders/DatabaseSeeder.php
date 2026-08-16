@@ -12,72 +12,97 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Poblar la base de datos con usuarios
-     * y requerimientos de prueba.
+     * Poblar la base de datos con usuarios,
+     * técnicos TI y requerimientos de prueba.
      */
     public function run(): void
     {
         /*
          * Cuenta administradora para pruebas.
+         *
+         * updateOrCreate evita duplicar el usuario
+         * si el Seeder se ejecuta nuevamente.
          */
-        User::factory()->create([
-            'name' => 'Rosa Administradora',
-            'email' => 'rosa@sanjoaquin.cl',
-            'password' => 'Municipal2026!',
-            'rol' => 'administrador',
-        ]);
+        User::updateOrCreate(
+            [
+                'email' => 'rosa@sanjoaquin.cl',
+            ],
+            [
+                'name' => 'Rosa Administradora',
+                'password' => 'Municipal2026!',
+                'rol' => 'administrador',
+            ]
+        );
 
         /*
          * Funcionarios municipales de prueba.
          */
-        $funcionarios = [
-            User::factory()->create([
+        $datosFuncionarios = [
+            [
                 'name' => 'Ana Martínez',
                 'email' => 'ana.martinez@sanjoaquin.cl',
-                'password' => 'Municipal2026!',
-                'rol' => 'funcionario',
-            ]),
-
-            User::factory()->create([
+            ],
+            [
                 'name' => 'Carlos González',
                 'email' => 'carlos.gonzalez@sanjoaquin.cl',
-                'password' => 'Municipal2026!',
-                'rol' => 'funcionario',
-            ]),
-
-            User::factory()->create([
+            ],
+            [
                 'name' => 'María López',
                 'email' => 'maria.lopez@sanjoaquin.cl',
-                'password' => 'Municipal2026!',
-                'rol' => 'funcionario',
-            ]),
-
-            User::factory()->create([
+            ],
+            [
                 'name' => 'Pedro Ramírez',
                 'email' => 'pedro.ramirez@sanjoaquin.cl',
-                'password' => 'Municipal2026!',
-                'rol' => 'funcionario',
-            ]),
-
-            User::factory()->create([
+            ],
+            [
                 'name' => 'Sofía Fernández',
                 'email' => 'sofia.fernandez@sanjoaquin.cl',
-                'password' => 'Municipal2026!',
-                'rol' => 'funcionario',
-            ]),
+            ],
         ];
 
+        $funcionarios = [];
+
+        foreach ($datosFuncionarios as $datos) {
+            $funcionarios[] = User::updateOrCreate(
+                [
+                    'email' => $datos['email'],
+                ],
+                [
+                    'name' => $datos['name'],
+                    'password' => 'Municipal2026!',
+                    'rol' => 'funcionario',
+                ]
+            );
+        }
+
         /*
-         * Cada funcionario recibe seis requerimientos.
+         * Crear los técnicos del área TI.
+         */
+        $this->call([
+            TecnicosSeeder::class,
+        ]);
+
+        /*
+         * Cada funcionario recibe seis requerimientos
+         * solamente si todavía no tiene requerimientos.
          *
-         * 5 funcionarios x 6 requerimientos = 30 registros.
+         * Esto evita crear otros 30 registros
+         * al ejecutar nuevamente el Seeder.
          */
         foreach ($funcionarios as $funcionario) {
-            Requerimiento::factory()
-                ->count(6)
-                ->create([
-                    'user_id' => $funcionario->id,
-                ]);
+
+            $tieneRequerimientos = Requerimiento::where(
+                'user_id',
+                $funcionario->id
+            )->exists();
+
+            if (!$tieneRequerimientos) {
+                Requerimiento::factory()
+                    ->count(6)
+                    ->create([
+                        'user_id' => $funcionario->id,
+                    ]);
+            }
         }
     }
 }

@@ -41,12 +41,106 @@
         font-weight: 600;
     }
 
+    .tarea-tecnico {
+        background: #F3E8FF;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 5px solid #5B3F95;
+        margin: 18px 0;
+    }
+
+    .tarea-tecnico h3 {
+        color: #5B3F95;
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-size: 19px;
+    }
+
+    .tarea-tecnico p {
+        margin-bottom: 0;
+    }
+
+    .gestion-tecnica {
+        background: #F8FAFC;
+        border: 1px solid #E5E7EB;
+        border-left: 5px solid #5B3F95;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 18px 0;
+    }
+
+    .gestion-tecnica h3 {
+        color: #5B3F95;
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-size: 20px;
+    }
+
+    .gestion-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 20px;
+    }
+
+    .gestion-item {
+        margin: 0;
+    }
+
+    .gestion-item strong {
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .avance-interno {
+        background: #FFFFFF;
+        border-radius: 6px;
+        padding: 12px;
+        margin-top: 12px;
+        border-left: 4px solid #78BE20;
+    }
+
+    .seguimiento-funcionario {
+        background: #EEF7E8;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 5px solid #78BE20;
+        margin: 18px 0;
+    }
+
+    .seguimiento-funcionario h3 {
+        color: #5B3F95;
+        margin: 0 0 10px 0;
+        font-size: 19px;
+    }
+
+    .seguimiento-funcionario p {
+        margin: 6px 0;
+    }
+
     @media (max-width: 800px) {
         .detalle-grid {
             grid-template-columns: 1fr;
         }
+
+        .gestion-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
+
+
+@php
+    $rolUsuario = auth()->user()->rol;
+
+    $esTecnicoAsignado =
+        $rolUsuario === 'tecnico' &&
+        $requerimiento->tecnico_id === auth()->id();
+
+    $puedeVerGestionInterna =
+        $rolUsuario === 'administrador' ||
+        $esTecnicoAsignado;
+@endphp
+
 
 <div class="card">
 
@@ -93,14 +187,13 @@
                 {{ $requerimiento->created_at->format('d-m-Y H:i') }}
             </p>
 
+
             {{-- RESPONSABLE TI --}}
             @if ($requerimiento->tecnico)
 
                 <div class="responsable-ti">
 
-                    <h3>
-                        Responsable TI
-                    </h3>
+                    <h3>Responsable TI</h3>
 
                     <p>
                         <strong>Técnico asignado:</strong>
@@ -126,7 +219,29 @@
 
             @endif
 
-            {{-- DESCRIPCIÓN --}}
+
+            {{-- TAREA ASIGNADA --}}
+            {{-- Solo administrador y técnico asignado --}}
+            @if ($puedeVerGestionInterna)
+
+                @if ($requerimiento->tarea_asignada)
+
+                    <div class="tarea-tecnico">
+
+                        <h3>Tarea asignada al técnico</h3>
+
+                        <p>
+                            {{ $requerimiento->tarea_asignada }}
+                        </p>
+
+                    </div>
+
+                @endif
+
+            @endif
+
+
+            {{-- DESCRIPCIÓN ORIGINAL --}}
             <p>
                 <strong>Descripción:</strong>
             </p>
@@ -140,11 +255,144 @@
                 {{ $requerimiento->descripcion }}
             </p>
 
-            {{-- RESPUESTA PARA EL FUNCIONARIO --}}
+
+            {{-- GESTIÓN TÉCNICA INTERNA --}}
+            {{-- Visible solo para administrador y técnico responsable --}}
+            @if (
+                $puedeVerGestionInterna &&
+                (
+                    $requerimiento->avance_tecnico ||
+                    $requerimiento->tiempo_estimado ||
+                    $requerimiento->requiere_materiales
+                )
+            )
+
+                <div class="gestion-tecnica">
+
+                    <h3>Gestión técnica</h3>
+
+                    <div class="gestion-grid">
+
+                        <p class="gestion-item">
+
+                            <strong>Responsable</strong>
+
+                            {{ $requerimiento->tecnico?->name ?? 'Sin responsable' }}
+
+                        </p>
+
+
+                        <p class="gestion-item">
+
+                            <strong>Estado actual</strong>
+
+                            <x-estado :estado="$requerimiento->estado" />
+
+                        </p>
+
+
+                        <p class="gestion-item">
+
+                            <strong>¿Requiere materiales?</strong>
+
+                            {{ $requerimiento->requiere_materiales ? 'Sí' : 'No' }}
+
+                        </p>
+
+
+                        <p class="gestion-item">
+
+                            <strong>Tiempo estimado</strong>
+
+                            {{ $requerimiento->tiempo_estimado ?: 'No informado' }}
+
+                        </p>
+
+                    </div>
+
+
+                    @if (
+                        $requerimiento->requiere_materiales &&
+                        $requerimiento->materiales_requeridos
+                    )
+
+                        <div style="
+                            background: #FFF7ED;
+                            border-left: 4px solid #F26B21;
+                            padding: 12px;
+                            border-radius: 6px;
+                            margin-top: 12px;
+                        ">
+
+                            <strong>
+                                Materiales o repuestos requeridos:
+                            </strong>
+
+                            <div style="margin-top: 5px;">
+                                {{ $requerimiento->materiales_requeridos }}
+                            </div>
+
+                        </div>
+
+                    @endif
+
+
+                    @if ($requerimiento->avance_tecnico)
+
+                        <div class="avance-interno">
+
+                            <strong>
+                                Avance o trabajo realizado:
+                            </strong>
+
+                            <div style="margin-top: 6px;">
+                                {{ $requerimiento->avance_tecnico }}
+                            </div>
+
+                        </div>
+
+                    @endif
+
+                </div>
+
+            @endif
+
+
+            {{-- INFORMACIÓN SIMPLIFICADA PARA EL FUNCIONARIO --}}
+            @if (
+                $rolUsuario === 'funcionario' &&
+                $requerimiento->tiempo_estimado
+            )
+
+                <div class="seguimiento-funcionario">
+
+                    <h3>Seguimiento de la atención</h3>
+
+                    <p>
+                        <strong>Responsable TI:</strong>
+                        {{ $requerimiento->tecnico?->name ?? 'Pendiente de asignación' }}
+                    </p>
+
+                    <p>
+                        <strong>Estado:</strong>
+                        <x-estado :estado="$requerimiento->estado" />
+                    </p>
+
+                    <p>
+                        <strong>Tiempo estimado:</strong>
+                        {{ $requerimiento->tiempo_estimado }}
+                    </p>
+
+                </div>
+
+            @endif
+
+
+            {{-- INFORMACIÓN PARA EL FUNCIONARIO --}}
             @if ($requerimiento->respuesta_admin)
 
                 <p>
-                    <strong>Respuesta para el funcionario:</strong>
+                    <strong>Información para el funcionario:</strong>
                 </p>
 
                 <p style="
@@ -166,13 +414,15 @@
                     border-left: 5px solid #F26B21;
                 ">
                     El área de Informática aún no ha ingresado
-                    una respuesta para este requerimiento.
+                    información para este requerimiento.
                 </p>
 
             @endif
 
-            {{-- NAVEGACIÓN SEGÚN EL ROL --}}
-            @if (auth()->user()->rol === 'administrador')
+
+            {{-- NAVEGACIÓN SEGÚN ROL --}}
+
+            @if ($rolUsuario === 'administrador')
 
                 <a
                     href="{{ route('admin.requerimientos.edit', $requerimiento) }}"
@@ -192,6 +442,28 @@
                     Volver a administración
                 </a>
 
+
+            @elseif ($rolUsuario === 'tecnico')
+
+                <a
+                    href="{{ route('tecnico.requerimientos.gestionar', $requerimiento) }}"
+                    class="btn"
+                >
+                    Gestionar atención
+                </a>
+
+                <a
+                    href="{{ route('tecnico.dashboard') }}"
+                    class="btn"
+                    style="
+                        background: #6B7280;
+                        margin-left: 10px;
+                    "
+                >
+                    Volver al Panel Técnico
+                </a>
+
+
             @else
 
                 <a
@@ -206,7 +478,8 @@
 
         </section>
 
-        {{-- SEGUIMIENTO --}}
+
+        {{-- PANEL DE SEGUIMIENTO --}}
         <aside class="panel-accesos">
 
             <h2>Seguimiento</h2>
@@ -239,6 +512,17 @@
                 </p>
 
             @endif
+
+
+            @if ($requerimiento->tiempo_estimado)
+
+                <p>
+                    <strong>Tiempo estimado:</strong><br>
+                    {{ $requerimiento->tiempo_estimado }}
+                </p>
+
+            @endif
+
 
             <p>
                 <strong>Última actualización:</strong><br>

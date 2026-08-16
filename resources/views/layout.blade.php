@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Sistema Municipal de Soporte TI</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
     <style>
         :root {
@@ -469,17 +473,32 @@
 
 <body>
 
-    {{-- Determina a qué panel debe volver cada usuario --}}
+    {{--
+        Determina el panel de inicio
+        correspondiente al rol del usuario.
+    --}}
     @php
+
         if (auth()->check()) {
+
             if (auth()->user()->rol === 'administrador') {
+
                 $rutaInicio = route('admin.dashboard');
+
+            } elseif (auth()->user()->rol === 'tecnico') {
+
+                $rutaInicio = route('tecnico.dashboard');
+
             } else {
+
                 $rutaInicio = route('funcionario.dashboard');
             }
+
         } else {
+
             $rutaInicio = url('/');
         }
+
     @endphp
 
     <header>
@@ -496,6 +515,7 @@
                     href="{{ $rutaInicio }}"
                     class="logo-link"
                 >
+
                     <img
                         src="{{ asset('img/logo-municipal.png') }}"
                         alt="Logo Municipal"
@@ -505,6 +525,7 @@
                     <span>
                         Sistema Municipal de Soporte TI
                     </span>
+
                 </a>
 
             </div>
@@ -519,7 +540,10 @@
                                 'user_id',
                                 auth()->id()
                             )
-                            ->where('leida', false)
+                            ->where(
+                                'leida',
+                                false
+                            )
                             ->count();
                     @endphp
 
@@ -532,6 +556,7 @@
                         class="link-notificacion"
                         id="link-notificaciones"
                     >
+
                         <span class="campana">
                             🔔
                         </span>
@@ -547,6 +572,7 @@
                         >
                             {{ $notificacionesPendientes }}
                         </span>
+
                     </a>
 
                     <form
@@ -554,6 +580,7 @@
                         method="POST"
                         class="form-logout"
                     >
+
                         @csrf
 
                         <button
@@ -562,9 +589,11 @@
                         >
                             Cerrar sesión
                         </button>
+
                     </form>
 
                 @endauth
+
 
                 @guest
 
@@ -580,123 +609,151 @@
 
     </header>
 
+
     <main class="contenedor">
         @yield('content')
     </main>
 
+
     <footer class="footer">
+
         Sistema Municipal de Soporte TI -
         Sistema interno de requerimientos informáticos
+
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
+    ></script>
+
 
     @if(session('success'))
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Operación realizada',
-            text: @json(session('success')),
-            confirmButtonText: 'Aceptar'
-        });
-    </script>
+
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Operación realizada',
+                text: @json(session('success')),
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+
     @endif
+
 
     @if(session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Ocurrió un problema',
-            text: @json(session('error')),
-            confirmButtonText: 'Aceptar'
-        });
-    </script>
+
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Ocurrió un problema',
+                text: @json(session('error')),
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+
     @endif
 
+
     @auth
-    <script>
-        document.addEventListener(
-            'DOMContentLoaded',
-            function () {
 
-                const contador =
-                    document.getElementById(
-                        'contador-notificaciones'
-                    );
+        <script>
 
-                const linkNotificaciones =
-                    document.getElementById(
-                        'link-notificaciones'
-                    );
+            document.addEventListener(
+                'DOMContentLoaded',
+                function () {
 
-                async function actualizarContadorNotificaciones() {
-                    try {
+                    const contador =
+                        document.getElementById(
+                            'contador-notificaciones'
+                        );
 
-                        const respuesta = await fetch(
-                            "{{ route('notificaciones.contador') }}",
-                            {
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'X-Requested-With': 'XMLHttpRequest'
+                    const linkNotificaciones =
+                        document.getElementById(
+                            'link-notificaciones'
+                        );
+
+                    async function actualizarContadorNotificaciones() {
+
+                        try {
+
+                            const respuesta = await fetch(
+                                "{{ route('notificaciones.contador') }}",
+                                {
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
                                 }
+                            );
+
+                            if (!respuesta.ok) {
+                                return;
                             }
-                        );
 
-                        if (!respuesta.ok) {
-                            return;
-                        }
+                            const datos =
+                                await respuesta.json();
 
-                        const datos =
-                            await respuesta.json();
+                            const total =
+                                Number(datos.total ?? 0);
 
-                        const total =
-                            Number(datos.total ?? 0);
+                            if (total > 0) {
 
-                        if (total > 0) {
+                                contador.textContent =
+                                    total > 99
+                                        ? '99+'
+                                        : total;
 
-                            contador.textContent =
-                                total > 99
-                                    ? '99+'
-                                    : total;
+                                contador.style.display =
+                                    'inline-flex';
 
-                            contador.style.display =
-                                'inline-flex';
+                                linkNotificaciones
+                                    .classList
+                                    .add(
+                                        'tiene-notificaciones'
+                                    );
 
-                            linkNotificaciones.classList.add(
-                                'tiene-notificaciones'
+                            } else {
+
+                                contador.textContent =
+                                    '0';
+
+                                contador.style.display =
+                                    'none';
+
+                                linkNotificaciones
+                                    .classList
+                                    .remove(
+                                        'tiene-notificaciones'
+                                    );
+                            }
+
+                        } catch (error) {
+
+                            console.log(
+                                'No se pudo actualizar el contador de notificaciones.'
                             );
-
-                        } else {
-
-                            contador.textContent = '0';
-
-                            contador.style.display = 'none';
-
-                            linkNotificaciones.classList.remove(
-                                'tiene-notificaciones'
-                            );
                         }
-
-                    } catch (error) {
-
-                        console.log(
-                            'No se pudo actualizar el contador de notificaciones.'
-                        );
                     }
+
+                    actualizarContadorNotificaciones();
+
+                    setInterval(
+                        actualizarContadorNotificaciones,
+                        10000
+                    );
                 }
+            );
 
-                actualizarContadorNotificaciones();
+        </script>
 
-                setInterval(
-                    actualizarContadorNotificaciones,
-                    10000
-                );
-            }
-        );
-    </script>
     @endauth
+
 
     @yield('scripts')
 

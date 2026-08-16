@@ -44,17 +44,30 @@ class AuthController extends Controller
         );
 
         if (Auth::attempt($credenciales)) {
+
             $request->session()->regenerate();
 
             /*
              * Redirección según el rol del usuario.
              */
+
             if (Auth::user()->rol === 'administrador') {
+
                 return redirect()
                     ->route('admin.dashboard')
                     ->with(
                         'success',
                         'Sesión iniciada como administrador.'
+                    );
+            }
+
+            if (Auth::user()->rol === 'tecnico') {
+
+                return redirect()
+                    ->route('tecnico.dashboard')
+                    ->with(
+                        'success',
+                        'Sesión iniciada como técnico TI.'
                     );
             }
 

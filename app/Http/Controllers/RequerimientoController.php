@@ -155,6 +155,11 @@ class RequerimientoController extends Controller
 
     /**
      * Muestra el detalle de un requerimiento.
+     *
+     * Puede acceder:
+     * - El funcionario propietario.
+     * - Un administrador.
+     * - El técnico TI asignado al requerimiento.
      */
     public function show(Requerimiento $requerimiento)
     {
@@ -164,12 +169,30 @@ class RequerimientoController extends Controller
         $esAdministrador =
             Auth::user()->rol === 'administrador';
 
-        if (!$esPropietario && !$esAdministrador) {
+        $esTecnicoAsignado =
+            Auth::user()->rol === 'tecnico' &&
+            $requerimiento->tecnico_id === Auth::id();
+
+        if (
+            !$esPropietario &&
+            !$esAdministrador &&
+            !$esTecnicoAsignado
+        ) {
             abort(
                 403,
                 'No tiene permiso para ver este requerimiento.'
             );
         }
+
+        /*
+         * Se cargan las relaciones necesarias
+         * para mostrar correctamente el detalle.
+         */
+        $requerimiento->load([
+            'usuario',
+            'tecnico',
+            'asignadoPor',
+        ]);
 
         return view(
             'requerimientos.show',
@@ -186,10 +209,6 @@ class RequerimientoController extends Controller
     {
         $this->verificarAdministrador();
 
-        /*
-         * Se validan los filtros recibidos desde
-         * la URL mediante parámetros GET.
-         */
         $filtros = $request->validate([
             'estado' => [
                 'nullable',
@@ -216,18 +235,11 @@ class RequerimientoController extends Controller
             ],
         ]);
 
-        /*
-         * Se inicia la consulta cargando también
-         * las relaciones con funcionario y técnico.
-         */
         $consulta = Requerimiento::with([
             'usuario',
             'tecnico',
         ]);
 
-        /*
-         * Filtro por estado.
-         */
         if (!empty($filtros['estado'])) {
             $consulta->where(
                 'estado',
@@ -235,9 +247,6 @@ class RequerimientoController extends Controller
             );
         }
 
-        /*
-         * Filtro por prioridad.
-         */
         if (!empty($filtros['prioridad'])) {
             $consulta->where(
                 'prioridad',
@@ -245,9 +254,6 @@ class RequerimientoController extends Controller
             );
         }
 
-        /*
-         * Filtro por categoría.
-         */
         if (!empty($filtros['categoria'])) {
             $consulta->where(
                 'categoria',
@@ -255,9 +261,6 @@ class RequerimientoController extends Controller
             );
         }
 
-        /*
-         * Filtro por funcionario.
-         */
         if (!empty($filtros['funcionario'])) {
             $consulta->where(
                 'user_id',
@@ -265,18 +268,10 @@ class RequerimientoController extends Controller
             );
         }
 
-        /*
-         * Los resultados se ordenan desde
-         * el requerimiento más reciente.
-         */
         $requerimientos = $consulta
             ->orderBy('created_at', 'desc')
             ->get();
 
-        /*
-         * Lista de funcionarios utilizada
-         * en el selector del filtro.
-         */
         $funcionarios = User::where(
             'rol',
             'funcionario'
@@ -301,10 +296,6 @@ class RequerimientoController extends Controller
     {
         $this->verificarAdministrador();
 
-        /*
-         * Se obtienen solamente los usuarios
-         * que poseen rol técnico.
-         */
         $tecnicos = User::where(
             'rol',
             'tecnico'
@@ -312,10 +303,6 @@ class RequerimientoController extends Controller
             ->orderBy('name')
             ->get();
 
-        /*
-         * Se cargan los datos de derivación
-         * actualmente asociados al requerimiento.
-         */
         $requerimiento->load([
             'tecnico',
             'asignadoPor',
@@ -333,9 +320,6 @@ class RequerimientoController extends Controller
     /**
      * Actualiza prioridad, estado, derivación TI
      * y respuesta administrativa.
-     *
-     * La fecha de asignación y el administrador
-     * responsable se registran automáticamente.
      */
     public function update(
         Request $request,
@@ -406,10 +390,6 @@ class RequerimientoController extends Controller
             ]
         );
 
-        /*
-         * Se guardan los valores anteriores
-         * para detectar cambios.
-         */
         $estadoAnterior =
             $requerimiento->estado;
 
@@ -419,9 +399,6 @@ class RequerimientoController extends Controller
         $tecnicoAnterior =
             $requerimiento->tecnico_id;
 
-        /*
-         * Se determina el técnico seleccionado.
-         */
         $tecnicoNuevo = !empty($datos['tecnico_id'])
             ? (int) $datos['tecnico_id']
             : null;
@@ -429,13 +406,6 @@ class RequerimientoController extends Controller
         $cambioTecnico =
             $tecnicoAnterior !== $tecnicoNuevo;
 
-        /*
-         * Gestión automática de la derivación.
-         *
-         * Si se selecciona un técnico por primera vez
-         * o se cambia de técnico, se registra una nueva
-         * fecha y hora de asignación.
-         */
         if ($tecnicoNuevo) {
 
             if (
@@ -457,19 +427,11 @@ class RequerimientoController extends Controller
 
         } else {
 
-            /*
-             * Si se retira la derivación,
-             * los datos asociados quedan vacíos.
-             */
             $fechaAsignacion = null;
             $asignadoPorId = null;
             $tareaAsignada = null;
         }
 
-        /*
-         * Si el requerimiento queda resuelto o cerrado,
-         * se registra la fecha de cierre.
-         */
         if (
             in_array(
                 $datos['estado'],
@@ -483,9 +445,6 @@ class RequerimientoController extends Controller
             $fechaCierre = null;
         }
 
-        /*
-         * Se actualiza el requerimiento.
-         */
         $requerimiento->update([
             'prioridad' =>
                 $datos['prioridad'],
@@ -512,10 +471,6 @@ class RequerimientoController extends Controller
                 $fechaCierre,
         ]);
 
-        /*
-         * Se construye el mensaje de notificación
-         * para el funcionario según los cambios.
-         */
         $cambios = [];
 
         if (
@@ -552,10 +507,6 @@ class RequerimientoController extends Controller
                 $nombreEstado;
         }
 
-        /*
-         * Si cambió el técnico responsable,
-         * también se informa al funcionario.
-         */
         if ($cambioTecnico) {
 
             if ($tecnicoNuevo) {
@@ -574,10 +525,6 @@ class RequerimientoController extends Controller
             }
         }
 
-        /*
-         * Se notifica al funcionario cuando
-         * existe algún cambio relevante.
-         */
         if (
             $requerimiento->user_id &&
             count($cambios) > 0
