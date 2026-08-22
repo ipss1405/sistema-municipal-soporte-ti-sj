@@ -1,73 +1,63 @@
-# Sistema Municipal de Soporte TI
+# MesaTI Municipal — Sistema Municipal de Soporte TI
 
 Aplicación web desarrollada con Laravel para registrar, gestionar y hacer seguimiento a requerimientos informáticos de funcionarios municipales.
 
+Esta versión corresponde a la continuidad del sistema desarrollado en EVA2 y actualizado para EVA3, incorporando una base de datos PostgreSQL remota en Supabase.
+
+---
+
 ## Objetivo
 
-Centralizar las solicitudes de soporte TI en una plataforma donde los funcionarios puedan registrar requerimientos y revisar su estado, mientras el administrador puede gestionarlos, responderlos y cerrarlos.
+Centralizar las solicitudes de soporte TI en una plataforma donde:
 
-## Tecnologías utilizadas
+- Los funcionarios puedan registrar requerimientos y revisar su estado.
+- El administrador pueda clasificar, priorizar y derivar los requerimientos.
+- Los técnicos puedan gestionar las atenciones asignadas.
+- Los usuarios reciban notificaciones durante el flujo de atención.
+- La información quede almacenada en una base de datos remota PostgreSQL mediante Supabase.
 
-- Laravel y PHP
-- Blade
-- MySQL
-- Bootstrap y CSS
-- Laragon
-- Composer
-- Git y GitHub
-- Visual Studio Code
-- SweetAlert2
+---
 
-## Funcionalidades principales
+## Evolución EVA2 → EVA3
 
-### Funcionario
+### EVA2
 
-- Registrarse e iniciar sesión.
-- Crear requerimientos informáticos.
-- Consultar solamente sus propios requerimientos.
-- Revisar el estado y la respuesta de cada solicitud.
-- Recibir notificaciones cuando cambia el estado de un requerimiento.
+La versión anterior trabajaba con:
 
-### Administrador
+- Laravel.
+- MySQL local.
+- Laragon.
+- Roles funcionario y administrador.
+- CRUD de requerimientos.
+- Notificaciones internas.
+- Migraciones, Seeder y Factory.
 
-- Iniciar sesión y acceder directamente a Administración.
-- Consultar todos los requerimientos.
-- Identificar al funcionario que creó cada solicitud.
-- Cambiar el estado del requerimiento.
-- Registrar una respuesta administrativa.
-- Eliminar requerimientos con confirmación SweetAlert2.
-- Recibir notificaciones cuando un funcionario crea una solicitud.
+### EVA3
 
-## Roles y seguridad
+La versión actual mantiene la lógica de MesaTI e incorpora:
 
-El sistema utiliza dos roles:
+- PostgreSQL como motor de base de datos.
+- Supabase Cloud como base de datos remota.
+- Conexión mediante Session Pooler.
+- Región Sudamérica (São Paulo).
+- Rol técnico.
+- Derivación de requerimientos a técnicos.
+- Gestión técnica de atención.
+- Información de avance para el funcionario.
+- Materiales o repuestos requeridos.
+- Tiempo estimado de atención.
+- Dashboard administrativo.
+- Dashboard técnico.
+- Filtros administrativos.
+- Paginación de requerimientos.
+- Modernización visual con Tabler UI.
+- Interfaz responsive y colores institucionales.
 
-- `funcionario`
-- `administrador`
+---
 
-Las rutas privadas requieren una sesión iniciada. Además, las funciones administrativas validan el rol del usuario.
+## Arquitectura general
 
-Un funcionario no visualiza el acceso a Administración. Si intenta ingresar manualmente a la ruta administrativa, el sistema bloquea el acceso mediante un error `403`.
-
-También se implementaron:
-
-- Protección de formularios con `@csrf`.
-- Validaciones desde los controladores.
-- Contraseñas almacenadas mediante hash.
-- Cierre seguro de sesión.
-- Sesión con 30 minutos de duración.
-- Navegación adaptada según el rol.
-
-## Arquitectura MVC
-
-El proyecto utiliza el patrón MVC de Laravel:
-
-- **Modelo:** representa y administra los datos mediante Eloquent.
-- **Vista:** muestra la interfaz mediante Blade.
-- **Controlador:** procesa solicitudes, valida datos y ejecuta operaciones.
-- **Ruta:** conecta una URL y un método HTTP con el controlador.
-
-Flujo general:
+El sistema utiliza el patrón MVC de Laravel.
 
 ```text
 Navegador
@@ -76,162 +66,484 @@ Ruta
     ↓
 Controlador
     ↓
-Modelo
+Modelo / Eloquent
     ↓
-Base de datos
+PostgreSQL
+    ↓
+Supabase Cloud
     ↓
 Vista Blade
     ↓
 Usuario
 ```
 
-## Herencia de vistas Blade
+Para EVA3, la conexión de base de datos funciona de la siguiente forma:
 
-Las vistas reutilizan el diseño principal mediante:
-
-```blade
-@extends('layout')
-
-@section('content')
-    ...
-@endsection
+```text
+MesaTI Laravel
+      ↓
+Eloquent
+      ↓
+DB_CONNECTION=pgsql
+      ↓
+Session Pooler
+Puerto 5432
+      ↓
+Supabase Cloud
+Sudamérica (São Paulo)
+      ↓
+PostgreSQL remoto
 ```
 
-El archivo `layout.blade.php` recibe el contenido mediante:
+---
 
-```blade
-@yield('content')
+## Tecnologías utilizadas
+
+- Laravel.
+- PHP 8.3.
+- Blade.
+- Eloquent ORM.
+- PostgreSQL.
+- Supabase.
+- Session Pooler.
+- Tabler UI.
+- Bootstrap/CSS.
+- JavaScript.
+- SweetAlert2.
+- Laragon.
+- Composer.
+- Git y GitHub.
+- Visual Studio Code.
+
+---
+
+## Roles del sistema
+
+El sistema utiliza tres roles principales:
+
+```text
+funcionario
+administrador
+tecnico
 ```
 
-Esto evita repetir el encabezado, navegación, estilos y pie de página en cada vista.
+### Funcionario
+
+Puede:
+
+- Registrarse e iniciar sesión.
+- Crear requerimientos informáticos.
+- Consultar solamente sus propios requerimientos.
+- Revisar prioridad y estado.
+- Consultar el detalle de cada solicitud.
+- Recibir información del área de Informática.
+- Recibir notificaciones cuando el requerimiento cambia.
+- Crear nuevos requerimientos desde su panel.
+
+La prioridad no es seleccionada por el funcionario.
+
+Al crear una solicitud:
+
+```text
+Prioridad = sin_asignar
+Estado = pendiente
+```
+
+La prioridad es posteriormente definida por el administrador.
+
+### Administrador
+
+Puede:
+
+- Iniciar sesión en el panel administrativo.
+- Consultar todos los requerimientos.
+- Identificar al funcionario solicitante.
+- Asignar prioridad.
+- Cambiar el estado.
+- Derivar el requerimiento a un técnico TI.
+- Registrar una tarea para el técnico.
+- Registrar información para el funcionario.
+- Consultar responsables y fechas de asignación.
+- Filtrar por estado, prioridad, categoría y funcionario.
+- Eliminar requerimientos con confirmación SweetAlert2.
+- Recibir notificaciones cuando un funcionario crea una solicitud.
+- Consultar indicadores generales en el dashboard.
+
+### Técnico
+
+Puede:
+
+- Iniciar sesión en su Panel Técnico TI.
+- Visualizar únicamente los requerimientos derivados a su atención.
+- Consultar datos del funcionario y del requerimiento.
+- Registrar avance o trabajo realizado.
+- Cambiar el estado técnico.
+- Indicar si requiere materiales o repuestos.
+- Registrar materiales requeridos.
+- Informar tiempo estimado.
+- Registrar información visible para el funcionario.
+- Marcar un requerimiento como resuelto.
+
+El técnico puede llegar hasta el estado:
+
+```text
+resuelto
+```
+
+El cierre definitivo corresponde al administrador.
+
+---
+
+## Flujo principal del sistema
+
+```text
+Funcionario
+crea requerimiento
+      ↓
+Pendiente
+Sin asignar
+      ↓
+Administrador
+revisa solicitud
+      ↓
+Asigna prioridad
+      ↓
+Deriva a Técnico TI
+      ↓
+Técnico
+gestiona atención
+      ↓
+Registra avance
+materiales
+tiempo estimado
+      ↓
+Funcionario
+recibe seguimiento
+      ↓
+Técnico
+marca Resuelto
+      ↓
+Administrador
+realiza cierre definitivo
+```
+
+---
+
+## Notificaciones
+
+Las notificaciones se relacionan con usuarios y requerimientos.
+
+Se generan, entre otros casos, cuando:
+
+- Un funcionario crea un requerimiento.
+- El administrador modifica prioridad o estado.
+- El administrador deriva un requerimiento.
+- El técnico actualiza la atención.
+- El técnico informa avances al funcionario.
+
+Relaciones principales:
+
+```text
+notificaciones.user_id
+        ↓
+Usuario destinatario
+
+notificaciones.requerimiento_id
+        ↓
+Requerimiento relacionado
+```
+
+---
 
 ## CRUD de requerimientos
 
-| Operación | Método HTTP | Acción |
+Operación    |Método HTTP|     Acción |
 |---|---|---|
-| Crear | `POST` | Registrar un requerimiento |
-| Consultar | `GET` | Listar y mostrar detalles |
-| Actualizar | `PUT` | Cambiar estado y respuesta |
-| Eliminar | `DELETE` | Eliminar un requerimiento |
+| Crear     | `POST` | Registrar requerimiento |
+| Consultar | `GET`  | Listar y mostrar detalle |
+| Actualizar| `PUT`  | Actualizar gestión administrativa o técnica |
+| Eliminar  | `DELETE`| Eliminar requerimiento |
 
-### Rutas principales
+---
 
-```text
-GET     /mis-requerimientos
-GET     /requerimientos/crear
-POST    /requerimientos
-GET     /requerimientos/{requerimiento}
-GET     /admin/requerimientos
-GET     /admin/requerimientos/{requerimiento}/editar
-PUT     /admin/requerimientos/{requerimiento}
-DELETE  /admin/requerimientos/{requerimiento}
-```
+## Relaciones principales
 
-## Base de datos
-
-Base utilizada en la copia de evaluación:
-
-```text
-sistema_soporte_ti_eva2
-```
-
-Tablas principales:
-
-```text
-users
-requerimientos
-notificaciones
-```
-
-Relaciones implementadas:
-
-```text
-Usuario → muchos requerimientos
-Usuario → muchas notificaciones
-Requerimiento → pertenece a un usuario
-Requerimiento → muchas notificaciones
-```
-
-Los modelos utilizan relaciones Eloquent como:
+La base de datos utiliza relaciones Eloquent como:
 
 ```php
 hasMany()
 belongsTo()
 ```
 
-## Evolución de la base de datos
-
-En una primera etapa del proyecto se trabajó con las tablas principales `users` y `requerimientos`.
-
-Posteriormente, al incorporar nuevas funcionalidades, fue necesario ampliar la estructura de la base de datos mediante migraciones de Laravel:
-
-- Se agregó el campo `rol` a la tabla `users` para diferenciar usuarios `funcionario` y `administrador`.
-- Se creó la tabla `notificaciones`, relacionada con `users` y `requerimientos`.
-- La tabla `notificaciones` permite almacenar avisos generados cuando un funcionario crea un requerimiento o cuando Administración modifica su estado.
-
-La evolución general fue:
+Relaciones principales:
 
 ```text
-Tablas iniciales
-users
-requerimientos
-        ↓
-Nueva necesidad: separar permisos
-        ↓
-Migración para agregar rol a users
-        ↓
-Nueva necesidad: avisos internos
-        ↓
-Migración para crear notificaciones
-        ↓
-Seeder + Factory
-        ↓
-Datos de prueba automáticos
+users.id
+  ↓
+requerimientos.user_id
+Funcionario que creó la solicitud
+
+users.id
+  ↓
+requerimientos.tecnico_id
+Técnico responsable
+
+users.id
+  ↓
+requerimientos.asignado_por_id
+Administrador que realizó la derivación
+
+users.id
+  ↓
+notificaciones.user_id
+Destinatario de la notificación
+
+requerimientos.id
+  ↓
+notificaciones.requerimiento_id
+Solicitud asociada
 ```
 
-## Migraciones, Seeder y Factory
+---
 
-Las migraciones crean o modifican tablas, columnas y claves foráneas.
+## Base de datos EVA3
 
-La Factory genera requerimientos ficticios con:
+En EVA3 la aplicación utiliza:
 
-- Categoría
-- Título
-- Descripción
-- Prioridad
-- Estado
-- Fechas
-- Usuario relacionado
+```text
+Motor: PostgreSQL
+Servicio: Supabase
+Región: Sudamérica (São Paulo)
+Conexión: Session Pooler
+Puerto: 5432
+```
 
-El Seeder crea automáticamente:
+Tablas principales de MesaTI:
 
-- 1 administradora
-- 5 funcionarios
-- 30 requerimientos
+```text
+users
+requerimientos
+notificaciones
+migrations
+cache
+jobs
+```
+
+Supabase también mantiene tablas internas propias de sus servicios.
+
+---
+
+## Configuración de conexión
+
+Laravel utiliza variables de entorno para conectarse a Supabase.
+
+Ejemplo seguro:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=TU_HOST_SUPABASE
+DB_PORT=5432
+DB_DATABASE=postgres
+DB_USERNAME=TU_USUARIO_SUPABASE
+DB_PASSWORD="TU_CONTRASEÑA"
+DB_SSLMODE=require
+```
+
+> Nunca se deben subir contraseñas reales al repositorio.
+
+El archivo `.env` permanece ignorado por Git.
+
+También se mantiene un respaldo local de la configuración MySQL:
+
+```text
+.env.mysql.backup
+```
+
+Este archivo también está protegido mediante `.gitignore`.
+
+---
+
+## PostgreSQL en PHP
+
+Para utilizar PostgreSQL desde Laravel fue necesario habilitar las extensiones:
+
+```text
+pdo_pgsql
+pgsql
+```
+
+Comprobación:
+
+```bash
+php -m | findstr /I "pgsql"
+```
+
+Resultado esperado:
+
+```text
+pdo_pgsql
+pgsql
+```
+
+---
+
+## Migraciones en Supabase
+
+Las migraciones fueron ejecutadas directamente sobre PostgreSQL remoto con:
+
+```bash
+php artisan migrate
+```
+
+Se aplicaron correctamente las migraciones correspondientes a:
+
+- Usuarios.
+- Cache.
+- Jobs.
+- Requerimientos.
+- Notificaciones.
+- Rol de usuario.
+- Derivación a técnico TI.
+- Cambio de prioridad por defecto.
+- Gestión técnica.
+
+> En la base remota no se recomienda ejecutar `php artisan migrate:fresh` durante el uso normal, ya que elimina las tablas antes de volver a crearlas.
+
+---
+
+## Seeders
+
+El proyecto utiliza:
+
+```text
+DatabaseSeeder.php
+TecnicosSeeder.php
+```
+
+El Seeder crea datos de demostración:
+
+- 1 administradora.
+- 5 funcionarios.
+- 4 técnicos TI.
+- 30 requerimientos de prueba.
+
+Los técnicos creados son:
+
+- Gabriel Silva.
+- David Guajardo.
+- Carlos Saavedra.
+- Alejandro Adio.
 
 Comando utilizado:
 
 ```bash
-php artisan migrate:fresh --seed
+php artisan db:seed
 ```
 
-Este comando elimina y vuelve a crear las tablas de la base configurada en `.env` y luego carga los datos definidos en el Seeder.
+---
 
-> **Importante:** la tabla `notificaciones` se crea mediante migración, pero sus registros se generan principalmente durante el uso del sistema: cuando se crea un requerimiento o cuando Administración cambia su estado.
+## Pruebas realizadas con Supabase
+
+Se verificó la conexión remota mediante:
+
+```bash
+php artisan db:show
+```
+
+La aplicación confirmó:
+
+```text
+Connection: pgsql
+Database: postgres
+Port: 5432
+PostgreSQL remoto en Supabase
+```
+
+También se verificaron los datos mediante Tinker:
+
+```php
+App\Models\User::count();
+```
+
+Resultado:
+
+```text
+10
+```
+
+Y:
+
+```php
+App\Models\Requerimiento::count();
+```
+
+Resultado inicial:
+
+```text
+30
+```
+
+Posteriormente se creó un nuevo requerimiento directamente desde la interfaz web, confirmando que Laravel puede escribir datos en Supabase.
+
+Esto demuestra que la aplicación realiza:
+
+```text
+Lectura remota ✅
+Escritura remota ✅
+Migraciones remotas ✅
+Seeders remotos ✅
+Autenticación con datos remotos ✅
+```
+
+---
+
+## Paginación
+
+La administración utiliza paginación real de Laravel:
+
+```php
+->paginate(10)
+->withQueryString();
+```
+
+La vista de requerimientos del funcionario también utiliza:
+
+```php
+->paginate(10);
+```
+
+---
 
 ## Eager Loading
 
-En la administración se utiliza:
+Para evitar consultas innecesarias se utiliza Eager Loading.
+
+Ejemplo:
 
 ```php
-Requerimiento::with('usuario')->get();
+Requerimiento::with([
+    'usuario',
+    'tecnico',
+])->get();
 ```
 
-Esto carga anticipadamente los usuarios relacionados y evita el problema N+1, reduciendo consultas innecesarias a la base de datos.
+Esto permite cargar anticipadamente las relaciones requeridas y ayuda a evitar el problema N+1.
 
-## Validaciones
+---
 
-Los métodos `store()` y `update()` validan los datos antes de guardarlos.
+## Validaciones y seguridad
+
+El sistema utiliza:
+
+- Sesiones autenticadas.
+- Validación de roles.
+- Protección de formularios con `@csrf`.
+- Validaciones desde controladores.
+- Contraseñas almacenadas mediante hash.
+- Cierre de sesión.
+- Restricción de acceso a requerimientos.
+- Validación de técnico asignado.
+- Error `403` cuando un usuario intenta acceder a información sin autorización.
 
 Las vistas utilizan:
 
@@ -243,28 +555,102 @@ old()
 @error
 ```
 
-Estas instrucciones protegen los formularios, permiten actualizar o eliminar registros y muestran mensajes cuando los datos son incorrectos.
+---
+
+## Herencia de vistas Blade
+
+Las vistas reutilizan el diseño principal:
+
+```blade
+@extends('layout')
+
+@section('content')
+
+    ...
+
+@endsection
+```
+
+El layout principal utiliza:
+
+```blade
+@yield('content')
+```
+
+Esto evita repetir navegación, encabezado y estructura general.
+
+---
+
+## Interfaz
+
+La versión EVA3 fue modernizada usando Tabler UI y los colores institucionales:
+
+```text
+Morado:  #5B3F95
+Verde:   #78BE20
+Rojo:    #EF3E24
+Naranjo: #F26B21
+```
+
+Se modernizaron las principales pantallas de funcionario, administrador y técnico.
+
+---
 
 ## Ejecución del proyecto
 
-1. Iniciar Apache y MySQL desde Laragon.
-2. Abrir una terminal en la carpeta del proyecto.
-3. Ejecutar:
+### 1. Iniciar Laragon
+
+Es necesario disponer de PHP y las extensiones PostgreSQL habilitadas.
+
+### 2. Instalar dependencias
 
 ```bash
 composer install
-php artisan config:clear
-php artisan migrate:fresh --seed
-php artisan serve --port=8001
 ```
 
-4. Abrir:
+### 3. Configurar `.env`
+
+Configurar la conexión PostgreSQL de Supabase.
+
+### 4. Limpiar configuración
+
+```bash
+php artisan config:clear
+```
+
+### 5. Ejecutar migraciones
+
+Solo si la base aún no tiene la estructura:
+
+```bash
+php artisan migrate
+```
+
+### 6. Cargar datos de demostración
+
+Solo cuando sea necesario:
+
+```bash
+php artisan db:seed
+```
+
+### 7. Levantar Laravel
+
+```bash
+php artisan serve --port=8002
+```
+
+Abrir:
 
 ```text
-http://127.0.0.1:8001
+http://127.0.0.1:8002
 ```
 
+---
+
 ## Credenciales de demostración
+
+Las cuentas son únicamente para ambiente académico y de pruebas.
 
 ### Administradora
 
@@ -280,6 +666,15 @@ Correo: ana.martinez@sanjoaquin.cl
 Contraseña: Municipal2026!
 ```
 
+### Técnico
+
+```text
+Correo: davidguajardo@sanjoaquin.cl
+Contraseña: Municipal2026!
+```
+
+---
+
 ## Documentación
 
 La documentación complementaria se encuentra en:
@@ -288,39 +683,66 @@ La documentación complementaria se encuentra en:
 documentacion/
 ```
 
-Incluye información sobre:
-
-- Interfaz de usuario.
-- Backend y CRUD.
-- Flujo del sistema.
-- Casos de prueba.
-- Evidencias.
-- Guía de presentación.
-
-Las evidencias de la Evaluación 2 se incorporarán en:
+Archivos actuales:
 
 ```text
-documentacion/EVIDENCIAS_EVA2_SISTEMA_SOPORTE_TI.pdf
+01_INTERFAZ_USUARIO.md
+02_BACKEND_REQUERIMIENTOS.md
+03_FLUJO_DEL_SISTEMA.md
+04_CASOS_DE_PRUEBA.md
+05_EVIDENCIAS.md
 ```
 
-## Estado del proyecto
+Para EVA3 se incorpora:
 
-El desarrollo principal se encuentra terminado y funcionando.
+```text
+06_EVA3_SUPABASE.md
+```
 
-El sistema permite autenticar usuarios, separar permisos por rol, realizar el CRUD de requerimientos, generar datos mediante Seeder y Factory, utilizar relaciones Eloquent y enviar notificaciones entre funcionarios y administración.
+---
+
+## Estado actual del proyecto
+
+Actualmente MesaTI permite:
+
+- Autenticar usuarios.
+- Separar permisos por tres roles.
+- Crear y gestionar requerimientos.
+- Asignar prioridades.
+- Derivar solicitudes a técnicos.
+- Registrar gestión técnica.
+- Informar avances al funcionario.
+- Generar notificaciones.
+- Utilizar relaciones Eloquent.
+- Filtrar requerimientos.
+- Paginar resultados.
+- Consultar dashboards.
+- Trabajar con PostgreSQL remoto mediante Supabase.
+
+La conexión con Supabase fue comprobada mediante lectura y escritura real desde la aplicación.
+
+---
 
 ## Mejoras futuras
 
-- Incorporar una agenda para programar la fecha y hora de atención de cada requerimiento.
-- Asignar los requerimientos a funcionarios o técnicos del equipo de soporte.
-- Permitir que el administrador agregue comentarios e instrucciones para el técnico asignado.
-- Crear una bitácora con los cambios de estado, asignaciones, fechas y comentarios realizados.
-- Implementar notificaciones del navegador para avisar sobre nuevos requerimientos aunque la plataforma esté minimizada.
-- Incorporar una vista de calendario para organizar las atenciones programadas.
-- Publicar el sistema en un servidor institucional.
+-  Agregar una bitácora para registrar los cambios realizados en cada requerimiento.
+- Mostrar un historial más detallado de estados y técnicos asignados.
+- Incorporar filtros en la sección de notificaciones.
+- Permitir que el administrador gestione usuarios y técnicos desde el sistema.
+- Reemplazar el registro público de usuarios por un sistema de solicitud de acceso, donde el administrador sea quien autorice y cree las cuentas.
+- Incorporar una agenda para organizar las fechas de atención.
+- Implementar avisos del navegador para nuevas solicitudes o actualizaciones.
+- Desplegar la aplicación Laravel en un servidor remoto para complementar la base de datos que actualmente funciona en Supabase.
+- Mejorar el manejo administrativo de estados como espera de materiales y espera del funcionario.
+---
 
 ## Conclusión
 
-El Sistema Municipal de Soporte TI permite organizar y dar seguimiento a solicitudes informáticas internas.
+MesaTI Municipal permite organizar y dar seguimiento al soporte informático interno mediante un flujo que conecta funcionarios, administradores y técnicos.
 
-El proyecto aplica Laravel, MVC, Blade, MySQL, migraciones, modelos Eloquent, relaciones, validaciones, Seeder, Factory, Eager Loading, roles, seguridad y operaciones CRUD.
+La versión EVA3 mantiene la arquitectura MVC de Laravel y amplía el proyecto mediante una base de datos PostgreSQL remota en Supabase.
+
+La aplicación utiliza Eloquent, migraciones, relaciones, validaciones, roles, notificaciones, CRUD, dashboards y gestión técnica.
+
+La conexión remota fue probada exitosamente mediante migraciones, seeders, consultas y creación de nuevos requerimientos desde la interfaz web.
+

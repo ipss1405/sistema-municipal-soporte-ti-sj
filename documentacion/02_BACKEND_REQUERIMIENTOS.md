@@ -2,23 +2,40 @@
 
 ## Descripción general
 
-El backend del Sistema Municipal de Soporte TI fue desarrollado con Laravel y MySQL, aplicando el patrón MVC para separar las responsabilidades del sistema.
+El backend de MesaTI Municipal fue desarrollado con Laravel aplicando el patrón MVC para separar las responsabilidades del sistema.
 
-El sistema permite autenticar usuarios, registrar requerimientos, consultar información, gestionar estados, eliminar registros y generar notificaciones internas entre funcionarios y administradores.
+En EVA2 la aplicación trabajaba con MySQL de forma local. Para EVA3, el sistema fue actualizado para utilizar PostgreSQL remoto mediante Supabase.
+
+El backend permite:
+
+- Autenticar usuarios.
+- Diferenciar permisos según rol.
+- Registrar requerimientos.
+- Consultar información.
+- Asignar prioridad.
+- Derivar solicitudes a técnicos.
+- Gestionar la atención técnica.
+- Actualizar estados.
+- Registrar información para el funcionario.
+- Generar notificaciones internas.
+- Eliminar requerimientos.
+- Trabajar con datos almacenados remotamente en Supabase.
+
+---
 
 ## Patrón MVC aplicado
 
-Laravel trabaja con el patrón Modelo, Vista y Controlador.
+Laravel utiliza el patrón Modelo, Vista y Controlador.
 
-En este proyecto se aplica de la siguiente manera:
+En MesaTI se aplica de la siguiente manera:
 
 - **Modelo:** representa las tablas de la base de datos mediante Eloquent ORM.
 - **Vista:** muestra la información al usuario mediante archivos Blade.
-- **Controlador:** procesa las solicitudes, valida los datos y ejecuta las operaciones.
-- **Ruta:** conecta una dirección URL y un método HTTP con una función del controlador.
+- **Controlador:** procesa solicitudes, valida datos y ejecuta las operaciones.
+- **Ruta:** conecta una URL y un método HTTP con una función del controlador.
 - **Base de datos:** almacena usuarios, requerimientos y notificaciones.
 
-Flujo general:
+Flujo general actual:
 
 ```text
 Navegador
@@ -29,12 +46,16 @@ Controlador
     ↓
 Modelo Eloquent
     ↓
-Base de datos MySQL
+PostgreSQL
+    ↓
+Supabase Cloud
     ↓
 Vista Blade
     ↓
 Usuario
 ```
+
+---
 
 ## Modelos principales
 
@@ -50,132 +71,313 @@ app/Models/Notificacion.php
 
 El modelo `User` representa la tabla `users`.
 
-Sus campos principales son:
+Campos principales:
 
-- `name`
-- `email`
-- `password`
-- `rol`
+```text
+name
+email
+password
+rol
+```
 
-También contiene relaciones con requerimientos y notificaciones.
+Los roles utilizados actualmente son:
+
+```text
+funcionario
+administrador
+tecnico
+```
+
+El modelo mantiene relaciones con requerimientos y notificaciones.
+
+Ejemplos:
 
 ```php
-public function requerimientos(): HasMany
+public function requerimientos()
 {
     return $this->hasMany(Requerimiento::class);
 }
 
-public function notificaciones(): HasMany
+public function notificaciones()
 {
     return $this->hasMany(Notificacion::class);
 }
 ```
 
-### Modelo Requerimiento
+---
+
+## Modelo Requerimiento
 
 El modelo `Requerimiento` representa la tabla `requerimientos`.
 
-Sus campos asignables son:
+Además de los datos originales de la solicitud, actualmente contiene información de clasificación, derivación y gestión técnica.
 
-```php
-protected $fillable = [
-    'user_id',
-    'categoria',
-    'titulo',
-    'descripcion',
-    'prioridad',
-    'estado',
-    'respuesta_admin',
-    'fecha_cierre',
-];
+Campos principales:
+
+```text
+user_id
+categoria
+titulo
+descripcion
+prioridad
+estado
+respuesta_admin
+fecha_cierre
+tecnico_id
+asignado_por_id
+fecha_asignacion
+tarea_asignada
+avance_tecnico
+requiere_materiales
+materiales_requeridos
+tiempo_estimado
 ```
 
-El modelo pertenece a un usuario y puede tener varias notificaciones.
+Relaciones principales:
+
+```text
+usuario
+tecnico
+asignadoPor
+notificaciones
+```
+
+Ejemplo conceptual:
 
 ```php
-public function usuario(): BelongsTo
+public function usuario()
 {
     return $this->belongsTo(User::class, 'user_id');
 }
 
-public function notificaciones(): HasMany
+public function tecnico()
+{
+    return $this->belongsTo(User::class, 'tecnico_id');
+}
+
+public function asignadoPor()
+{
+    return $this->belongsTo(User::class, 'asignado_por_id');
+}
+
+public function notificaciones()
 {
     return $this->hasMany(Notificacion::class);
 }
 ```
 
-### Modelo Notificacion
+---
+
+## Modelo Notificacion
 
 El modelo `Notificacion` representa la tabla `notificaciones`.
 
-Permite registrar avisos para funcionarios y administradores.
+Permite registrar avisos para funcionarios, administradores y técnicos.
 
-```php
-protected $fillable = [
-    'user_id',
-    'requerimiento_id',
-    'titulo',
-    'mensaje',
-    'leida',
-    'fecha_leida',
-];
+Campos principales:
+
+```text
+user_id
+requerimiento_id
+titulo
+mensaje
+leida
+fecha_leida
 ```
 
 Cada notificación pertenece a un usuario y puede estar relacionada con un requerimiento.
 
+---
+
 ## Relaciones Eloquent
 
-Las relaciones implementadas son:
+Las relaciones principales del sistema son:
 
 ```text
 Usuario → tiene muchos requerimientos
 Usuario → tiene muchas notificaciones
-Requerimiento → pertenece a un usuario
+
+Requerimiento → pertenece al funcionario que lo creó
+Requerimiento → puede pertenecer a un técnico asignado
+Requerimiento → puede registrar al administrador que realizó la asignación
 Requerimiento → tiene muchas notificaciones
+
 Notificación → pertenece a un usuario
 Notificación → pertenece a un requerimiento
 ```
 
-Para estas relaciones se utilizan:
+Para estas relaciones se utilizan métodos como:
 
 ```php
 hasMany()
 belongsTo()
 ```
 
-## Evolución de la base de datos
+---
 
-En la primera etapa del proyecto se trabajó con las tablas principales `users` y `requerimientos`, creadas inicialmente para permitir la autenticación de usuarios y el registro de solicitudes.
+## Relaciones mediante claves foráneas
 
-Posteriormente, al incorporar nuevas funcionalidades, fue necesario ampliar la estructura mediante migraciones de Laravel:
-
-- Se agregó el campo `rol` a la tabla `users` para diferenciar usuarios `funcionario` y `administrador`.
-- Se creó la tabla `notificaciones` para almacenar avisos internos.
-- La tabla `notificaciones` se relacionó con `users` y `requerimientos` mediante claves foráneas.
-
-La evolución general fue:
+Las relaciones principales de la base de datos son:
 
 ```text
-Primera etapa
-users
-requerimientos
+requerimientos.user_id
         ↓
-Nueva necesidad: separar permisos
+users.id
+Funcionario que creó la solicitud
+
+requerimientos.tecnico_id
         ↓
-Migración para agregar rol a users
+users.id
+Técnico responsable
+
+requerimientos.asignado_por_id
         ↓
-Nueva necesidad: avisos internos
+users.id
+Administrador que realizó la derivación
+
+notificaciones.user_id
         ↓
-Migración para crear notificaciones
+users.id
+Usuario destinatario
+
+notificaciones.requerimiento_id
         ↓
-Seeder + Factory
-        ↓
-Datos de prueba automáticos
+requerimientos.id
+Solicitud relacionada
 ```
 
-Las migraciones posteriores permitieron que la estructura de la base de datos quedara documentada y reproducible desde el proyecto.
+Estas relaciones ayudan a mantener la integridad de los datos.
 
-## Migraciones de la base de datos
+---
+
+## Evolución de la base de datos
+
+La estructura del sistema fue creciendo mediante migraciones de Laravel.
+
+### Primera etapa
+
+Inicialmente se utilizaron:
+
+```text
+users
+requerimientos
+```
+
+### Incorporación de roles
+
+Se agregó el campo:
+
+```text
+rol
+```
+
+a la tabla `users`.
+
+Esto permitió separar los permisos de:
+
+```text
+funcionario
+administrador
+```
+
+Posteriormente se incorporó también:
+
+```text
+tecnico
+```
+
+### Incorporación de notificaciones
+
+Se creó la tabla:
+
+```text
+notificaciones
+```
+
+relacionada con usuarios y requerimientos.
+
+### Derivación a técnicos
+
+Posteriormente la tabla `requerimientos` incorporó:
+
+```text
+tecnico_id
+asignado_por_id
+fecha_asignacion
+tarea_asignada
+```
+
+Esto permite registrar:
+
+- Qué técnico recibe el caso.
+- Qué administrador realizó la asignación.
+- Cuándo fue asignado.
+- Qué tarea se le indicó realizar.
+
+### Gestión técnica
+
+También se agregaron:
+
+```text
+avance_tecnico
+requiere_materiales
+materiales_requeridos
+tiempo_estimado
+```
+
+Estos campos permiten registrar el avance de la atención y antecedentes técnicos.
+
+### Evolución general
+
+```text
+users + requerimientos
+        ↓
+rol de usuario
+        ↓
+notificaciones
+        ↓
+derivación a técnico
+        ↓
+gestión técnica
+        ↓
+PostgreSQL remoto en Supabase
+```
+
+---
+
+## Base de datos EVA3
+
+La versión actual utiliza:
+
+```text
+Motor: PostgreSQL
+Servicio: Supabase
+Región: Sudamérica (São Paulo)
+Conexión: Session Pooler
+Puerto: 5432
+```
+
+Las tablas principales de MesaTI son:
+
+```text
+users
+requerimientos
+notificaciones
+migrations
+```
+
+Laravel también utiliza tablas como:
+
+```text
+cache
+jobs
+```
+
+Supabase mantiene además sus propias tablas internas.
+
+---
+
+## Migraciones
 
 Las migraciones se encuentran en:
 
@@ -183,253 +385,417 @@ Las migraciones se encuentran en:
 database/migrations
 ```
 
-La base de datos utilizada para la evaluación es:
+Entre las migraciones del proyecto se encuentran:
 
 ```text
-sistema_soporte_ti_eva2
+0001_01_01_000000_create_users_table.php
+0001_01_01_000001_create_cache_table.php
+0001_01_01_000002_create_jobs_table.php
+2026_07_12_040035_create_requerimientos_table.php
+2026_07_29_170958_crear_notificaciones_table.php
+2026_07_29_193943_agregar_rol_a_users_table.php
+2026_08_15_192046_agregar_derivacion_ti_a_requerimientos.php
+2026_08_15_205057_cambiar_prioridad_default_en_requerimientos.php
+2026_08_15_211604_agregar_gestion_tecnica_a_requerimientos_table.php
 ```
 
-Las tablas principales son:
+En EVA3 se ejecutaron en PostgreSQL remoto mediante:
 
-- `users`
-- `requerimientos`
-- `notificaciones`
+```bash
+php artisan migrate
+```
 
-También existen tablas internas de Laravel para caché, sesiones y trabajos.
+Todas finalizaron correctamente.
 
-### Tabla users
+---
 
-La tabla `users` almacena los datos de autenticación.
+## PostgreSQL y Supabase
 
-Campos principales:
+Para EVA3 Laravel fue configurado para utilizar PostgreSQL.
 
-- `id`
-- `name`
-- `email`
-- `password`
-- `rol`
-- `remember_token`
-- `created_at`
-- `updated_at`
+Ejemplo de configuración:
 
-El campo `rol` utiliza por defecto el valor:
+```env
+DB_CONNECTION=pgsql
+DB_HOST=TU_HOST_SUPABASE
+DB_PORT=5432
+DB_DATABASE=postgres
+DB_USERNAME=TU_USUARIO_SUPABASE
+DB_PASSWORD="TU_CONTRASEÑA"
+DB_SSLMODE=require
+```
+
+Las credenciales reales se mantienen solamente en `.env` y no se suben a GitHub.
+
+También fue necesario habilitar en PHP:
 
 ```text
-funcionario
+pdo_pgsql
+pgsql
 ```
 
-Los roles disponibles son:
+La conexión se comprobó mediante:
 
-```text
-funcionario
-administrador
+```bash
+php artisan db:show
 ```
 
-### Tabla requerimientos
+Laravel confirmó conexión con PostgreSQL remoto en Supabase.
 
-La tabla `requerimientos` contiene:
+---
 
-- `id`
-- `user_id`
-- `categoria`
-- `titulo`
-- `descripcion`
-- `prioridad`
-- `estado`
-- `respuesta_admin`
-- `fecha_cierre`
-- `created_at`
-- `updated_at`
+## Controladores principales
 
-El campo `user_id` relaciona cada requerimiento con el funcionario que lo creó.
-
-### Tabla notificaciones
-
-La tabla `notificaciones` contiene:
-
-- `id`
-- `user_id`
-- `requerimiento_id`
-- `titulo`
-- `mensaje`
-- `leida`
-- `fecha_leida`
-- `created_at`
-- `updated_at`
-
-Esta tabla permite almacenar las notificaciones internas del sistema.
-
-## Claves foráneas
-
-El sistema utiliza claves foráneas para mantener las relaciones entre las tablas.
-
-Ejemplo:
-
-```php
-$table->foreignId('user_id')
-    ->nullable()
-    ->constrained('users')
-    ->nullOnDelete();
-```
-
-Esto permite relacionar un requerimiento con su usuario y mantener la integridad de la base de datos.
-
-Relaciones principales:
-
-```text
-requerimientos.user_id → users.id
-notificaciones.user_id → users.id
-notificaciones.requerimiento_id → requerimientos.id
-```
-
-## Controladores utilizados
-
-Los controladores principales son:
+Entre los controladores utilizados se encuentran:
 
 ```text
 app/Http/Controllers/AuthController.php
 app/Http/Controllers/RequerimientoController.php
 app/Http/Controllers/NotificacionController.php
+app/Http/Controllers/AdminDashboardController.php
+app/Http/Controllers/TecnicoDashboardController.php
 ```
+
+Además, el sistema contiene la lógica correspondiente a la gestión técnica de los requerimientos.
+
+---
 
 ## AuthController
 
-El controlador `AuthController` administra:
+El `AuthController` administra:
 
 - Inicio de sesión.
 - Registro de usuarios.
 - Cierre de sesión.
 - Redirección según el rol.
 
-Después del inicio de sesión:
+Después de iniciar sesión:
 
 ```text
-Administrador → Administración de requerimientos
-Funcionario → Panel funcionario
-```
+Funcionario
+    ↓
+Panel funcionario
 
-Los usuarios creados mediante el formulario de registro reciben automáticamente el rol `funcionario`.
+Administrador
+    ↓
+Dashboard administrativo
+
+Técnico
+    ↓
+Panel Técnico TI
+```
 
 Las contraseñas se almacenan mediante hash.
 
+Actualmente el registro público crea usuarios con rol `funcionario`.
+
+Como mejora futura se propone que el funcionario solicite acceso y que el administrador sea quien cree o autorice las cuentas.
+
+---
+
 ## RequerimientoController
 
-El controlador `RequerimientoController` contiene la lógica principal del CRUD.
+El `RequerimientoController` contiene gran parte de la lógica relacionada con los requerimientos.
 
-Sus funciones son:
+Funciones principales:
 
-- `index()`
-- `create()`
-- `store()`
-- `show()`
-- `adminIndex()`
-- `edit()`
-- `update()`
-- `destroy()`
+```text
+index()
+create()
+store()
+show()
+adminIndex()
+edit()
+update()
+destroy()
+```
 
 ### Método index()
 
 Muestra solamente los requerimientos del funcionario autenticado.
 
+Actualmente utiliza paginación:
+
 ```php
 Requerimiento::where('user_id', Auth::id())
-    ->latest()
-    ->get();
+    ->orderBy('created_at', 'desc')
+    ->paginate(10);
 ```
 
 ### Método create()
 
-Muestra el formulario para crear un nuevo requerimiento.
+Muestra el formulario para registrar un requerimiento.
 
 ### Método store()
 
-Valida los datos y registra el requerimiento.
+Valida y registra una nueva solicitud.
 
-También asigna automáticamente el identificador del usuario autenticado mediante `Auth::id()`.
+El funcionario ingresa:
 
-Después de crear el requerimiento, genera una notificación para los administradores.
+```text
+Categoría
+Título
+Descripción
+```
+
+El backend asigna automáticamente:
+
+```text
+user_id = usuario autenticado
+prioridad = sin_asignar
+estado = pendiente
+```
+
+Después se genera una notificación para los administradores.
+
+Flujo:
+
+```text
+Funcionario completa formulario
+        ↓
+Ruta POST
+        ↓
+store()
+        ↓
+Validación
+        ↓
+Modelo Requerimiento
+        ↓
+Supabase PostgreSQL
+        ↓
+Notificación al administrador
+```
 
 ### Método show()
 
 Muestra el detalle de un requerimiento.
 
-El acceso está permitido solamente para:
+El acceso está permitido para:
 
-- El funcionario propietario del requerimiento.
-- Un usuario con rol administrador.
+- Funcionario propietario.
+- Administrador.
+- Técnico asignado.
 
-Si otro usuario intenta ingresar, el sistema responde con error `403`.
+Si un usuario intenta visualizar un requerimiento sin permiso, Laravel responde con error:
+
+```text
+403
+```
 
 ### Método adminIndex()
 
-Muestra todos los requerimientos en la vista administrativa.
+Muestra los requerimientos a los administradores.
 
-Se utiliza Eager Loading para cargar los usuarios relacionados:
+Permite filtrar por:
+
+- Estado.
+- Prioridad.
+- Categoría.
+- Funcionario.
+
+Utiliza Eager Loading para cargar relaciones como:
+
+```text
+usuario
+tecnico
+```
+
+Los resultados utilizan:
 
 ```php
-Requerimiento::with('usuario')
-    ->orderBy('created_at', 'desc')
-    ->get();
+->paginate(10)
+->withQueryString();
 ```
+
+Esto permite conservar los filtros al cambiar de página.
 
 ### Método edit()
 
 Muestra el formulario de gestión administrativa.
 
-El acceso está limitado al administrador.
+Desde esta pantalla se pueden consultar técnicos disponibles y los datos de derivación.
 
 ### Método update()
 
-Permite:
+Permite al administrador:
 
-- Cambiar el estado.
-- Registrar una respuesta administrativa.
-- Asignar la fecha de cierre cuando corresponde.
-- Generar una notificación para el funcionario cuando cambia el estado.
+- Asignar prioridad.
+- Modificar estado.
+- Asignar un técnico.
+- Registrar quién realizó la asignación.
+- Registrar la fecha de asignación.
+- Registrar una tarea.
+- Escribir información para el funcionario.
+- Generar notificaciones.
 
-La fecha de cierre se registra cuando el estado corresponde a una condición final como `resuelto` o `cerrado`.
+Cuando se asigna o reasigna un técnico, el sistema puede generar una notificación para el nuevo responsable.
+
+También se generan avisos al funcionario cuando cambian datos importantes de su solicitud.
 
 ### Método destroy()
 
-Elimina un requerimiento desde la administración.
+Elimina un requerimiento.
 
 ```php
 $requerimiento->delete();
 ```
 
-Después de eliminar, el sistema redirige a la lista administrativa con un mensaje de confirmación.
+La acción está disponible para administración y utiliza una confirmación visual con SweetAlert2 antes del envío.
+
+---
+
+## Gestión técnica
+
+El técnico visualiza únicamente los requerimientos derivados a su cuenta.
+
+El backend utiliza el campo:
+
+```text
+tecnico_id
+```
+
+para relacionar el requerimiento con el técnico responsable.
+
+Durante la gestión se pueden registrar:
+
+```text
+estado
+avance_tecnico
+requiere_materiales
+materiales_requeridos
+tiempo_estimado
+respuesta_admin
+```
+
+Los estados técnicos disponibles incluyen:
+
+```text
+en_revision
+en_proceso
+en_espera_materiales
+en_espera_funcionario
+resuelto
+```
+
+El técnico puede llegar hasta:
+
+```text
+resuelto
+```
+
+El cierre definitivo corresponde al administrador.
+
+---
+
+## Dashboard administrativo
+
+El backend calcula información para mostrar indicadores como:
+
+```text
+Usuarios registrados
+Total de requerimientos
+Pendientes
+En proceso
+Resueltos
+Urgentes
+Distribución por categoría
+```
+
+Esto permite entregar un resumen general al administrador.
+
+---
+
+## Dashboard técnico
+
+El panel técnico muestra indicadores asociados al usuario autenticado.
+
+Ejemplos:
+
+```text
+Total asignados
+Pendientes
+En revisión
+En proceso / espera
+Resueltos
+```
+
+La consulta considera solamente requerimientos asociados al técnico mediante `tecnico_id`.
+
+---
 
 ## NotificacionController
 
-El controlador `NotificacionController` administra las notificaciones del usuario autenticado.
+El `NotificacionController` administra las notificaciones del usuario autenticado.
 
-Sus funciones principales son:
+Entre sus funciones se encuentran:
 
-- Mostrar las notificaciones.
-- Marcar las notificaciones como leídas.
-- Entregar el contador de notificaciones no leídas.
+- Mostrar notificaciones.
+- Marcar notificaciones como leídas.
+- Entregar el contador de avisos no leídos.
 
 Cada usuario puede consultar solamente sus propias notificaciones.
 
-Cuando se abre la vista de notificaciones, las que no han sido leídas se actualizan con:
+Cuando corresponde, las notificaciones se actualizan con:
 
 ```text
 leida = true
 fecha_leida = fecha y hora actual
 ```
 
-## Operaciones CRUD
+---
 
-El sistema implementa las cuatro operaciones principales:
+## Notificaciones del flujo
 
-| Operación | Método HTTP | Acción |
+El sistema genera avisos durante distintas etapas.
+
+### Funcionario crea requerimiento
+
+```text
+Funcionario
+    ↓
+Nuevo requerimiento
+    ↓
+Notificación al administrador
+```
+
+### Administrador actualiza o deriva
+
+```text
+Administrador
+    ↓
+Prioridad / Estado / Técnico
+    ↓
+Notificación al funcionario
+    ↓
+Notificación al técnico cuando corresponde
+```
+
+### Técnico gestiona
+
+```text
+Técnico
+    ↓
+Actualiza atención
+    ↓
+Notificación al funcionario
+```
+
+---
+
+## Operaciones principales
+
+Dentro del sistema, los requerimientos se manejan mediante distintas operaciones HTTP según la acción que se necesite realizar.
+
+| Proceso | Método HTTP | Descripción |
 |---|---|---|
-| Crear | `POST` | Registrar un requerimiento |
-| Leer | `GET` | Listar y mostrar requerimientos |
-| Actualizar | `PUT` | Cambiar estado y respuesta |
-| Eliminar | `DELETE` | Eliminar un requerimiento |
+| Registrar | `POST` | Guarda un nuevo requerimiento en el sistema. |
+| Visualizar | `GET` | Permite consultar el listado y revisar el detalle de una solicitud. |
+| Modificar | `PUT` | Actualiza la información y el seguimiento de un requerimiento. |
+| Eliminar | `DELETE` | Quita un requerimiento registrado en el sistema. |
 
-## Rutas principales
+---
+
+## Rutas
 
 Las rutas se encuentran en:
 
@@ -437,134 +803,88 @@ Las rutas se encuentran en:
 routes/web.php
 ```
 
-Rutas utilizadas:
+El sistema posee rutas para:
+
+- Login.
+- Registro.
+- Panel funcionario.
+- Panel administrador.
+- Panel técnico.
+- Crear requerimientos.
+- Consultar requerimientos.
+- Gestionar requerimientos.
+- Gestión técnica.
+- Notificaciones.
+
+Las rutas privadas utilizan autenticación mediante Laravel.
+
+Además, los controladores y la lógica del sistema validan que el usuario tenga permisos para acceder a las funciones correspondientes.
+
+---
+
+## Prioridad
+
+En la versión actual el funcionario ya no selecciona la prioridad.
+
+Al crear el requerimiento se registra:
 
 ```text
-GET     /mis-requerimientos
-GET     /requerimientos/crear
-POST    /requerimientos
-GET     /requerimientos/{requerimiento}
-GET     /admin/requerimientos
-GET     /admin/requerimientos/{requerimiento}/editar
-PUT     /admin/requerimientos/{requerimiento}
-DELETE  /admin/requerimientos/{requerimiento}
-GET     /notificaciones
-GET     /notificaciones/contador
+sin_asignar
 ```
 
-Las rutas privadas utilizan autenticación mediante middleware `auth`.
-
-## Registro de requerimientos
-
-El formulario se encuentra en:
+Luego el administrador puede clasificarlo como:
 
 ```text
-resources/views/requerimientos/create.blade.php
+baja
+media
+alta
+urgente
 ```
 
-El funcionario ingresa:
+Esto permite que la prioridad sea definida por el área responsable de la atención.
 
-- Categoría.
-- Título.
-- Descripción.
-- Prioridad.
+---
 
-Al enviar el formulario:
+## Estados
+
+El sistema utiliza estados administrativos y técnicos.
+
+Entre ellos se encuentran:
 
 ```text
-Formulario
-    ↓
-Ruta POST
-    ↓
-store()
-    ↓
-Validación
-    ↓
-Modelo Requerimiento
-    ↓
-MySQL
+pendiente
+en_revision
+en_proceso
+en_espera_materiales
+en_espera_funcionario
+resuelto
+cerrado
+rechazado
 ```
 
-## Listado de requerimientos
+El flujo puede variar según la atención requerida.
 
-Los funcionarios consultan sus requerimientos en:
+---
 
-```text
-resources/views/requerimientos/index.blade.php
-```
+## Validaciones
 
-El administrador consulta todos los registros en:
-
-```text
-resources/views/admin/requerimientos/index.blade.php
-```
-
-La vista administrativa también muestra el nombre del funcionario relacionado.
-
-## Detalle del requerimiento
-
-El detalle se encuentra en:
-
-```text
-resources/views/requerimientos/show.blade.php
-```
-
-Muestra:
-
-- Número del requerimiento.
-- Funcionario.
-- Categoría.
-- Título.
-- Descripción.
-- Prioridad.
-- Estado.
-- Respuesta administrativa.
-- Fecha de creación.
-- Fecha de cierre.
-
-Los botones de navegación cambian según el rol del usuario.
-
-## Gestión administrativa
-
-La vista de gestión se encuentra en:
-
-```text
-resources/views/admin/requerimientos/edit.blade.php
-```
-
-Desde esta pantalla, el administrador puede:
-
-- Cambiar el estado.
-- Registrar una respuesta.
-- Guardar la actualización.
-- Notificar al funcionario.
-
-## Estados disponibles
-
-El sistema considera los siguientes estados:
-
-- Pendiente.
-- En revisión.
-- En proceso.
-- Resuelto.
-- Cerrado.
-- Rechazado.
-
-Los estados permiten controlar el avance de la atención.
-
-## Validaciones aplicadas
-
-El método `store()` valida:
+El método `store()` valida información como:
 
 - Categoría obligatoria y válida.
 - Título obligatorio.
 - Descripción obligatoria.
-- Prioridad obligatoria y válida.
 
-El método `update()` valida:
+El funcionario no envía la prioridad.
 
-- Estado obligatorio y válido.
-- Respuesta administrativa opcional.
+El método administrativo `update()` valida:
+
+- Prioridad.
+- Estado.
+- Técnico seleccionado.
+- Tarea asignada cuando existe derivación.
+- Información administrativa.
+
+La gestión técnica valida los campos necesarios para actualizar la atención.
 
 Las vistas utilizan:
 
@@ -576,24 +896,41 @@ old()
 @error
 ```
 
-Estas instrucciones permiten proteger formularios, conservar datos ingresados y mostrar mensajes de validación.
+---
 
 ## Seguridad aplicada
 
 El sistema incorpora:
 
-- Autenticación de usuarios.
+- Autenticación.
 - Contraseñas almacenadas mediante hash.
 - Protección CSRF.
-- Validación de datos.
-- Separación de permisos según el rol.
-- Acceso restringido a requerimientos propios.
-- Bloqueo con error `403`.
-- Cierre seguro de sesión.
-- Sesión configurada con 30 minutos de duración.
+- Validación de formularios.
+- Separación de funciones por rol.
+- Restricción de requerimientos propios.
+- Restricción de requerimientos técnicos asignados.
+- Error `403` ante accesos no autorizados.
+- Cierre de sesión.
 - Configuración de base de datos mediante `.env`.
+- Credenciales de Supabase excluidas del repositorio.
 
-La validación del rol administrador se realiza dentro del controlador antes de ejecutar acciones administrativas.
+El archivo:
+
+```text
+.env
+```
+
+no se sube a GitHub.
+
+El respaldo:
+
+```text
+.env.mysql.backup
+```
+
+también se encuentra ignorado.
+
+---
 
 ## Seeder
 
@@ -603,13 +940,28 @@ El archivo principal se encuentra en:
 database/seeders/DatabaseSeeder.php
 ```
 
-El Seeder crea:
+En EVA3 se utiliza además:
 
-- 1 administradora.
-- 5 funcionarios.
-- 30 requerimientos.
+```text
+database/seeders/TecnicosSeeder.php
+```
 
-Esto permite disponer de datos suficientes para probar el sistema.
+Los Seeders generan:
+
+```text
+1 administradora
+5 funcionarios
+4 técnicos
+30 requerimientos
+```
+
+El comando utilizado sobre Supabase fue:
+
+```bash
+php artisan db:seed
+```
+
+---
 
 ## Factory
 
@@ -619,7 +971,9 @@ La Factory se encuentra en:
 database/factories/RequerimientoFactory.php
 ```
 
-Genera datos ficticios para:
+Permite generar requerimientos de prueba.
+
+Los datos pueden incluir:
 
 - Categoría.
 - Título.
@@ -627,109 +981,171 @@ Genera datos ficticios para:
 - Prioridad.
 - Estado.
 - Respuesta.
-- Fecha de cierre.
+- Fechas.
 - Usuario relacionado.
 
-Comando utilizado:
-
-```bash
-php artisan migrate:fresh --seed
-```
-
-Este comando elimina las tablas existentes, ejecuta las migraciones y carga los datos del Seeder.
-
-> La tabla `notificaciones` se crea mediante migración, pero sus registros se generan principalmente durante el uso real del sistema: al crear un requerimiento o al cambiar su estado.
-
-## Eager Loading
-
-En la administración se utiliza:
-
-```php
-Requerimiento::with('usuario')->get();
-```
-
-Esto permite cargar los funcionarios relacionados junto con los requerimientos.
-
-Su uso evita el problema N+1, reduciendo consultas innecesarias a la base de datos.
-
-## Flujo backend implementado
-
-El flujo general para crear un requerimiento es:
-
-```text
-Funcionario completa formulario
-            ↓
-Ruta POST recibe la solicitud
-            ↓
-RequerimientoController valida los datos
-            ↓
-Modelo Requerimiento guarda en MySQL
-            ↓
-Se genera una notificación al administrador
-            ↓
-El funcionario vuelve a su listado
-```
-
-El flujo de actualización es:
-
-```text
-Administrador abre el requerimiento
-            ↓
-Cambia el estado y registra una respuesta
-            ↓
-Ruta PUT envía la información
-            ↓
-RequerimientoController actualiza el registro
-            ↓
-Se genera una notificación al funcionario
-            ↓
-El funcionario revisa el nuevo estado
-```
-
-## Eliminación de requerimientos
-
-La eliminación se realiza mediante:
-
-```text
-DELETE /admin/requerimientos/{requerimiento}
-```
-
-Esta ruta llama al método:
-
-```php
-destroy(Requerimiento $requerimiento)
-```
-
-El formulario utiliza:
-
-```blade
-@csrf
-@method('DELETE')
-```
-
-Antes de enviar la eliminación, SweetAlert2 solicita confirmación al administrador.
-
-SweetAlert2 realiza la confirmación visual; la eliminación real se ejecuta en `destroy()` mediante:
-
-```php
-$requerimiento->delete();
-```
-
-## Comandos utilizados
-
-Comandos principales del proyecto:
+En la base remota se utilizó:
 
 ```bash
 php artisan migrate
-php artisan migrate:fresh --seed
-php artisan route:list
-php artisan config:clear
-php artisan serve --port=8001
-php artisan tinker
+php artisan db:seed
 ```
+
+En lugar de utilizar `migrate:fresh`, evitando eliminar las tablas ya creadas en Supabase.
+
+---
+
+## Eager Loading
+
+Para cargar relaciones de forma anticipada se utiliza Eager Loading.
+
+Ejemplo:
+
+```php
+Requerimiento::with([
+    'usuario',
+    'tecnico',
+])->get();
+```
+
+Esto permite obtener los datos relacionados y ayuda a evitar el problema N+1.
+
+---
+
+## Pruebas realizadas en Supabase
+
+La conexión fue comprobada mediante:
+
+```bash
+php artisan db:show
+```
+
+Laravel confirmó:
+
+```text
+Connection: pgsql
+Database: postgres
+Port: 5432
+PostgreSQL remoto
+```
+
+Los usuarios fueron comprobados mediante Tinker:
+
+```php
+App\Models\User::count();
+```
+
+Resultado:
+
+```text
+10
+```
+
+Los requerimientos fueron comprobados mediante:
+
+```php
+App\Models\Requerimiento::count();
+```
+
+Resultado inicial:
+
+```text
+30
+```
+
+También se creó un nuevo requerimiento desde la interfaz, confirmando escritura real en Supabase.
+
+---
+
+## Flujo backend actual
+
+### Creación
+
+```text
+Funcionario
+    ↓
+Formulario
+    ↓
+Ruta POST
+    ↓
+RequerimientoController
+    ↓
+Validación
+    ↓
+Eloquent
+    ↓
+Supabase PostgreSQL
+    ↓
+Notificación al administrador
+```
+
+### Gestión administrativa
+
+```text
+Administrador
+    ↓
+Clasifica prioridad
+    ↓
+Cambia estado
+    ↓
+Asigna técnico
+    ↓
+Registra tarea
+    ↓
+Actualiza en Supabase
+    ↓
+Genera notificaciones
+```
+
+### Gestión técnica
+
+```text
+Técnico asignado
+    ↓
+Registra avance
+    ↓
+Materiales / tiempo
+    ↓
+Actualiza estado
+    ↓
+Eloquent
+    ↓
+Supabase PostgreSQL
+    ↓
+Funcionario recibe seguimiento
+```
+
+---
+
+## Comandos utilizados
+
+Entre los comandos utilizados durante la implementación se encuentran:
+
+```bash
+php artisan config:clear
+php artisan db:show
+php artisan migrate:status
+php artisan migrate
+php artisan db:seed
+php artisan tinker
+php artisan route:list
+php artisan serve --port=8002
+```
+
+Para verificar PostgreSQL en PHP:
+
+```bash
+php -m | findstr /I "pgsql"
+```
+
+---
 
 ## Conclusión
 
-El backend del Sistema Municipal de Soporte TI permite autenticar usuarios, gestionar requerimientos y enviar notificaciones internas mediante Laravel y MySQL.
+El backend de MesaTI Municipal permite gestionar el flujo completo de los requerimientos mediante Laravel.
 
-El proyecto aplica MVC, rutas, métodos HTTP, controladores, modelos Eloquent, relaciones, migraciones, validaciones, Seeder, Factory, Eager Loading, seguridad por roles y operaciones CRUD completas.
+La versión actual incorpora funcionarios, administradores y técnicos, derivación de solicitudes, gestión técnica, notificaciones, filtros, paginación y relaciones Eloquent.
+
+Para EVA3, la principal mejora fue reemplazar la dependencia de MySQL local por una conexión PostgreSQL remota mediante Supabase.
+
+Se comprobó que Laravel puede conectarse, ejecutar migraciones, cargar datos, consultar registros y guardar nuevos requerimientos directamente en la base de datos remota.

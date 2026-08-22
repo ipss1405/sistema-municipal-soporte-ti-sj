@@ -1,671 +1,641 @@
-# Casos de Prueba
+# Flujo del Sistema
 
-## 1. Descripción general
+## Descripción general
 
-Este documento contiene los casos de prueba funcionales del **Sistema Municipal de Soporte TI**.
+MesaTI Municipal permite gestionar solicitudes de soporte informático desde que un funcionario registra un requerimiento hasta que el área de Informática lo revisa, lo deriva a un técnico y realiza el seguimiento correspondiente.
 
-Las pruebas se ejecutaron manualmente en el entorno local del proyecto. Cada caso debe registrar el resultado real y una captura en formato PNG como evidencia.
+En la versión EVA3, el flujo mantiene la lógica de Laravel, pero los datos se almacenan de forma remota en PostgreSQL mediante Supabase.
 
-## 2. Entorno de prueba
-
-```text
-Proyecto: Sistema Municipal de Soporte TI
-URL: http://127.0.0.1:8001
-Base de datos: sistema_soporte_ti_eva2
-Navegador: Google Chrome
-Servidor local: Laragon
-```
-
-## 3. Usuarios de prueba
-
-### Administradora
+El sistema trabaja con tres roles:
 
 ```text
-Correo: rosa@sanjoaquin.cl
-Contraseña: Municipal2026!
-Rol: administrador
+Funcionario
+Administrador
+Técnico
 ```
 
-### Funcionaria
-
-```text
-Correo: ana.martinez@sanjoaquin.cl
-Contraseña: Municipal2026!
-Rol: funcionario
-```
-
-## 4. Estados de los casos de prueba
-
-Cada prueba debe finalizar con uno de estos estados:
-
-- **Pendiente:** todavía no se ejecuta.
-- **Aprobado:** el resultado obtenido coincide con el esperado.
-- **Rechazado:** el resultado obtenido no coincide con el esperado.
-- **Bloqueado:** no fue posible ejecutar la prueba por un problema previo.
+Cada rol participa en una etapa distinta del proceso.
 
 ---
 
-# CP-01: Inicio de sesión correcto del funcionario
-
-## Objetivo
-
-Comprobar que una funcionaria registrada pueda iniciar sesión y acceder a su panel.
-
-## Precondiciones
-
-- El servidor debe estar funcionando.
-- La usuaria debe existir en la base de datos.
-- No debe existir otra sesión abierta.
-
-## Datos de prueba
+## Flujo general del sistema
 
 ```text
-Correo: ana.martinez@sanjoaquin.cl
-Contraseña: Municipal2026!
-```
-
-## Pasos
-
-1. Abrir `http://127.0.0.1:8001/login`.
-2. Ingresar el correo.
-3. Ingresar la contraseña.
-4. Presionar **Iniciar sesión**.
-
-## Resultado esperado
-
-El sistema permite el acceso y muestra el panel funcionario.
-
-El usuario puede visualizar:
-
-- Crear requerimiento.
-- Mis requerimientos.
-- Campanita de notificaciones.
-- Cerrar sesión.
-
-La opción **Administración** no debe aparecer.
-
-## Resultado obtenido
-
-```text
-Pendiente de ejecución.
-```
-
-## Estado
-
-**Pendiente**
-
-## Evidencia
-
-```text
-CP01_login_funcionario_aprobado.png
+Funcionario
+    ↓
+Inicia sesión
+    ↓
+Crea requerimiento
+    ↓
+Estado: Pendiente
+Prioridad: Sin asignar
+    ↓
+Administrador recibe notificación
+    ↓
+Revisa requerimiento
+    ↓
+Asigna prioridad
+    ↓
+Cambia estado
+    ↓
+Deriva a Técnico TI
+    ↓
+Técnico recibe el requerimiento
+    ↓
+Gestiona atención
+    ↓
+Registra avance / materiales / tiempo
+    ↓
+Funcionario recibe seguimiento
+    ↓
+Técnico marca Resuelto
+    ↓
+Administrador realiza cierre definitivo
 ```
 
 ---
 
-# CP-02: Inicio de sesión con contraseña incorrecta
+## 1. Inicio de sesión
 
-## Objetivo
+El usuario ingresa al sistema mediante correo electrónico y contraseña.
 
-Comprobar que el sistema rechace credenciales incorrectas.
-
-## Precondiciones
-
-- La usuaria debe existir.
-- No debe existir una sesión abierta.
-
-## Datos de prueba
+Después de validar las credenciales, Laravel revisa el campo:
 
 ```text
-Correo: ana.martinez@sanjoaquin.cl
-Contraseña: ClaveIncorrecta123
+users.rol
 ```
 
-## Pasos
-
-1. Abrir la pantalla de inicio de sesión.
-2. Ingresar el correo correcto.
-3. Ingresar una contraseña incorrecta.
-4. Presionar **Iniciar sesión**.
-
-## Resultado esperado
-
-El sistema no permite el acceso y muestra un mensaje indicando que las credenciales no coinciden.
-
-## Resultado obtenido
+Según el rol, el usuario es dirigido al panel correspondiente.
 
 ```text
-Pendiente de ejecución.
-```
+funcionario
+    ↓
+Panel funcionario
 
-## Estado
+administrador
+    ↓
+Dashboard administrativo
 
-**Pendiente**
-
-## Evidencia
-
-```text
-CP02_login_incorrecto.png
+tecnico
+    ↓
+Panel Técnico TI
 ```
 
 ---
 
-# CP-03: Registro de un nuevo funcionario
+## 2. Flujo del funcionario
 
-## Objetivo
+El funcionario puede registrar solicitudes y revisar solamente sus propios requerimientos.
 
-Comprobar que un usuario nuevo pueda registrarse y quede con rol funcionario.
-
-## Precondiciones
-
-- El correo utilizado no debe existir en la base de datos.
-- No debe existir una sesión abierta.
-
-## Datos de prueba
+Flujo:
 
 ```text
-Nombre: Usuario Prueba
-Correo: usuario.prueba@sanjoaquin.cl
-Contraseña: Municipal2026!
-Confirmación: Municipal2026!
+Funcionario
+    ↓
+Panel funcionario
+    ↓
+Crear requerimiento
+    ↓
+Completa:
+Categoría
+Título
+Descripción
+    ↓
+Registrar requerimiento
 ```
 
-## Pasos
+El funcionario no selecciona la prioridad.
 
-1. Abrir la opción **Registro**.
-2. Completar todos los campos.
-3. Presionar el botón de registro.
-4. Verificar la redirección.
-
-## Resultado esperado
-
-El sistema crea la cuenta, inicia la sesión y muestra el panel funcionario.
-
-El usuario nuevo debe quedar con rol `funcionario`.
-
-## Resultado obtenido
+Cuando el requerimiento se crea, Laravel registra automáticamente:
 
 ```text
-Pendiente de ejecución.
+user_id = usuario autenticado
+prioridad = sin_asignar
+estado = pendiente
 ```
 
-## Estado
-
-**Pendiente**
-
-## Evidencia
+Después:
 
 ```text
-CP03_registro_funcionario.png
+Requerimiento creado
+    ↓
+Se guarda en PostgreSQL
+    ↓
+Supabase
+    ↓
+Se genera notificación
+    ↓
+Administrador
 ```
 
----
-
-# CP-04: Creación correcta de un requerimiento
-
-## Objetivo
-
-Comprobar que una funcionaria pueda registrar un requerimiento válido.
-
-## Precondiciones
-
-- La funcionaria debe tener una sesión iniciada.
-- Debe estar disponible el formulario de creación.
-
-## Datos de prueba
+El funcionario puede consultar el registro desde:
 
 ```text
-Categoría: Hardware
-Título: Teclado no responde
-Descripción: El teclado del equipo dejó de responder durante la jornada.
-Prioridad: Media
+Mis requerimientos
 ```
 
-## Pasos
+y revisar:
 
-1. Ingresar al panel funcionario.
-2. Presionar **Crear requerimiento**.
-3. Completar los campos.
-4. Presionar el botón para registrar.
-5. Revisar el listado de requerimientos.
-
-## Resultado esperado
-
-El sistema guarda el requerimiento en la base de datos.
-
-El registro debe:
-
-- Quedar asociado a la funcionaria autenticada.
-- Tener estado inicial `pendiente`.
-- Aparecer en **Mis requerimientos**.
-- Generar una notificación para la administradora.
-
-## Resultado obtenido
-
-```text
-Pendiente de ejecución.
-```
-
-## Estado
-
-**Pendiente**
-
-## Evidencia
-
-```text
-CP04_requerimiento_creado.png
-```
-
----
-
-# CP-05: Validación de campos obligatorios
-
-## Objetivo
-
-Comprobar que el sistema no permita crear un requerimiento con campos obligatorios vacíos.
-
-## Precondiciones
-
-- La funcionaria debe tener una sesión iniciada.
-- Debe estar abierto el formulario de creación.
-
-## Datos de prueba
-
-```text
-Categoría: Sin seleccionar
-Título: Vacío
-Descripción: Vacío
-Prioridad: Sin seleccionar
-```
-
-## Pasos
-
-1. Abrir **Crear requerimiento**.
-2. Dejar los campos obligatorios sin completar.
-3. Presionar el botón para registrar.
-
-## Resultado esperado
-
-El sistema no guarda el requerimiento y muestra mensajes de validación en los campos obligatorios.
-
-## Resultado obtenido
-
-```text
-Pendiente de ejecución.
-```
-
-## Estado
-
-**Pendiente**
-
-## Evidencia
-
-```text
-CP05_validaciones_formulario.png
-```
-
----
-
-# CP-06: Consulta de requerimientos propios
-
-## Objetivo
-
-Comprobar que una funcionaria visualice solamente los requerimientos asociados a su cuenta.
-
-## Precondiciones
-
-- La funcionaria debe tener una sesión iniciada.
-- Debe existir al menos un requerimiento de la usuaria.
-
-## Pasos
-
-1. Ingresar a **Mis requerimientos**.
-2. Revisar el listado.
-3. Abrir **Ver detalle** en una solicitud.
-
-## Resultado esperado
-
-El sistema muestra solamente los requerimientos de la funcionaria autenticada.
-
-El detalle debe mostrar:
-
-- Categoría.
+- Número.
 - Título.
-- Descripción.
-- Prioridad.
-- Estado.
-- Respuesta administrativa.
-- Fechas correspondientes.
-
-## Resultado obtenido
-
-```text
-Pendiente de ejecución.
-```
-
-## Estado
-
-**Pendiente**
-
-## Evidencia
-
-```text
-CP06_mis_requerimientos_detalle.png
-```
-
----
-
-# CP-07: Acceso de la administradora
-
-## Objetivo
-
-Comprobar que la administradora pueda iniciar sesión y visualizar todos los requerimientos.
-
-## Precondiciones
-
-- La administradora debe existir.
-- No debe existir otra sesión abierta.
-
-## Datos de prueba
-
-```text
-Correo: rosa@sanjoaquin.cl
-Contraseña: Municipal2026!
-```
-
-## Pasos
-
-1. Abrir la pantalla de inicio de sesión.
-2. Ingresar las credenciales de administradora.
-3. Presionar **Iniciar sesión**.
-4. Revisar la vista administrativa.
-
-## Resultado esperado
-
-El sistema redirige a la administración de requerimientos.
-
-La vista debe mostrar:
-
-- Todos los requerimientos.
-- Nombre del funcionario.
 - Categoría.
 - Prioridad.
 - Estado.
-- Botones Gestionar y Eliminar.
-- Campanita de notificaciones.
+- Fecha.
+- Detalle.
+- Seguimiento.
 
-## Resultado obtenido
+---
+
+## 3. Flujo del administrador
+
+El administrador revisa los requerimientos creados por los funcionarios.
+
+Flujo:
 
 ```text
-Pendiente de ejecución.
+Administrador
+    ↓
+Dashboard
+    ↓
+Listado de requerimientos
+    ↓
+Selecciona Gestionar
 ```
 
-## Estado
+Desde la gestión administrativa puede:
 
-**Pendiente**
+- Asignar prioridad.
+- Cambiar estado.
+- Seleccionar un técnico.
+- Registrar una tarea.
+- Escribir información para el funcionario.
 
-## Evidencia
+Ejemplo:
 
 ```text
-CP07_panel_administracion.png
+Requerimiento pendiente
+    ↓
+Prioridad: Alta
+    ↓
+Estado: En revisión
+    ↓
+Técnico: David Guajardo
+    ↓
+Tarea asignada
+```
+
+Cuando se realiza una derivación, el sistema registra información como:
+
+```text
+tecnico_id
+asignado_por_id
+fecha_asignacion
+tarea_asignada
 ```
 
 ---
 
-# CP-08: Actualización del estado y respuesta
+## 4. Derivación al técnico
 
-## Objetivo
-
-Comprobar que la administradora pueda cambiar el estado y registrar una respuesta.
-
-## Precondiciones
-
-- La administradora debe tener una sesión iniciada.
-- Debe existir un requerimiento pendiente.
-
-## Datos de prueba
+La relación con el técnico se realiza mediante:
 
 ```text
-Nuevo estado: En proceso
-Respuesta: Se revisará el equipo durante la jornada de mañana.
+requerimientos.tecnico_id
 ```
 
-## Pasos
+Este campo indica qué usuario con rol técnico queda responsable de la atención.
 
-1. Ingresar a Administración.
-2. Seleccionar **Gestionar** en un requerimiento.
-3. Cambiar el estado.
-4. Escribir la respuesta.
-5. Guardar la actualización.
-6. Iniciar sesión como funcionaria.
-7. Revisar la campanita y el detalle.
-
-## Resultado esperado
-
-El sistema actualiza el estado y la respuesta.
-
-Además:
-
-- La funcionaria recibe una notificación.
-- El nuevo estado aparece en el detalle.
-- La respuesta administrativa queda visible.
-
-## Resultado obtenido
+También se registra:
 
 ```text
-Pendiente de ejecución.
+requerimientos.asignado_por_id
 ```
 
-## Estado
+que identifica al administrador que realizó la derivación.
 
-**Pendiente**
-
-## Evidencia
+Flujo:
 
 ```text
-CP08_actualizacion_y_notificacion.png
+Administrador
+    ↓
+Selecciona técnico
+    ↓
+Laravel actualiza requerimiento
+    ↓
+tecnico_id
+    ↓
+Técnico puede visualizar el caso
+```
+
+El técnico solamente puede acceder a los requerimientos que tiene asignados.
+
+---
+
+## 5. Flujo del técnico
+
+El técnico inicia sesión y accede a su Panel Técnico TI.
+
+El panel muestra solamente los requerimientos asociados a su cuenta.
+
+```text
+Técnico
+    ↓
+Panel Técnico TI
+    ↓
+Mis requerimientos asignados
+    ↓
+Gestionar atención
+```
+
+Durante la gestión técnica puede registrar:
+
+- Estado de atención.
+- Avance realizado.
+- Si requiere materiales.
+- Materiales o repuestos.
+- Tiempo estimado.
+- Información para el funcionario.
+
+Estados disponibles para el técnico:
+
+```text
+En revisión
+En proceso
+En espera de materiales
+En espera del funcionario
+Resuelto
+```
+
+El técnico puede avanzar hasta:
+
+```text
+Resuelto
+```
+
+El cierre definitivo corresponde al administrador.
+
+---
+
+## 6. Flujo de materiales
+
+Si el técnico indica que necesita materiales o repuestos, la interfaz muestra automáticamente los campos correspondientes.
+
+```text
+¿Requiere materiales?
+        ↓
+       Sí
+        ↓
+Materiales requeridos
+        ↓
+Tiempo estimado
+```
+
+Si selecciona:
+
+```text
+No
+```
+
+el sistema muestra solamente el campo general de tiempo estimado.
+
+Esta interacción se controla mediante JavaScript en la vista de gestión técnica.
+
+---
+
+## 7. Seguimiento para el funcionario
+
+Cuando el administrador o técnico actualiza el requerimiento, el funcionario puede consultar el nuevo estado y la información entregada.
+
+Flujo:
+
+```text
+Administrador / Técnico
+        ↓
+Actualiza requerimiento
+        ↓
+Se guarda información
+        ↓
+Se genera notificación
+        ↓
+Funcionario
+        ↓
+Consulta seguimiento
+```
+
+La información visible para el funcionario puede incluir:
+
+- Estado.
+- Prioridad.
+- Técnico responsable.
+- Avance.
+- Información de atención.
+- Fechas.
+
+---
+
+## 8. Flujo de notificaciones
+
+Las notificaciones se relacionan con usuarios y requerimientos.
+
+Campos principales:
+
+```text
+notificaciones.user_id
+notificaciones.requerimiento_id
+```
+
+### Cuando el funcionario crea un requerimiento
+
+```text
+Funcionario
+    ↓
+Crea solicitud
+    ↓
+Notificación
+    ↓
+Administrador
+```
+
+### Cuando el administrador actualiza o deriva
+
+```text
+Administrador
+    ↓
+Actualiza prioridad / estado / técnico
+    ↓
+Notificación
+    ↓
+Funcionario
+```
+
+Cuando corresponde una nueva asignación o reasignación, el sistema también puede generar una notificación al técnico.
+
+### Cuando el técnico gestiona
+
+```text
+Técnico
+    ↓
+Actualiza atención
+    ↓
+Notificación
+    ↓
+Funcionario
 ```
 
 ---
 
-# CP-09: Bloqueo de acceso administrativo
+## 9. Flujo del detalle del requerimiento
 
-## Objetivo
+La vista de detalle es compartida, pero la información cambia según el rol.
 
-Comprobar que una funcionaria no pueda acceder a la sección administrativa.
+### Funcionario
 
-## Precondiciones
+Puede visualizar información relacionada con su solicitud y seguimiento.
 
-- La funcionaria debe tener una sesión iniciada.
+### Administrador
 
-## Pasos
+Puede visualizar información administrativa, derivación y gestión interna.
 
-1. Iniciar sesión como funcionaria.
-2. Escribir manualmente en el navegador:
+### Técnico asignado
+
+Puede visualizar la información necesaria para atender el caso.
+
+El control de acceso considera:
 
 ```text
-http://127.0.0.1:8001/admin/requerimientos
+Funcionario propietario
+Administrador
+Técnico asignado
 ```
 
-3. Presionar Enter.
-
-## Resultado esperado
-
-El sistema bloquea el acceso y muestra un error:
+Si un usuario no cumple alguna de estas condiciones, el sistema puede responder con:
 
 ```text
-403 - Acceso no autorizado
-```
-
-La opción Administración tampoco debe aparecer en el menú.
-
-## Resultado obtenido
-
-```text
-Pendiente de ejecución.
-```
-
-## Estado
-
-**Pendiente**
-
-## Evidencia
-
-```text
-CP09_acceso_bloqueado_403.png
+403
 ```
 
 ---
 
-# CP-10: Cancelación de eliminación con SweetAlert2
+## 10. Flujo de datos con Supabase
 
-## Objetivo
+En EVA3 la aplicación continúa funcionando desde Laravel local, pero la base de datos se encuentra en Supabase.
 
-Comprobar que la administradora pueda cancelar una eliminación y conservar el requerimiento.
-
-## Precondiciones
-
-- La administradora debe tener una sesión iniciada.
-- Debe existir un requerimiento de prueba.
-
-## Pasos
-
-1. Ingresar a Administración.
-2. Presionar **Eliminar** en un requerimiento.
-3. Revisar la ventana SweetAlert2.
-4. Presionar **Cancelar**.
-5. Revisar el listado.
-
-## Resultado esperado
-
-SweetAlert2 muestra una advertencia con las opciones de confirmar o cancelar.
-
-Al presionar **Cancelar**, el requerimiento permanece en el listado.
-
-## Resultado obtenido
+El flujo técnico es:
 
 ```text
-Pendiente de ejecución.
+Usuario
+    ↓
+Vista Blade
+    ↓
+Ruta
+    ↓
+Controlador
+    ↓
+Modelo Eloquent
+    ↓
+DB_CONNECTION=pgsql
+    ↓
+Session Pooler
+    ↓
+Supabase Cloud
+    ↓
+PostgreSQL remoto
 ```
 
-## Estado
-
-**Pendiente**
-
-## Evidencia
+Esto significa que acciones como:
 
 ```text
-CP10_sweetalert_cancelar.png
+Crear requerimiento
+Actualizar estado
+Asignar técnico
+Registrar avance
+Crear notificación
+```
+
+se almacenan directamente en PostgreSQL remoto.
+
+---
+
+## 11. Flujo de creación en backend
+
+```text
+Funcionario completa formulario
+        ↓
+POST /requerimientos
+        ↓
+RequerimientoController::store()
+        ↓
+Validación
+        ↓
+Requerimiento::create()
+        ↓
+Eloquent
+        ↓
+Supabase PostgreSQL
+        ↓
+Notificación al administrador
+        ↓
+Redirección a Mis requerimientos
 ```
 
 ---
 
-# CP-11: Confirmación de eliminación
-
-## Objetivo
-
-Comprobar que la administradora pueda eliminar un requerimiento de prueba.
-
-## Precondiciones
-
-- La administradora debe tener una sesión iniciada.
-- Debe utilizarse un registro creado exclusivamente para esta prueba.
-
-## Pasos
-
-1. Crear o identificar un requerimiento de prueba.
-2. Ingresar a Administración.
-3. Presionar **Eliminar**.
-4. Confirmar la eliminación en SweetAlert2.
-5. Revisar nuevamente el listado.
-
-## Resultado esperado
-
-El sistema elimina el requerimiento y muestra un mensaje de confirmación.
-
-El registro ya no aparece en el listado administrativo.
-
-## Resultado obtenido
+## 12. Flujo de gestión administrativa
 
 ```text
-Pendiente de ejecución.
-```
-
-## Estado
-
-**Pendiente**
-
-## Evidencia
-
-```text
-CP11_requerimiento_eliminado.png
+Administrador
+    ↓
+Gestionar requerimiento
+    ↓
+PUT
+    ↓
+RequerimientoController::update()
+    ↓
+Validación
+    ↓
+Actualiza:
+prioridad
+estado
+tecnico_id
+asignado_por_id
+fecha_asignacion
+tarea_asignada
+respuesta_admin
+    ↓
+Supabase PostgreSQL
+    ↓
+Notificaciones
 ```
 
 ---
 
-# CP-12: Notificaciones marcadas como leídas
-
-## Objetivo
-
-Comprobar que las notificaciones del usuario se marquen como leídas al abrir la sección.
-
-## Precondiciones
-
-- El usuario debe tener una notificación sin leer.
-- Debe tener una sesión iniciada.
-
-## Pasos
-
-1. Revisar el número mostrado en la campanita.
-2. Abrir la sección de notificaciones.
-3. Volver a revisar el contador.
-
-## Resultado esperado
-
-El sistema muestra las notificaciones del usuario autenticado.
-
-Al abrir la sección:
-
-- Las notificaciones quedan marcadas como leídas.
-- Se registra la fecha de lectura.
-- El contador disminuye o queda en cero.
-
-## Resultado obtenido
+## 13. Flujo de gestión técnica
 
 ```text
-Pendiente de ejecución.
-```
-
-## Estado
-
-**Pendiente**
-
-## Evidencia
-
-```text
-CP12_notificaciones_leidas.png
+Técnico
+    ↓
+Gestionar atención
+    ↓
+PUT
+    ↓
+Controlador de gestión técnica
+    ↓
+Validación
+    ↓
+Actualiza:
+estado
+avance_tecnico
+requiere_materiales
+materiales_requeridos
+tiempo_estimado
+respuesta_admin
+    ↓
+Supabase PostgreSQL
+    ↓
+Notificación al funcionario
 ```
 
 ---
 
-# Resumen de ejecución
+## 14. Flujo de cierre
 
-| Código | Caso de prueba | Estado |
-|---|---|---|
-| CP-01 | Inicio de sesión correcto del funcionario | Pendiente |
-| CP-02 | Inicio de sesión con contraseña incorrecta | Pendiente |
-| CP-03 | Registro de un nuevo funcionario | Pendiente |
-| CP-04 | Creación correcta de un requerimiento | Pendiente |
-| CP-05 | Validación de campos obligatorios | Pendiente |
-| CP-06 | Consulta de requerimientos propios | Pendiente |
-| CP-07 | Acceso de la administradora | Pendiente |
-| CP-08 | Actualización del estado y respuesta | Pendiente |
-| CP-09 | Bloqueo de acceso administrativo | Pendiente |
-| CP-10 | Cancelación de eliminación con SweetAlert2 | Pendiente |
-| CP-11 | Confirmación de eliminación | Pendiente |
-| CP-12 | Notificaciones marcadas como leídas | Pendiente |
+El técnico puede marcar la atención como:
+
+```text
+Resuelto
+```
+
+Luego el administrador puede realizar el cierre definitivo.
+
+```text
+Técnico
+    ↓
+Resuelto
+    ↓
+Administrador revisa
+    ↓
+Cerrado
+```
+
+Esta separación permite distinguir entre:
+
+```text
+Trabajo técnico terminado
+```
+
+y:
+
+```text
+Cierre administrativo del requerimiento
+```
+
+---
+
+## 15. Flujo resumido para presentación
+
+```text
+1. El funcionario crea una solicitud.
+
+2. Laravel la guarda en PostgreSQL remoto mediante Supabase.
+
+3. El administrador recibe el requerimiento.
+
+4. El administrador asigna prioridad y técnico.
+
+5. El técnico recibe el caso y registra la atención.
+
+6. El funcionario recibe seguimiento y notificaciones.
+
+7. El técnico puede marcar el caso como resuelto.
+
+8. El administrador realiza el cierre definitivo.
+```
+
+---
+
+## Diferencia entre EVA2 y EVA3
+
+### EVA2
+
+```text
+Laravel
+    ↓
+MySQL local
+```
+
+### EVA3
+
+```text
+Laravel local
+    ↓
+Eloquent
+    ↓
+PostgreSQL
+    ↓
+Session Pooler
+    ↓
+Supabase Cloud
+```
+
+El flujo funcional del sistema se mantiene, pero los datos ya no dependen solamente de una base local.
+
+---
 
 ## Conclusión
 
-Los casos de prueba definidos permiten comprobar las funciones principales del Sistema Municipal de Soporte TI.
+El flujo actual de MesaTI Municipal conecta las funciones de los tres roles del sistema:
 
-Los resultados obtenidos, estados y evidencias se completarán a medida que cada prueba sea ejecutada manualmente.
+```text
+Funcionario
+    ↓
+Administrador
+    ↓
+Técnico
+    ↓
+Funcionario
+```
+
+Laravel controla las rutas, validaciones y operaciones del sistema, mientras Eloquent administra las relaciones y el acceso a los datos.
+
+En EVA3, estos datos se almacenan remotamente en PostgreSQL mediante Supabase, permitiendo mantener el mismo flujo funcional con una base de datos en la nube.
