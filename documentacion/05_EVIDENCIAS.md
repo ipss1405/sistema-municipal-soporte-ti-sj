@@ -1,84 +1,42 @@
-# Evidencias de Pruebas
+# Evidencias de Validación y Demostración
 
 ## 1. Descripción general
 
-Este documento registra las evidencias de pruebas del sistema **MesaTI Municipal – Sistema Municipal de Soporte TI**.
+Este documento registra las principales comprobaciones realizadas durante el desarrollo y prueba de **MesaTI Municipal – Sistema Municipal de Soporte TI**.
 
-La documentación conserva las evidencias correspondientes a EVA2 y agrega las comprobaciones realizadas durante EVA3.
+Para EVA3, las evidencias no se basarán principalmente en capturas de pantalla, ya que el funcionamiento del sistema será demostrado directamente durante la presentación.
 
-Las capturas del proyecto pueden almacenarse en:
+La validación se realizará mostrando en vivo:
 
-```text
-documentacion/CAPTURAS/
-```
-
-Para EVA3 se incorporan además evidencias relacionadas con:
-
-- Rol técnico.
-- Derivación de requerimientos.
+- Funcionamiento de MesaTI.
+- Acceso según roles.
+- Creación de requerimientos.
+- Gestión administrativa.
+- Derivación a técnicos.
 - Gestión técnica.
 - Notificaciones.
-- Paginación.
 - Conexión de Laravel con Supabase.
-- Migraciones en PostgreSQL remoto.
-- Seeders.
-- Lectura de datos remotos.
-- Escritura de datos desde la interfaz.
+- Lectura y escritura de datos en PostgreSQL remoto.
 
 ---
 
-## 2. Evidencias anteriores de EVA2
+## 2. Forma de demostrar la EVA3
 
-Durante EVA2 se registraron capturas correspondientes a las principales funciones del sistema.
-
-Entre las evidencias documentadas se encuentran:
-
-| Código | Caso de prueba | Evidencia |
-|---|---|---|
-| CP-01 | Inicio de sesión correcto del funcionario | `CP01_login_funcionario_aprobado.png` |
-| CP-02 | Inicio de sesión con contraseña incorrecta | `CP02_login_incorrecto.png` |
-| CP-03 | Registro de un nuevo funcionario | `CP03_registro_funcionario.png` |
-| CP-04 | Creación correcta de un requerimiento | `CP04_requerimiento_creado.png` |
-| CP-05 | Validación de campos obligatorios | `CP05_validaciones_formulario.png` |
-| CP-06 | Consulta de requerimientos propios | `CP06_mis_requerimientos_detalle.png` |
-| CP-07 | Acceso de la administradora | `CP07_panel_administracion.png` |
-| CP-08 | Actualización y notificación | `CP08_actualizacion_y_notificacion.png` |
-| CP-09 | Bloqueo de acceso administrativo | `CP09_acceso_bloqueado_403.png` |
-| CP-10 | Cancelación con SweetAlert2 | `CAP10_sweetalert_confirmacion.png` |
-| CP-11 | Eliminación de requerimiento | `CP11_requerimiento_eliminado.png` |
-| CP-12 | Notificaciones marcadas como leídas | `CP12_notificaciones_leidas.png` |
-
-Estas evidencias corresponden a la etapa anterior del proyecto y se mantienen como respaldo histórico.
-
----
-
-## 3. Evidencias complementarias de EVA2
-
-También se registraron capturas complementarias para documentar la interfaz, navegación, cambios de estado y seguridad.
+Durante la presentación se puede comprobar el funcionamiento siguiendo este flujo:
 
 ```text
-CAP01_pagina_principal_sin_sesion.png
-CAP01_pagina_principal_funcionario_autenticado.png
-CAP02_login_funcionario_datos.png
-CAP03_formulario_registro.png
-CAP04_formulario_requerimiento_01.png
-CAP04_notificacion_admin_requerimiento_34.png
-CAP07_login_administrador_correcto.png
-CAP08_detalle_requerimiento_admin_antes.png
-CAP08_gestion_requerimiento_antes_01.png
-CAP08_actualizacion_exitosa_admin.png
-CAP08_estado_actualizado_admin.png
-CAP08_estado_actualizado_funcionario.png
-CAP08_detalle_actualizado_funcionario.png
-CAP10_sweetalert_confirmacion.png
-CAP_SEGURIDAD_cierre_sesion_correcto.png
+Laravel local
+    ↓
+Eloquent
+    ↓
+PostgreSQL
+    ↓
+Session Pooler
+    ↓
+Supabase Cloud
 ```
 
----
-
-## 4. Evidencias de la nueva versión de MesaTI
-
-Durante la mejora del sistema se comprobó el funcionamiento del flujo con tres roles:
+Además, se demostrará el flujo funcional:
 
 ```text
 Funcionario
@@ -90,49 +48,51 @@ Técnico
 Funcionario
 ```
 
-### Funcionario
-
-Se comprobó:
-
-- Inicio de sesión.
-- Creación de requerimiento.
-- Prioridad inicial `Sin asignar`.
-- Estado inicial `Pendiente`.
-- Consulta de requerimientos propios.
-- Recepción de notificaciones.
-
-### Administrador
-
-Se comprobó:
-
-- Acceso al dashboard.
-- Visualización de requerimientos.
-- Filtros administrativos.
-- Asignación de prioridad.
-- Cambio de estado.
-- Derivación a técnico.
-- Registro de tarea.
-- Visualización del funcionario asociado.
-
-### Técnico
-
-Se comprobó:
-
-- Inicio de sesión.
-- Panel Técnico TI.
-- Visualización de solicitudes asignadas.
-- Gestión de atención.
-- Registro de avance.
-- Materiales.
-- Tiempo estimado.
-- Cambio de estado.
-- Notificación al funcionario.
+La combinación de ambos flujos permite demostrar tanto el funcionamiento de MesaTI como la conexión remota implementada para EVA3.
 
 ---
 
-## 5. Evidencia del flujo de derivación
+## 3. Evidencias funcionales del sistema
 
-Durante la prueba funcional se utilizó el requerimiento:
+### Funcionario
+
+Se comprobó que el funcionario puede:
+
+- Iniciar sesión.
+- Acceder a su panel.
+- Crear un requerimiento.
+- Consultar sus propias solicitudes.
+- Revisar estado y prioridad.
+- Consultar el detalle.
+- Recibir notificaciones.
+
+Al crear un requerimiento, el sistema registra inicialmente:
+
+```text
+Prioridad: Sin asignar
+Estado: Pendiente
+```
+
+La prioridad es definida posteriormente por el administrador.
+
+---
+
+## 4. Evidencia de gestión administrativa
+
+Se comprobó que el administrador puede:
+
+- Acceder al dashboard administrativo.
+- Consultar los requerimientos.
+- Identificar al funcionario que creó la solicitud.
+- Filtrar requerimientos.
+- Asignar prioridad.
+- Cambiar estado.
+- Derivar un requerimiento a un técnico.
+- Registrar una tarea.
+- Consultar el detalle.
+- Eliminar requerimientos cuando corresponde.
+
+Durante las pruebas se utilizó el requerimiento:
 
 ```text
 N.º 33
@@ -140,7 +100,7 @@ Título: Sin internet
 Categoría: Internet
 ```
 
-El administrador realizó la siguiente gestión:
+La gestión realizada fue:
 
 ```text
 Prioridad: Alta
@@ -148,17 +108,21 @@ Estado: En revisión
 Técnico: David Guajardo
 ```
 
-Posteriormente, al iniciar sesión como David Guajardo, el requerimiento apareció correctamente en su Panel Técnico TI.
+El requerimiento quedó correctamente derivado al técnico seleccionado.
 
-Esta prueba permitió comprobar la relación:
+---
+
+## 5. Evidencia de derivación a técnico
+
+La asignación de un requerimiento utiliza principalmente:
 
 ```text
 requerimientos.tecnico_id
-        ↓
-Técnico responsable
 ```
 
-También se verificó el registro de información de derivación:
+Este campo identifica al técnico responsable.
+
+También se registra:
 
 ```text
 asignado_por_id
@@ -166,71 +130,87 @@ fecha_asignacion
 tarea_asignada
 ```
 
+Esto permite conocer:
+
+- Qué técnico fue asignado.
+- Qué administrador realizó la derivación.
+- Cuándo se realizó.
+- Qué tarea fue indicada.
+
+Después de la asignación, el requerimiento apareció correctamente en el panel del técnico.
+
 ---
 
 ## 6. Evidencia de gestión técnica
 
-El técnico gestionó el requerimiento asignado y registró información de atención.
+Se comprobó que un técnico puede acceder solamente a los requerimientos derivados a su cuenta.
 
-Entre los datos probados se incluyeron:
+Durante la gestión puede registrar:
 
-```text
-Estado: En proceso
-Avance técnico
-Material requerido
-Tiempo estimado
-Información para el funcionario
-```
+- Estado de atención.
+- Avance técnico.
+- Materiales o repuestos.
+- Tiempo estimado.
+- Información para el funcionario.
 
-La actualización se guardó correctamente.
-
-Posteriormente el funcionario recibió una notificación con el título:
+Entre los estados técnicos se encuentran:
 
 ```text
-Actualización de atención TI
+En revisión
+En proceso
+En espera de materiales
+En espera del funcionario
+Resuelto
 ```
 
-Esto permitió comprobar el flujo:
-
-```text
-Técnico
-    ↓
-Actualiza atención
-    ↓
-Laravel
-    ↓
-Base de datos
-    ↓
-Notificación
-    ↓
-Funcionario
-```
+Durante las pruebas, el técnico actualizó correctamente un requerimiento y el funcionario recibió seguimiento mediante una notificación.
 
 ---
 
-## 7. Evidencia de notificación al técnico
+## 7. Evidencia de notificaciones
 
-Durante una primera prueba de asignación, el requerimiento apareció correctamente en el panel del técnico, pero el contador de la campanita no aumentó.
+Se comprobó el funcionamiento de notificaciones en distintas etapas.
 
-Después de detectar este comportamiento se realizó una mejora en `RequerimientoController` para crear una notificación cuando existe una nueva asignación o reasignación.
-
-La nueva lógica genera una notificación con el título:
+### Nuevo requerimiento
 
 ```text
-Nuevo requerimiento asignado
+Funcionario crea requerimiento
+        ↓
+Administrador recibe aviso
 ```
 
-Esta mejora queda documentada como pendiente de una nueva prueba de regresión para confirmar visualmente el contador de notificaciones.
+### Actualización administrativa
+
+```text
+Administrador actualiza
+        ↓
+Funcionario recibe aviso
+```
+
+### Gestión técnica
+
+```text
+Técnico actualiza atención
+        ↓
+Funcionario recibe aviso
+```
+
+Durante las pruebas el funcionario recibió correctamente notificaciones como:
+
+```text
+Actualización de requerimiento
+Actualización de atención TI
+```
+
+La notificación al técnico al momento de una nueva asignación fue mejorada posteriormente y queda pendiente de una nueva prueba de regresión.
 
 ---
 
 # Evidencias EVA3 – Supabase
 
-## 8. Conexión PostgreSQL
+## 8. PostgreSQL habilitado en PHP
 
-Para EVA3 se cambió la conexión desde MySQL local hacia PostgreSQL remoto mediante Supabase.
-
-Antes de realizar la conexión fue necesario habilitar:
+Para permitir que Laravel se conectara con PostgreSQL se habilitaron las extensiones:
 
 ```text
 pdo_pgsql
@@ -250,20 +230,33 @@ pdo_pgsql
 pgsql
 ```
 
-Esto confirmó que PHP tenía soporte para PostgreSQL.
+Esta prueba confirma que PHP dispone del controlador necesario para trabajar con PostgreSQL.
 
 ---
 
-## 9. Evidencia de conexión con Supabase
+## 9. Conexión de Laravel con Supabase
 
-Se ejecutó:
+Laravel fue configurado para utilizar:
+
+```text
+DB_CONNECTION=pgsql
+```
+
+La conexión se realiza mediante:
+
+```text
+Session Pooler
+Puerto 5432
+```
+
+Para comprobar la conexión se ejecutó:
 
 ```bash
 php artisan config:clear
 php artisan db:show
 ```
 
-El resultado confirmó:
+Laravel mostró:
 
 ```text
 Connection: pgsql
@@ -272,27 +265,15 @@ Port: 5432
 PostgreSQL: 17.6
 ```
 
-Esto demuestra que Laravel estaba conectado a PostgreSQL remoto y no a la antigua base MySQL local.
-
-Nombre sugerido para la captura:
-
-```text
-EVA3_01_supabase_db_show.png
-```
+Esta comprobación demuestra que Laravel está conectado a PostgreSQL remoto mediante Supabase.
 
 ---
 
-## 10. Evidencia de migraciones
+## 10. Migraciones en PostgreSQL remoto
 
-Antes de crear las tablas se ejecutó:
+Antes de crear la estructura de MesaTI en Supabase se comprobó el estado de las migraciones.
 
-```bash
-php artisan migrate:status
-```
-
-Inicialmente Laravel indicó que la tabla de migraciones todavía no existía.
-
-Luego se ejecutó:
+Posteriormente se ejecutó:
 
 ```bash
 php artisan migrate
@@ -304,43 +285,35 @@ Las migraciones finalizaron correctamente con estado:
 DONE
 ```
 
-Entre las estructuras creadas se encuentran:
+Se crearon las tablas y modificaciones necesarias para el sistema, incluyendo:
 
 ```text
 users
-cache
-jobs
 requerimientos
 notificaciones
 migrations
+cache
+jobs
 ```
 
 Además se aplicaron las migraciones relacionadas con:
 
-- Rol.
+- Roles.
 - Derivación TI.
 - Prioridad.
 - Gestión técnica.
 
-Nombre sugerido para la captura:
-
-```text
-EVA3_02_migraciones_supabase_done.png
-```
-
 ---
 
-## 11. Evidencia de Seeders
+## 11. Seeders en Supabase
 
-Después de las migraciones se ejecutó:
+Después de ejecutar las migraciones se cargaron datos de prueba mediante:
 
 ```bash
 php artisan db:seed
 ```
 
-El proceso terminó correctamente.
-
-Los datos cargados fueron:
+Se incorporaron:
 
 ```text
 1 administradora
@@ -349,23 +322,19 @@ Los datos cargados fueron:
 30 requerimientos
 ```
 
-Nombre sugerido para la captura:
-
-```text
-EVA3_03_seeders_supabase.png
-```
+El proceso terminó correctamente.
 
 ---
 
-## 12. Evidencia de lectura remota mediante Tinker
+## 12. Lectura de datos remotos
 
-Se utilizó:
+Para comprobar que Laravel podía consultar la información almacenada en Supabase se utilizó Tinker.
 
 ```bash
 php artisan tinker
 ```
 
-Para consultar usuarios:
+Consulta de usuarios:
 
 ```php
 App\Models\User::count();
@@ -377,7 +346,7 @@ Resultado:
 10
 ```
 
-Para consultar requerimientos:
+Consulta de requerimientos:
 
 ```php
 App\Models\Requerimiento::count();
@@ -389,59 +358,15 @@ Resultado inicial:
 30
 ```
 
-Esto confirmó que Laravel podía leer correctamente la información almacenada en Supabase.
-
-Nombre sugerido para la captura:
-
-```text
-EVA3_04_tinker_usuarios_requerimientos.png
-```
+Esto confirma que Laravel puede leer información desde PostgreSQL remoto.
 
 ---
 
-## 13. Evidencia de lectura desde la interfaz
+## 13. Escritura de datos remotos
 
-Con la configuración de Supabase activa se inició Laravel mediante:
+Para comprobar que la conexión no fuera solamente de lectura se creó un nuevo requerimiento desde la interfaz web.
 
-```bash
-php artisan serve --port=8002
-```
-
-La aplicación estuvo disponible en:
-
-```text
-http://127.0.0.1:8002
-```
-
-Se inició sesión correctamente con una cuenta almacenada en la base remota.
-
-El dashboard administrativo cargó los datos sin errores.
-
-Esto confirma el flujo:
-
-```text
-Interfaz Laravel
-    ↓
-Eloquent
-    ↓
-PostgreSQL
-    ↓
-Supabase
-```
-
-Nombre sugerido para la captura:
-
-```text
-EVA3_05_dashboard_con_supabase.png
-```
-
----
-
-## 14. Evidencia de escritura remota desde la interfaz
-
-Para comprobar que la conexión no fuera solamente de lectura, se creó un requerimiento directamente desde la interfaz.
-
-Datos del requerimiento:
+Datos registrados:
 
 ```text
 N.º 31
@@ -451,78 +376,73 @@ Prioridad: Sin asignar
 Estado: Pendiente
 ```
 
-El registro apareció correctamente después de ser creado.
+El requerimiento fue creado correctamente desde MesaTI.
 
-Esto demuestra que Laravel puede escribir información en PostgreSQL remoto mediante Supabase.
-
-Flujo comprobado:
+Esto permite demostrar el flujo:
 
 ```text
 Funcionario
     ↓
-Formulario Laravel
+Formulario Blade
     ↓
-RequerimientoController
+Ruta
+    ↓
+Controlador
     ↓
 Modelo Eloquent
     ↓
 Supabase PostgreSQL
 ```
 
-Nombre sugerido para la captura:
+Por lo tanto, Laravel puede escribir datos directamente en la base de datos remota.
 
-```text
-EVA3_06_requerimiento_31_supabase.png
+---
+
+## 14. Inicio de sesión utilizando Supabase
+
+Con la conexión PostgreSQL activa se inició Laravel mediante:
+
+```bash
+php artisan serve --port=8002
 ```
 
----
+La aplicación funcionó en:
 
-## 15. Resumen de evidencias EVA3
+```text
+http://127.0.0.1:8002
+```
 
-| Evidencia | Comprobación | Resultado |
-|---|---|---|
-| PostgreSQL habilitado en PHP | `pdo_pgsql` y `pgsql` | Aprobado |
-| Conexión Supabase | `php artisan db:show` | Aprobado |
-| Migraciones | `php artisan migrate` | Aprobado |
-| Seeders | `php artisan db:seed` | Aprobado |
-| Usuarios remotos | 10 usuarios | Aprobado |
-| Requerimientos iniciales | 30 requerimientos | Aprobado |
-| Login con base remota | Dashboard carga correctamente | Aprobado |
-| Escritura remota | Requerimiento #31 | Aprobado |
-| Derivación a técnico | Requerimiento #33 | Aprobado |
-| Gestión técnica | Actualización del caso | Aprobado |
-| Notificación al funcionario | Actualización de atención TI | Aprobado |
-| Notificación al técnico | Mejora implementada | Pendiente de nueva prueba |
+Se inició sesión correctamente y el dashboard administrativo cargó los datos almacenados en Supabase.
+
+Esto demuestra que la autenticación y las consultas del sistema funcionan utilizando la base de datos remota.
 
 ---
 
-## 16. Evidencia de seguridad
+## 15. Seguridad de las credenciales
 
-El proyecto mantiene las credenciales reales fuera del repositorio.
-
-El archivo:
+La configuración real de Supabase se mantiene en:
 
 ```text
 .env
 ```
 
-no se sube a GitHub.
+Este archivo no se sube a GitHub.
 
-Además, el respaldo de la antigua configuración MySQL:
+También se mantiene fuera del repositorio el respaldo:
 
 ```text
 .env.mysql.backup
 ```
 
-fue agregado a `.gitignore`.
+El archivo público:
 
-Las credenciales de Supabase no se escriben en:
+```text
+.env.example
+```
 
-- README.
-- Documentación.
-- Repositorio público.
+contiene solamente valores de ejemplo y no incluye contraseñas reales.
 
-La conexión PostgreSQL utiliza:
+La conexión utiliza:
 
 ```env
 DB_SSLMODE=require
@@ -530,65 +450,86 @@ DB_SSLMODE=require
 
 ---
 
-## 17. Evidencia documental
+## 16. Resumen de comprobaciones EVA3
 
-La documentación actual del proyecto incluye:
-
-```text
-01_INTERFAZ_USUARIO.md
-02_BACKEND_REQUERIMIENTOS.md
-03_FLUJO_DEL_SISTEMA.md
-04_CASOS_DE_PRUEBA.md
-05_EVIDENCIAS.md
-06_EVA3_SUPABASE.md
-```
-
-Estos archivos documentan la evolución desde EVA2 hacia EVA3.
+| Comprobación | Resultado |
+|---|---|
+| PostgreSQL habilitado en PHP | Aprobado |
+| Conexión Laravel–Supabase | Aprobado |
+| Migraciones en PostgreSQL remoto | Aprobado |
+| Seeders | Aprobado |
+| Consulta de usuarios | Aprobado |
+| Consulta de requerimientos | Aprobado |
+| Login con base remota | Aprobado |
+| Escritura desde la interfaz | Aprobado |
+| Derivación a técnico | Aprobado |
+| Gestión técnica | Aprobado |
+| Notificación al funcionario | Aprobado |
+| Notificación al técnico al asignar | Pendiente de nueva prueba |
 
 ---
 
-## 18. Estado actual de las pruebas
+## 17. Demostración sugerida durante la presentación
 
-No todos los casos del documento `04_CASOS_DE_PRUEBA.md` se consideran ejecutados nuevamente después de los últimos cambios.
-
-Por esta razón, la evidencia EVA3 diferencia entre:
+Para demostrar la implementación de EVA3 se puede realizar la siguiente secuencia:
 
 ```text
-Pruebas comprobadas
-Pruebas pendientes
-Pruebas pendientes de regresión
+1. Abrir MesaTI.
+
+2. Mostrar el inicio de sesión.
+
+3. Ingresar como funcionario.
+
+4. Crear o consultar un requerimiento.
+
+5. Ingresar como administrador.
+
+6. Mostrar prioridad y derivación a técnico.
+
+7. Ingresar como técnico.
+
+8. Mostrar la gestión de atención.
+
+9. Explicar las notificaciones.
+
+10. Mostrar en terminal:
+    php artisan db:show
+
+11. Explicar que:
+    Connection = pgsql
+    Database = postgres
+    PostgreSQL = remoto
+
+12. Abrir Supabase y mostrar las tablas de MesaTI.
+
+13. Explicar el flujo:
+    Laravel → Eloquent → PostgreSQL → Supabase.
 ```
 
-Esto evita declarar un porcentaje de aprobación del 100 % cuando todavía existen casos que deben volver a ejecutarse.
+No es necesario ejecutar todas las pruebas nuevamente durante la exposición. La demostración debe concentrarse en el flujo principal y en comprobar que la base de datos utilizada es remota.
 
-Los estados oficiales de cada caso se encuentran documentados en:
+---
+
+## 18. Estado de las pruebas
+
+Los resultados detallados de cada caso se encuentran en:
 
 ```text
 documentacion/04_CASOS_DE_PRUEBA.md
 ```
 
+Existen casos aprobados y algunos pendientes de nueva ejecución o regresión.
+
+Por esta razón, este documento no declara un porcentaje general de aprobación del 100 %.
+
 ---
 
 ## Conclusión
 
-Las evidencias permiten comprobar la evolución funcional y técnica de MesaTI Municipal.
+Las evidencias recopiladas permiten demostrar el funcionamiento de MesaTI Municipal y su evolución hacia EVA3.
 
-En EVA2 se documentaron las funciones principales de autenticación, requerimientos, administración, seguridad y notificaciones.
+El sistema mantiene el flujo entre funcionario, administrador y técnico, mientras Laravel administra las operaciones mediante rutas, controladores y modelos Eloquent.
 
-En la versión actual se agregaron la derivación a técnicos y la gestión técnica.
+La principal evidencia de EVA3 es que la aplicación pasó de depender de una base MySQL local a trabajar con PostgreSQL remoto mediante Supabase.
 
-Para EVA3 se comprobó además que Laravel puede conectarse a PostgreSQL remoto mediante Supabase, crear su estructura mediante migraciones, cargar datos con Seeders, consultar registros y escribir nuevos requerimientos directamente desde la interfaz.
-
-La principal evidencia técnica de EVA3 corresponde al flujo:
-
-```text
-Laravel
-    ↓
-Eloquent
-    ↓
-Session Pooler
-    ↓
-Supabase
-    ↓
-PostgreSQL remoto
-```
+Durante la presentación este funcionamiento puede demostrarse directamente mediante la interfaz del sistema, comandos de Laravel y la visualización de la base de datos en Supabase.
