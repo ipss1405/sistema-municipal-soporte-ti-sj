@@ -2,477 +2,675 @@
 
 @section('content')
 
+{{-- Tabler UI: aplicado solo a la página principal --}}
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"
+>
+
 <style>
-    .inicio-wrapper {
-        margin-top: 35px;
-        margin-bottom: 35px;
+    :root {
+        --sj-morado: #5B3F95;
+        --sj-morado-claro: #6B4BB0;
+        --sj-verde: #78BE20;
+        --sj-rojo: #EF3E24;
+        --sj-naranjo: #F26B21;
+
+        --sj-texto: #1F2937;
+        --sj-texto-suave: #5F6B7A;
     }
 
-    /* Columna izquierda */
+    /* =========================================================
+       CONTENEDOR GENERAL
+       ========================================================= */
 
-    .columna-lateral {
-        display: flex;
-        flex-direction: column;
-        gap: 22px;
+    .inicio-sj {
+        margin-top: 24px;
+        margin-bottom: 24px;
     }
 
-    .panel-accesos-moderno {
-        background: #5B3F95;
-        color: #ffffff;
+    .inicio-card {
+        border: 0;
         border-radius: 18px;
-        padding: 28px;
-        box-shadow: 0 10px 25px rgba(91, 63, 149, 0.18);
-
-        transition:
-            background 0.25s ease,
-            box-shadow 0.25s ease;
-    }
-
-    .panel-accesos-moderno:hover {
-        background: linear-gradient(
-            135deg,
-            #5B3F95 0%,
-            #6B4BB0 100%
-        );
-
-        box-shadow: 0 16px 35px rgba(91, 63, 149, 0.28);
-    }
-
-    .panel-accesos-moderno h2 {
-        font-weight: 800;
-        margin-bottom: 22px;
-    }
-
-    .btn-acceso {
-        display: block;
-        width: 100%;
-        background: #6B4BB0;
-        color: #ffffff;
-        text-decoration: none;
-        padding: 13px 16px;
-        border-radius: 8px;
-        font-weight: 700;
-        margin-bottom: 11px;
-
-        transition:
-            background 0.2s ease,
-            color 0.2s ease,
-            transform 0.2s ease;
-    }
-
-    .btn-acceso:last-child {
-        margin-bottom: 0;
-    }
-
-    .btn-acceso:hover,
-    .btn-acceso:focus,
-    .btn-acceso:active {
-        background: #78BE20;
-        color: #ffffff;
-        transform: translateX(4px);
-    }
-
-    /* Información compacta del servicio */
-
-    .info-servicio-compacta {
+        overflow: hidden;
         background: #ffffff;
-        border-top: 6px solid #78BE20;
-        border-radius: 18px;
-        padding: 24px;
-        box-shadow: 0 10px 25px rgba(91, 63, 149, 0.12);
 
-        transition:
-            box-shadow 0.25s ease,
-            border-top-color 0.25s ease;
+        box-shadow:
+            0 12px 32px rgba(91, 63, 149, 0.12);
     }
 
-    .info-servicio-compacta:hover {
-        border-top-color: #5B3F95;
-        box-shadow: 0 16px 35px rgba(91, 63, 149, 0.18);
+
+    /* =========================================================
+       COLUMNA IZQUIERDA
+       ========================================================= */
+
+    .inicio-lateral {
+        background:
+            linear-gradient(
+                160deg,
+                #5B3F95 0%,
+                #513687 100%
+            );
+
+        color: #ffffff;
+
+        min-height: 100%;
+        padding: 28px;
     }
 
-    .info-servicio-compacta h3 {
-        color: #5B3F95;
+    .titulo-acceso {
+        color: #ffffff;
+        font-size: 1.12rem;
         font-weight: 800;
-        font-size: 1.35rem;
+        margin-bottom: 6px;
+    }
+
+    .texto-acceso {
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.90rem;
+        line-height: 1.5;
         margin-bottom: 20px;
     }
 
-    .info-compacta-item {
-        border-left: 4px solid #5B3F95;
-        padding: 8px 0 8px 12px;
-        margin-bottom: 13px;
-        border-radius: 6px;
+
+    /* =========================================================
+       BOTONES DE ACCESO
+       ========================================================= */
+
+    .btn-sj-acceso {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 100%;
+        min-height: 44px;
+
+        padding: 10px 16px;
+        margin-bottom: 10px;
+
+        border:
+            1px solid rgba(255, 255, 255, 0.22);
+
+        border-radius: 9px;
+
+        background: var(--sj-morado-claro);
+        color: #ffffff;
+
+        font-weight: 700;
+        text-decoration: none;
 
         transition:
-            background 0.2s ease,
-            border-left-color 0.2s ease;
+            background 0.20s ease,
+            color 0.20s ease,
+            border-color 0.20s ease,
+            transform 0.20s ease;
     }
 
-    .info-compacta-item:last-child {
+    .btn-sj-acceso:hover,
+    .btn-sj-acceso:focus {
+        background: var(--sj-verde);
+        border-color: var(--sj-verde);
+        color: #ffffff;
+
+        transform: translateY(-1px);
+    }
+
+    .btn-sj-secundario {
+        background: transparent;
+
+        border:
+            1px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .btn-sj-secundario:hover,
+    .btn-sj-secundario:focus {
+        background: #ffffff;
+        border-color: #ffffff;
+        color: var(--sj-morado);
+    }
+
+
+    /* =========================================================
+       INFORMACIÓN DEL SERVICIO
+       ========================================================= */
+
+    .servicio-lateral {
+        margin-top: 24px;
+        padding-top: 20px;
+
+        border-top:
+            1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .servicio-lateral h3 {
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .dato-servicio {
+        margin-bottom: 11px;
+    }
+
+    .dato-servicio:last-child {
         margin-bottom: 0;
     }
 
-    .info-compacta-item:hover {
-        background: #EAF7E3;
-        border-left-color: #78BE20;
+    .dato-servicio strong {
+        display: block;
+
+        color:
+            rgba(255, 255, 255, 0.66);
+
+        font-size: 0.72rem;
+        font-weight: 700;
+
+        text-transform: uppercase;
+        letter-spacing: 0.045em;
+
+        margin-bottom: 2px;
     }
 
-    .info-compacta-item strong {
+    .dato-servicio span {
         display: block;
-        color: #1F2937;
-        font-size: 0.93rem;
-        margin-bottom: 3px;
-    }
 
-    .info-compacta-item span {
-        display: block;
-        color: #4B5563;
-        font-size: 0.9rem;
-        line-height: 1.4;
+        color: #ffffff;
+
+        font-size: 0.86rem;
+        line-height: 1.35;
+
         overflow-wrap: anywhere;
     }
 
-    /* Columna derecha */
 
-    .hero-municipal {
-        background: linear-gradient(
-            135deg,
-            #5B3F95 0%,
-            #EF3E24 55%,
-            #F26B21 100%
-        );
+    /* =========================================================
+       COLUMNA DERECHA
+       ========================================================= */
 
-        color: #ffffff;
-        border-radius: 18px 18px 0 0;
-        padding: 45px;
-        border-top: 6px solid #78BE20;
-    }
-
-    .badge-area {
-        background: #78BE20;
-        color: #ffffff;
-        font-weight: 700;
-        padding: 10px 18px;
-        border-radius: 999px;
-        display: inline-block;
-        margin-bottom: 20px;
-    }
-
-    .hero-contenido {
-        background: #ffffff;
-        color: #1F2937;
-        padding: 32px 38px;
-        border-radius: 0 0 18px 18px;
-        box-shadow: 0 10px 25px rgba(91, 63, 149, 0.12);
-    }
-
-    .hero-contenido p {
-        margin-bottom: 14px;
-    }
-
-    .texto-principal-resumido {
-        font-size: 1.05rem;
-        color: #374151;
-    }
-
-    /* Tarjetas informativas */
-
-    .card-opcion-integrada {
-        background: #ffffff;
-        border: none;
-        border-top: 5px solid #78BE20;
-        border-radius: 16px;
-        padding: 18px 14px;
-        min-height: 115px;
-        text-align: center;
-        box-shadow: 0 8px 20px rgba(91, 63, 149, 0.10);
+    .inicio-principal {
         position: relative;
+
+        min-height: 100%;
+
+        padding:
+            36px 42px 27px;
+
+        display: flex;
+        flex-direction: column;
+
+        background:
+            linear-gradient(
+                145deg,
+                #ffffff 0%,
+                #ffffff 62%,
+                #f8f6fc 100%
+            );
+
         overflow: hidden;
-
-        transition:
-            box-shadow 0.25s ease,
-            border-top-color 0.25s ease,
-            background 0.25s ease;
     }
 
-    .card-opcion-integrada::before {
+    /* Detalle decorativo muy suave */
+    .inicio-principal::after {
         content: "";
+
         position: absolute;
-        width: 65px;
-        height: 65px;
-        background: rgba(120, 190, 32, 0.12);
+
+        width: 170px;
+        height: 170px;
+
+        right: -65px;
+        bottom: -80px;
+
         border-radius: 50%;
-        top: -25px;
-        right: -25px;
 
-        transition:
-            background 0.25s ease,
-            transform 0.25s ease;
+        background:
+            rgba(120, 190, 32, 0.09);
+
+        pointer-events: none;
     }
 
-    .card-opcion-integrada:hover {
-        background: #F6FFF1;
-        border-top-color: #5B3F95;
-        box-shadow: 0 14px 30px rgba(91, 63, 149, 0.18);
-    }
 
-    .card-opcion-integrada:hover::before {
-        background: rgba(91, 63, 149, 0.15);
-        transform: scale(1.2);
-    }
+    /* =========================================================
+       IDENTIDAD MESA TI
+       ========================================================= */
 
-    .card-opcion-integrada .icono {
-        font-size: 1.7rem;
-        margin-bottom: 8px;
-        position: relative;
-        z-index: 1;
-    }
+    .marca-sj {
+        display: inline-flex;
+        align-items: center;
 
-    .card-opcion-integrada h5 {
-        color: #5B3F95;
+        align-self: flex-start;
+
+        gap: 9px;
+
+        padding: 9px 17px;
+
+        border-radius: 999px;
+
+        background:
+            rgba(120, 190, 32, 0.13);
+
+        color: #4D8115;
+
+        font-size: 1.02rem;
         font-weight: 800;
-        font-size: 0.98rem;
-        margin-bottom: 0;
+
+        letter-spacing: 0.01em;
+    }
+
+    .marca-sj-punto {
+        width: 9px;
+        height: 9px;
+
+        border-radius: 50%;
+
+        background: var(--sj-verde);
+    }
+
+
+    /* =========================================================
+       NOMBRE DEL SISTEMA
+       ========================================================= */
+
+    .bloque-identidad {
+        margin-top: 38px;
         position: relative;
         z-index: 1;
     }
 
-    /* Diseño adaptable */
+    .titulo-sistema {
+        color: var(--sj-morado);
+
+        font-weight: 800;
+
+        font-size:
+            clamp(2rem, 4vw, 3rem);
+
+        line-height: 1.08;
+
+        margin:
+            0 0 13px;
+    }
+
+    .subtitulo-sistema {
+        color: var(--sj-texto);
+
+        font-size: 1.08rem;
+        font-weight: 600;
+
+        margin-bottom: 15px;
+    }
+
+    .descripcion-sistema {
+        color: var(--sj-texto-suave);
+
+        font-size: 0.96rem;
+        line-height: 1.65;
+
+        max-width: 650px;
+
+        margin-bottom: 0;
+    }
+
+
+    /* =========================================================
+       LÍNEA INSTITUCIONAL
+       ========================================================= */
+
+    .cierre-institucional {
+        margin-top: auto;
+
+        padding-top: 38px;
+
+        position: relative;
+        z-index: 1;
+    }
+
+    .linea-institucional {
+        display: flex;
+
+        width: 100%;
+        height: 5px;
+
+        border-radius: 999px;
+
+        overflow: hidden;
+    }
+
+    .linea-institucional span:nth-child(1) {
+        width: 50%;
+        background: var(--sj-morado);
+    }
+
+    .linea-institucional span:nth-child(2) {
+        width: 25%;
+        background: var(--sj-verde);
+    }
+
+    .linea-institucional span:nth-child(3) {
+        width: 25%;
+
+        background:
+            linear-gradient(
+                90deg,
+                var(--sj-rojo),
+                var(--sj-naranjo)
+            );
+    }
+
+    .pie-portada {
+        margin-top: 13px;
+
+        color: #7A8493;
+
+        font-size: 0.82rem;
+        font-weight: 500;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
 
     @media (max-width: 991px) {
-        .columna-lateral {
-            margin-bottom: 5px;
+
+        .inicio-lateral {
+            padding: 24px;
+        }
+
+        .inicio-principal {
+            padding: 30px;
+        }
+
+        .bloque-identidad {
+            margin-top: 30px;
+        }
+
+        .cierre-institucional {
+            padding-top: 35px;
         }
     }
 
-    @media (max-width: 768px) {
-        .hero-municipal,
-        .hero-contenido {
-            padding: 25px;
+
+    @media (max-width: 767px) {
+
+        .inicio-sj {
+            margin-top: 16px;
+            margin-bottom: 16px;
         }
 
-        .hero-municipal h1 {
-            font-size: 2rem;
+        .inicio-card {
+            border-radius: 14px;
         }
 
-        .panel-accesos-moderno,
-        .info-servicio-compacta {
+        .inicio-lateral {
             padding: 22px;
         }
 
-        .card-opcion-integrada {
-            min-height: 105px;
+        .inicio-principal {
+            padding: 26px 22px;
+        }
+
+        .marca-sj {
+            font-size: 0.94rem;
+        }
+
+        .bloque-identidad {
+            margin-top: 28px;
+        }
+
+        .titulo-sistema {
+            font-size: 2rem;
+        }
+
+        .cierre-institucional {
+            padding-top: 32px;
         }
     }
+
 </style>
 
-<div class="container inicio-wrapper">
 
-    <div class="row g-4 align-items-start">
+<div class="container inicio-sj">
 
-        {{-- Columna izquierda --}}
-        <div class="col-lg-4">
+    <div class="card inicio-card">
 
-            <div class="columna-lateral">
+        <div class="row g-0">
 
-                {{-- Accesos rápidos --}}
-                <div class="panel-accesos-moderno">
+            {{-- =====================================================
+                 COLUMNA IZQUIERDA
+                 ===================================================== --}}
+            <div class="col-lg-4">
 
-                    <h2>Accesos rápidos</h2>
+                <div class="inicio-lateral">
 
-                    {{-- Usuario sin sesión iniciada --}}
+                    <div class="titulo-acceso">
+                        Acceso al sistema
+                    </div>
+
+
+                    {{-- =================================================
+                         USUARIO SIN SESIÓN
+                         ================================================= --}}
                     @guest
+
+                        <div class="texto-acceso">
+                            Ingrese con sus credenciales municipales
+                            o cree una cuenta de funcionario.
+                        </div>
 
                         <a
                             href="{{ route('login') }}"
-                            class="btn-acceso"
+                            class="btn-sj-acceso"
                         >
-                            Login
+                            Iniciar sesión
                         </a>
 
                         <a
                             href="{{ route('registro') }}"
-                            class="btn-acceso"
+                            class="btn-sj-acceso btn-sj-secundario"
                         >
-                            Registro
+                            Registrarse
                         </a>
 
                     @endguest
 
 
-                    {{-- Usuario con sesión iniciada --}}
+                    {{-- =================================================
+                         USUARIO CON SESIÓN
+                         ================================================= --}}
                     @auth
 
-                        <a
-                            href="{{ route('funcionario.dashboard') }}"
-                            class="btn-acceso"
-                        >
-                            Panel funcionario
-                        </a>
+                        <div class="texto-acceso">
+                            Acceda a las opciones disponibles
+                            según su perfil de usuario.
+                        </div>
 
-                        <a
-                            href="{{ route('requerimientos.create') }}"
-                            class="btn-acceso"
-                        >
-                            Crear requerimiento
-                        </a>
 
-                        <a
-                            href="{{ route('requerimientos.index') }}"
-                            class="btn-acceso"
-                        >
-                            Mis requerimientos
-                        </a>
+                        {{-- ADMINISTRADOR --}}
+                        @if(auth()->user()->rol === 'administrador')
 
-                        {{-- Solo administradores --}}
-                        @if (auth()->user()->rol === 'administrador')
+                            <a
+                                href="{{ route('admin.dashboard') }}"
+                                class="btn-sj-acceso"
+                            >
+                                Panel de administración
+                            </a>
 
                             <a
                                 href="{{ route('admin.requerimientos.index') }}"
-                                class="btn-acceso"
+                                class="btn-sj-acceso btn-sj-secundario"
                             >
-                                Administración
+                                Ver requerimientos
+                            </a>
+
+
+                        {{-- TÉCNICO --}}
+                        @elseif(auth()->user()->rol === 'tecnico')
+
+                            <a
+                                href="{{ route('tecnico.dashboard') }}"
+                                class="btn-sj-acceso"
+                            >
+                                Panel técnico
+                            </a>
+
+
+                        {{-- FUNCIONARIO --}}
+                        @else
+
+                            <a
+                                href="{{ route('funcionario.dashboard') }}"
+                                class="btn-sj-acceso"
+                            >
+                                Panel funcionario
+                            </a>
+
+                            <a
+                                href="{{ route('requerimientos.create') }}"
+                                class="btn-sj-acceso btn-sj-secundario"
+                            >
+                                Crear requerimiento
+                            </a>
+
+                            <a
+                                href="{{ route('requerimientos.index') }}"
+                                class="btn-sj-acceso btn-sj-secundario"
+                            >
+                                Mis requerimientos
                             </a>
 
                         @endif
 
                     @endauth
 
-                </div>
 
-                {{-- Información compacta del servicio --}}
-                <div class="info-servicio-compacta">
+                    {{-- =================================================
+                         INFORMACIÓN DEL SERVICIO
+                         ================================================= --}}
+                    <div class="servicio-lateral">
 
-                    <h3>Información del servicio</h3>
+                        <h3>
+                            Información del servicio
+                        </h3>
 
-                    <div class="info-compacta-item">
-                        <strong>Unidad responsable</strong>
-                        <span>Depto. Informática</span>
-                    </div>
+                        <div class="dato-servicio">
 
-                    <div class="info-compacta-item">
-                        <strong>Dirección</strong>
-                        <span>
-                            Dirección Administración y Finanzas
-                        </span>
-                    </div>
+                            <strong>
+                                Unidad responsable
+                            </strong>
 
-                    <div class="info-compacta-item">
-                        <strong>Teléfono / Anexo</strong>
-                        <span>
-                            9 5343 8487<br>
-                            Anexos 8374 - 8487
-                        </span>
-                    </div>
+                            <span>
+                                Depto. Informática
+                            </span>
 
-                    <div class="info-compacta-item">
-                        <strong>Correo</strong>
-                        <span>
-                            informatica@sanjoaquin.cl
-                        </span>
-                    </div>
+                        </div>
 
-                    <div class="info-compacta-item">
-                        <strong>Horario de atención</strong>
-                        <span>
-                            Lunes a viernes, horario administrativo
-                        </span>
-                    </div>
+                        <div class="dato-servicio">
 
-                    <div class="info-compacta-item">
-                        <strong>Tipo de atención</strong>
-                        <span>
-                            Soporte informático municipal
-                        </span>
+                            <strong>
+                                Dirección
+                            </strong>
+
+                            <span>
+                                Dirección Administración y Finanzas
+                            </span>
+
+                        </div>
+
+                        <div class="dato-servicio">
+
+                            <strong>
+                                Teléfono / Anexos
+                            </strong>
+
+                            <span>
+                                9 5343 8487 · 8374 · 8487
+                            </span>
+
+                        </div>
+
+                        <div class="dato-servicio">
+
+                            <strong>
+                                Correo
+                            </strong>
+
+                            <span>
+                                informatica@sanjoaquin.cl
+                            </span>
+
+                        </div>
+
+                        <div class="dato-servicio">
+
+                            <strong>
+                                Horario
+                            </strong>
+
+                            <span>
+                                Lunes a viernes · horario administrativo
+                            </span>
+
+                        </div>
+
                     </div>
 
                 </div>
 
             </div>
 
-        </div>
 
-        {{-- Columna derecha --}}
-        <div class="col-lg-8">
+            {{-- =====================================================
+                 COLUMNA DERECHA
+                 ===================================================== --}}
+            <div class="col-lg-8">
 
-            <div class="hero-municipal">
+                <div class="inicio-principal">
 
-                <span class="badge-area">
-                    Área de Informática Municipal
-                </span>
+                    {{-- Nombre corto del sistema --}}
+                    <div class="marca-sj">
 
-                <h1 class="display-5 fw-bold">
-                    Sistema Municipal de Soporte TI
-                </h1>
+                        <span class="marca-sj-punto"></span>
 
-                <p class="lead mt-3">
-                    Plataforma interna de gestión de requerimientos informáticos
-                </p>
-
-            </div>
-
-            <div class="hero-contenido">
-
-                <p class="texto-principal-resumido">
-                    Este sistema permite a los funcionarios municipales
-                    registrar solicitudes de soporte informático, revisar
-                    sus estados, recibir notificaciones y consultar las
-                    respuestas entregadas por el área de Informática.
-                </p>
-
-                <p>
-                    Su objetivo es centralizar la atención, mejorar la
-                    trazabilidad y apoyar la gestión del soporte técnico
-                    municipal.
-                </p>
-
-                <div class="row g-3 mt-3">
-
-                    <div class="col-md-4">
-
-                        <div class="card-opcion-integrada">
-
-                            <div class="icono">
-                                📌
-                            </div>
-
-                            <h5>
-                                Atención centralizada
-                            </h5>
-
-                        </div>
+                        MesaTI Municipal
 
                     </div>
 
-                    <div class="col-md-4">
 
-                        <div class="card-opcion-integrada">
+                    {{-- Nombre formal --}}
+                    <div class="bloque-identidad">
 
-                            <div class="icono">
-                                🔎
-                            </div>
+                        <h1 class="titulo-sistema">
+                            Sistema Municipal de Soporte TI
+                        </h1>
 
-                            <h5>
-                                Trazabilidad
-                            </h5>
-
+                        <div class="subtitulo-sistema">
+                            Gestión interna de requerimientos informáticos
                         </div>
+
+                        <p class="descripcion-sistema">
+                            Plataforma municipal para registrar,
+                            gestionar y realizar seguimiento a solicitudes
+                            de soporte informático.
+                        </p>
 
                     </div>
 
-                    <div class="col-md-4">
 
-                        <div class="card-opcion-integrada">
+                    {{-- Cierre inferior --}}
+                    <div class="cierre-institucional">
 
-                            <div class="icono">
-                                🛠️
-                            </div>
+                        <div class="linea-institucional">
 
-                            <h5>
-                                Gestión TI
-                            </h5>
+                            <span></span>
+                            <span></span>
+                            <span></span>
 
+                        </div>
+
+                        <div class="pie-portada">
+                            Municipalidad de San Joaquín · Área de Informática
                         </div>
 
                     </div>

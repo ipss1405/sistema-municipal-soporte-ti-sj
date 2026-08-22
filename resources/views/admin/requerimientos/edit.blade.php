@@ -2,151 +2,785 @@
 
 @section('content')
 
+{{-- Tabler UI --}}
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"
+>
+
 <style>
-    .seccion-derivacion {
-        background: #F9FAFB;
-        border: 1px solid #E5E7EB;
-        border-left: 5px solid #5B3F95;
+    :root {
+        --sj-morado: #5B3F95;
+        --sj-morado-claro: #6B4BB0;
+        --sj-verde: #78BE20;
+        --sj-rojo: #EF3E24;
+        --sj-naranjo: #F26B21;
+
+        --sj-texto: #1F2937;
+        --sj-texto-suave: #667085;
+        --sj-borde: #E5E7EB;
+        --sj-fondo: #F8F9FB;
+    }
+
+    /* =========================================================
+       CONTENEDOR
+       ========================================================= */
+
+    .gestion-wrapper {
+        max-width: 1100px;
+        margin: 24px auto 30px;
+    }
+
+    /* =========================================================
+       CABECERA
+       ========================================================= */
+
+    .gestion-hero {
+        position: relative;
+        overflow: hidden;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        gap: 24px;
+
+        padding: 26px 30px;
+        margin-bottom: 20px;
+
+        border-top: 6px solid var(--sj-verde);
+        border-radius: 18px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #5B3F95 0%,
+                #A43D70 45%,
+                #EF3E24 78%,
+                #F26B21 100%
+            );
+
+        color: #ffffff;
+
+        box-shadow:
+            0 11px 28px rgba(91, 63, 149, 0.14);
+    }
+
+    .gestion-hero::after {
+        content: "";
+
+        position: absolute;
+
+        width: 180px;
+        height: 180px;
+
+        right: -70px;
+        bottom: -105px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(255, 255, 255, 0.08);
+    }
+
+    .gestion-hero-contenido {
+        position: relative;
+        z-index: 1;
+    }
+
+    .gestion-etiqueta {
+        display: inline-flex;
+        align-items: center;
+
+        padding: 6px 14px;
+        margin-bottom: 10px;
+
+        border-radius: 999px;
+
+        background: var(--sj-verde);
+        color: #ffffff;
+
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .gestion-hero h1 {
+        margin: 0 0 7px;
+
+        color: #ffffff;
+
+        font-size: 2rem;
+        font-weight: 800;
+    }
+
+    .gestion-hero p {
+        max-width: 720px;
+
+        margin: 0;
+
+        color:
+            rgba(255, 255, 255, 0.88);
+
+        font-size: 0.92rem;
+        line-height: 1.5;
+    }
+
+    .btn-volver-panel {
+        position: relative;
+        z-index: 1;
+
+        flex-shrink: 0;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 40px;
+
+        padding: 8px 15px;
+
+        border:
+            1px solid rgba(255,255,255,0.60);
+
+        border-radius: 9px;
+
+        background:
+            rgba(255,255,255,0.12);
+
+        color: #ffffff;
+
+        text-decoration: none;
+
+        font-size: 0.84rem;
+        font-weight: 700;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .btn-volver-panel:hover {
+        background: #ffffff;
+        color: var(--sj-morado);
+
+        transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       RESUMEN DEL REQUERIMIENTO
+       ========================================================= */
+
+    .resumen-card {
+        padding: 21px;
+
+        margin-bottom: 18px;
+
+        border: 1px solid #ECEEF2;
+        border-left: 5px solid var(--sj-verde);
+        border-radius: 15px;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 7px 20px rgba(91, 63, 149, 0.06);
+    }
+
+    .resumen-card h2 {
+        margin: 0 0 16px;
+
+        color: var(--sj-morado);
+
+        font-size: 1.25rem;
+        font-weight: 800;
+    }
+
+    .resumen-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+
+        gap: 15px;
+    }
+
+    .resumen-item {
+        min-width: 0;
+
+        padding: 13px 14px;
+
         border-radius: 10px;
-        padding: 20px;
-        margin: 20px 0;
+
+        background: var(--sj-fondo);
     }
 
-    .seccion-derivacion h2 {
-        color: #5B3F95;
-        font-size: 22px;
-        margin-top: 0;
-        margin-bottom: 8px;
+    .resumen-label {
+        display: block;
+
+        margin-bottom: 5px;
+
+        color: var(--sj-texto-suave);
+
+        font-size: 0.74rem;
+        font-weight: 700;
+
+        text-transform: uppercase;
+        letter-spacing: 0.035em;
     }
 
-    .seccion-derivacion p {
-        margin-bottom: 15px;
+    .resumen-valor {
+        color: var(--sj-texto);
+
+        font-size: 0.89rem;
+        font-weight: 700;
+
+        line-height: 1.4;
+    }
+
+    .descripcion-funcionario {
+        margin-top: 15px;
+
+        padding: 14px 16px;
+
+        border-left: 4px solid var(--sj-verde);
+        border-radius: 9px;
+
+        background: #F8FAF7;
+    }
+
+    .descripcion-funcionario strong {
+        display: block;
+
+        margin-bottom: 6px;
+
+        color: var(--sj-morado);
+
+        font-size: 0.84rem;
+    }
+
+    .descripcion-funcionario div {
+        color: #374151;
+
+        font-size: 0.89rem;
+        line-height: 1.55;
+    }
+
+    /* =========================================================
+       ERRORES
+       ========================================================= */
+
+    .errores-card {
+        padding: 14px 16px;
+
+        margin-bottom: 18px;
+
+        border-left: 5px solid var(--sj-rojo);
+        border-radius: 10px;
+
+        background: #FFF2F0;
+
+        color: #991B1B;
+
+        font-size: 0.86rem;
+    }
+
+    .errores-card strong {
+        display: block;
+        margin-bottom: 7px;
+    }
+
+    .errores-card ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    /* =========================================================
+       SECCIÓN GENERAL DEL FORMULARIO
+       ========================================================= */
+
+    .form-card {
+        padding: 22px;
+
+        margin-bottom: 18px;
+
+        border: 1px solid #ECEEF2;
+        border-radius: 15px;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 7px 20px rgba(91, 63, 149, 0.06);
+    }
+
+    .form-card h2 {
+        margin: 0 0 6px;
+
+        color: var(--sj-morado);
+
+        font-size: 1.25rem;
+        font-weight: 800;
+    }
+
+    .form-card .subtexto {
+        margin-bottom: 18px;
+
+        color: var(--sj-texto-suave);
+
+        font-size: 0.86rem;
+    }
+
+    /* =========================================================
+       PRIORIDAD Y ESTADO
+       ========================================================= */
+
+    .clasificacion-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 18px;
+    }
+
+    .campo-form label {
+        display: block;
+
+        margin-bottom: 7px;
+
+        color: var(--sj-texto);
+
+        font-size: 0.86rem;
+        font-weight: 700;
+    }
+
+    .campo-form .form-select,
+    .campo-form .form-control {
+        width: 100%;
+
+        border:
+            1px solid var(--sj-borde);
+
+        border-radius: 9px;
+
+        background: #ffffff;
+
+        color: var(--sj-texto);
+
+        font-size: 0.89rem;
+
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .campo-form .form-select {
+        min-height: 44px;
+    }
+
+    .campo-form .form-control {
+        padding: 11px 13px;
+    }
+
+    .campo-form .form-select:focus,
+    .campo-form .form-control:focus {
+        border-color:
+            var(--sj-morado);
+
+        box-shadow:
+            0 0 0 3px
+            rgba(91, 63, 149, 0.10);
+    }
+
+    .texto-error {
+        display: block;
+
+        margin-top: 6px;
+
+        color: #B42318;
+
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    /* =========================================================
+       DERIVACIÓN TI
+       ========================================================= */
+
+    .derivacion-card {
+        border-left:
+            5px solid var(--sj-morado);
     }
 
     .datos-derivacion {
-        background: #EEF7E8;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 10px 0 20px 0;
-        border-left: 4px solid #78BE20;
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 14px;
+
+        margin-bottom: 18px;
     }
 
-    .datos-derivacion p {
-        margin: 5px 0;
+    .dato-derivacion {
+        padding: 13px 14px;
+
+        border-radius: 10px;
+
+        background: #F6FBF2;
+    }
+
+    .dato-derivacion strong {
+        display: block;
+
+        margin-bottom: 4px;
+
+        color: #4B6F25;
+
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .dato-derivacion span {
+        color: var(--sj-texto);
+
+        font-size: 0.87rem;
+        font-weight: 600;
     }
 
     .sin-derivacion {
-        display: inline-block;
-        background: #FEF3C7;
-        color: #92400E;
-        padding: 9px 14px;
+        display: inline-flex;
+        align-items: center;
+
+        padding: 8px 12px;
+
+        margin-bottom: 18px;
+
+        border-left:
+            4px solid #F59E0B;
+
         border-radius: 8px;
-        margin: 10px 0 20px 0;
-        font-size: 14px;
-        font-weight: 600;
-        border-left: 4px solid #F59E0B;
+
+        background: #FEF3C7;
+
+        color: #92400E;
+
+        font-size: 0.82rem;
+        font-weight: 700;
     }
 
     .ayuda-campo {
-        color: #6B7280;
-        font-size: 13px;
-        margin-top: -10px;
-        margin-bottom: 15px;
+        margin-top: 6px;
+        margin-bottom: 16px;
+
+        color: #7A8493;
+
+        font-size: 0.76rem;
+    }
+
+    .textarea-tarea {
+        min-height: 105px;
+        resize: vertical;
+    }
+
+    /* =========================================================
+       RESPUESTA AL FUNCIONARIO
+       ========================================================= */
+
+    .respuesta-card {
+        border-left:
+            5px solid var(--sj-verde);
+    }
+
+    .respuesta-card textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* =========================================================
+       BOTONES
+       ========================================================= */
+
+    .acciones-formulario {
+        display: flex;
+        align-items: center;
+
+        gap: 10px;
+
+        flex-wrap: wrap;
+    }
+
+    .btn-guardar,
+    .btn-cancelar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 43px;
+
+        padding: 9px 18px;
+
+        border-radius: 9px;
+
+        font-size: 0.87rem;
+        font-weight: 700;
+
+        text-decoration: none;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .btn-guardar {
+        border: 0;
+
+        background:
+            var(--sj-morado);
+
+        color: #ffffff;
+
+        cursor: pointer;
+    }
+
+    .btn-guardar:hover {
+        background:
+            var(--sj-verde);
+
+        color: #ffffff;
+
+        transform: translateY(-1px);
+    }
+
+    .btn-cancelar {
+        border: 0;
+
+        background: #6B7280;
+
+        color: #ffffff;
+    }
+
+    .btn-cancelar:hover {
+        background: #4B5563;
+
+        color: #ffffff;
+
+        transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 991px) {
+
+        .resumen-grid {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+
+        .datos-derivacion {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 767px) {
+
+        .gestion-wrapper {
+            margin-top: 16px;
+            margin-bottom: 22px;
+        }
+
+        .gestion-hero {
+            flex-direction: column;
+            align-items: flex-start;
+
+            padding: 22px;
+        }
+
+        .gestion-hero h1 {
+            font-size: 1.65rem;
+        }
+
+        .btn-volver-panel {
+            width: 100%;
+        }
+
+        .resumen-grid,
+        .clasificacion-grid,
+        .datos-derivacion {
+            grid-template-columns: 1fr;
+        }
+
+        .form-card,
+        .resumen-card {
+            padding: 18px;
+        }
+
+        .acciones-formulario {
+            flex-direction: column;
+        }
+
+        .btn-guardar,
+        .btn-cancelar {
+            width: 100%;
+        }
     }
 </style>
 
-<div class="card" style="max-width: 900px; margin: 0 auto;">
 
-    <h1>Gestionar requerimiento</h1>
+<div class="container gestion-wrapper">
 
-    <p>
-        En esta sección el área de Informática puede asignar la prioridad,
-        actualizar el estado, derivar el requerimiento a un responsable TI
-        y registrar una respuesta para el funcionario.
-    </p>
+    {{-- =====================================================
+         CABECERA
+         ===================================================== --}}
 
-    {{-- DATOS DEL REQUERIMIENTO --}}
-    <div style="
-        background: #F9FAFB;
-        padding: 18px;
-        border-radius: 6px;
-        border-left: 5px solid #78BE20;
-        margin-bottom: 25px;
-    ">
+    <div class="gestion-hero">
 
-        <p>
-            <strong>N° de requerimiento:</strong>
-            {{ $requerimiento->id }}
-        </p>
+        <div class="gestion-hero-contenido">
 
-        <p>
-            <strong>Título:</strong>
-            {{ $requerimiento->titulo }}
-        </p>
+            <span class="gestion-etiqueta">
+                Gestión administrativa
+            </span>
 
-        <p>
-            <strong>Categoría:</strong>
-            {{ ucfirst($requerimiento->categoria) }}
-        </p>
+            <h1>
+                Requerimiento #{{ $requerimiento->id }}
+                · {{ $requerimiento->titulo }}
+            </h1>
 
-        <p>
-            <strong>Prioridad actual:</strong>
+            <p>
+                Asigne prioridad, actualice el estado,
+                derive la atención a un responsable TI
+                y registre información para el funcionario.
+            </p>
 
-            @if ($requerimiento->prioridad === 'sin_asignar')
+        </div>
 
-                <span style="
-                    background: #FEF3C7;
-                    color: #92400E;
-                    padding: 5px 10px;
-                    border-radius: 20px;
-                    font-weight: bold;
-                ">
-                    Sin asignar
-                </span>
 
-            @else
-
-                {{ ucfirst($requerimiento->prioridad) }}
-
-            @endif
-        </p>
-
-        <p>
-            <strong>Estado actual:</strong>
-            <x-estado :estado="$requerimiento->estado" />
-        </p>
-
-        <p>
-            <strong>Descripción del funcionario:</strong>
-        </p>
-
-        <p>
-            {{ $requerimiento->descripcion }}
-        </p>
+        <a
+            href="{{ route('admin.requerimientos.index') }}"
+            class="btn-volver-panel"
+        >
+            ← Volver a administración
+        </a>
 
     </div>
 
-    {{-- ERRORES --}}
-    @if ($errors->any())
 
-        <div style="
-            background: #FEE2E2;
-            color: #991B1B;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        ">
+    {{-- =====================================================
+         RESUMEN DE LA SOLICITUD
+         ===================================================== --}}
+
+    <div class="resumen-card">
+
+        <h2>
+            Resumen de la solicitud
+        </h2>
+
+
+        <div class="resumen-grid">
+
+            <div class="resumen-item">
+
+                <span class="resumen-label">
+                    N.º requerimiento
+                </span>
+
+                <div class="resumen-valor">
+                    #{{ $requerimiento->id }}
+                </div>
+
+            </div>
+
+
+            <div class="resumen-item">
+
+                <span class="resumen-label">
+                    Categoría
+                </span>
+
+                <div class="resumen-valor">
+                    {{ ucfirst($requerimiento->categoria) }}
+                </div>
+
+            </div>
+
+
+            <div class="resumen-item">
+
+                <span class="resumen-label">
+                    Prioridad actual
+                </span>
+
+                <div class="resumen-valor">
+
+                    @if ($requerimiento->prioridad === 'sin_asignar')
+
+                        Sin asignar
+
+                    @else
+
+                        {{ ucfirst($requerimiento->prioridad) }}
+
+                    @endif
+
+                </div>
+
+            </div>
+
+
+            <div class="resumen-item">
+
+                <span class="resumen-label">
+                    Estado actual
+                </span>
+
+                <div class="resumen-valor">
+                    <x-estado :estado="$requerimiento->estado" />
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="descripcion-funcionario">
 
             <strong>
-                Revisa los datos ingresados:
+                Descripción del funcionario
             </strong>
 
-            <ul style="margin-bottom: 0;">
+            <div>
+                {{ $requerimiento->descripcion }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- =====================================================
+         ERRORES
+         ===================================================== --}}
+
+    @if ($errors->any())
+
+        <div class="errores-card">
+
+            <strong>
+                Revise los datos ingresados:
+            </strong>
+
+            <ul>
 
                 @foreach ($errors->all() as $error)
+
                     <li>
                         {{ $error }}
                     </li>
+
                 @endforeach
 
             </ul>
@@ -155,300 +789,419 @@
 
     @endif
 
+
+    {{-- =====================================================
+         FORMULARIO
+         ===================================================== --}}
+
     <form
-        action="{{ route('admin.requerimientos.update', $requerimiento) }}"
+        action="{{ route(
+            'admin.requerimientos.update',
+            $requerimiento
+        ) }}"
         method="POST"
     >
 
         @csrf
         @method('PUT')
 
-        {{-- PRIORIDAD --}}
-        <label for="prioridad">
-            Prioridad del requerimiento
-        </label>
 
-        <select
-            name="prioridad"
-            id="prioridad"
-            required
-        >
+        {{-- =================================================
+             CLASIFICACIÓN
+             ================================================= --}}
 
-            <option
-                value="sin_asignar"
-                {{ old('prioridad', $requerimiento->prioridad) === 'sin_asignar' ? 'selected' : '' }}
-            >
-                Sin asignar
-            </option>
+        <div class="form-card">
 
-            <option
-                value="baja"
-                {{ old('prioridad', $requerimiento->prioridad) === 'baja' ? 'selected' : '' }}
-            >
-                Baja
-            </option>
+            <h2>
+                Clasificación del requerimiento
+            </h2>
 
-            <option
-                value="media"
-                {{ old('prioridad', $requerimiento->prioridad) === 'media' ? 'selected' : '' }}
-            >
-                Media
-            </option>
-
-            <option
-                value="alta"
-                {{ old('prioridad', $requerimiento->prioridad) === 'alta' ? 'selected' : '' }}
-            >
-                Alta
-            </option>
-
-            <option
-                value="urgente"
-                {{ old('prioridad', $requerimiento->prioridad) === 'urgente' ? 'selected' : '' }}
-            >
-                Urgente
-            </option>
-
-        </select>
-
-        @error('prioridad')
-            <div style="
-                color: #B91C1C;
-                font-size: 14px;
-                margin-top: 5px;
-                margin-bottom: 10px;
-            ">
-                {{ $message }}
+            <div class="subtexto">
+                Defina la prioridad y el estado actual
+                de la solicitud.
             </div>
-        @enderror
 
-        {{-- ESTADO --}}
-        <label for="estado">
-            Estado del requerimiento
-        </label>
 
-        <select
-            name="estado"
-            id="estado"
-            required
-        >
+            <div class="clasificacion-grid">
 
-            <option
-                value="pendiente"
-                {{ old('estado', $requerimiento->estado) === 'pendiente' ? 'selected' : '' }}
-            >
-                Pendiente
-            </option>
+                {{-- PRIORIDAD --}}
+                <div class="campo-form">
 
-            <option
-                value="en_revision"
-                {{ old('estado', $requerimiento->estado) === 'en_revision' ? 'selected' : '' }}
-            >
-                En revisión
-            </option>
+                    <label for="prioridad">
+                        Prioridad
+                    </label>
 
-            <option
-                value="en_proceso"
-                {{ old('estado', $requerimiento->estado) === 'en_proceso' ? 'selected' : '' }}
-            >
-                En proceso
-            </option>
+                    <select
+                        name="prioridad"
+                        id="prioridad"
+                        class="form-select"
+                        required
+                    >
 
-            <option
-                value="resuelto"
-                {{ old('estado', $requerimiento->estado) === 'resuelto' ? 'selected' : '' }}
-            >
-                Resuelto
-            </option>
+                        <option
+                            value="sin_asignar"
+                            {{ old('prioridad', $requerimiento->prioridad) === 'sin_asignar' ? 'selected' : '' }}
+                        >
+                            Sin asignar
+                        </option>
 
-            <option
-                value="cerrado"
-                {{ old('estado', $requerimiento->estado) === 'cerrado' ? 'selected' : '' }}
-            >
-                Cerrado
-            </option>
+                        <option
+                            value="baja"
+                            {{ old('prioridad', $requerimiento->prioridad) === 'baja' ? 'selected' : '' }}
+                        >
+                            Baja
+                        </option>
 
-            <option
-                value="rechazado"
-                {{ old('estado', $requerimiento->estado) === 'rechazado' ? 'selected' : '' }}
-            >
-                Rechazado
-            </option>
+                        <option
+                            value="media"
+                            {{ old('prioridad', $requerimiento->prioridad) === 'media' ? 'selected' : '' }}
+                        >
+                            Media
+                        </option>
 
-        </select>
+                        <option
+                            value="alta"
+                            {{ old('prioridad', $requerimiento->prioridad) === 'alta' ? 'selected' : '' }}
+                        >
+                            Alta
+                        </option>
 
-        @error('estado')
-            <div style="
-                color: #B91C1C;
-                font-size: 14px;
-                margin-top: 5px;
-                margin-bottom: 10px;
-            ">
-                {{ $message }}
+                        <option
+                            value="urgente"
+                            {{ old('prioridad', $requerimiento->prioridad) === 'urgente' ? 'selected' : '' }}
+                        >
+                            Urgente
+                        </option>
+
+                    </select>
+
+
+                    @error('prioridad')
+
+                        <span class="texto-error">
+                            {{ $message }}
+                        </span>
+
+                    @enderror
+
+                </div>
+
+
+                {{-- ESTADO --}}
+                <div class="campo-form">
+
+                    <label for="estado">
+                        Estado
+                    </label>
+
+                    <select
+                        name="estado"
+                        id="estado"
+                        class="form-select"
+                        required
+                    >
+
+                        <option
+                            value="pendiente"
+                            {{ old('estado', $requerimiento->estado) === 'pendiente' ? 'selected' : '' }}
+                        >
+                            Pendiente
+                        </option>
+
+                        <option
+                            value="en_revision"
+                            {{ old('estado', $requerimiento->estado) === 'en_revision' ? 'selected' : '' }}
+                        >
+                            En revisión
+                        </option>
+
+                        <option
+                            value="en_proceso"
+                            {{ old('estado', $requerimiento->estado) === 'en_proceso' ? 'selected' : '' }}
+                        >
+                            En proceso
+                        </option>
+
+                        <option
+                            value="resuelto"
+                            {{ old('estado', $requerimiento->estado) === 'resuelto' ? 'selected' : '' }}
+                        >
+                            Resuelto
+                        </option>
+
+                        <option
+                            value="cerrado"
+                            {{ old('estado', $requerimiento->estado) === 'cerrado' ? 'selected' : '' }}
+                        >
+                            Cerrado
+                        </option>
+
+                        <option
+                            value="rechazado"
+                            {{ old('estado', $requerimiento->estado) === 'rechazado' ? 'selected' : '' }}
+                        >
+                            Rechazado
+                        </option>
+
+                    </select>
+
+
+                    @error('estado')
+
+                        <span class="texto-error">
+                            {{ $message }}
+                        </span>
+
+                    @enderror
+
+                </div>
+
             </div>
-        @enderror
 
-        {{-- DERIVACIÓN A TI --}}
-        <div class="seccion-derivacion">
+        </div>
+
+
+        {{-- =================================================
+             DERIVACIÓN TI
+             ================================================= --}}
+
+        <div class="form-card derivacion-card">
 
             <h2>
                 Derivación a responsable TI
             </h2>
 
-            <p>
-                Asigne el requerimiento a un técnico e indique
-                la tarea o acción que deberá realizar.
-            </p>
+            <div class="subtexto">
+                Asigne el requerimiento a un técnico
+                e indique la tarea o acción que deberá realizar.
+            </div>
 
-            {{-- SI YA TIENE TÉCNICO --}}
+
+            {{-- INFORMACIÓN ACTUAL --}}
             @if ($requerimiento->tecnico)
 
                 <div class="datos-derivacion">
 
-                    <p>
-                        <strong>Responsable actual:</strong>
-                        {{ $requerimiento->tecnico->name }}
-                    </p>
+                    <div class="dato-derivacion">
 
-                    @if ($requerimiento->asignadoPor)
+                        <strong>
+                            Responsable actual
+                        </strong>
 
-                        <p>
-                            <strong>Asignado por:</strong>
-                            {{ $requerimiento->asignadoPor->name }}
-                        </p>
+                        <span>
+                            {{ $requerimiento->tecnico->name }}
+                        </span>
 
-                    @endif
+                    </div>
 
-                    @if ($requerimiento->fecha_asignacion)
 
-                        <p>
-                            <strong>Fecha y hora de asignación:</strong>
-                            {{ $requerimiento->fecha_asignacion->format('d-m-Y H:i') }}
-                        </p>
+                    <div class="dato-derivacion">
 
-                    @endif
+                        <strong>
+                            Asignado por
+                        </strong>
+
+                        <span>
+                            {{ $requerimiento->asignadoPor?->name
+                                ?? 'No informado'
+                            }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="dato-derivacion">
+
+                        <strong>
+                            Fecha de asignación
+                        </strong>
+
+                        <span>
+
+                            @if ($requerimiento->fecha_asignacion)
+
+                                {{ $requerimiento->fecha_asignacion->format('d-m-Y H:i') }}
+
+                            @else
+
+                                No registrada
+
+                            @endif
+
+                        </span>
+
+                    </div>
 
                 </div>
 
+
             @else
 
-                {{-- ESTE AVISO DESAPARECE CUANDO SE ASIGNA UN TÉCNICO --}}
                 <div class="sin-derivacion">
-                    ⚠️ Sin responsable TI asignado
+                    Responsable TI pendiente de asignación
                 </div>
 
             @endif
 
-            {{-- RESPONSABLE TI --}}
-            <label for="tecnico_id">
-                Responsable TI
-            </label>
 
-            <select
-                name="tecnico_id"
-                id="tecnico_id"
-            >
+            {{-- RESPONSABLE --}}
+            <div class="campo-form">
 
-                <option value="">
-                    Sin técnico asignado
-                </option>
+                <label for="tecnico_id">
+                    Responsable TI
+                </label>
 
-                @foreach ($tecnicos as $tecnico)
+                <select
+                    name="tecnico_id"
+                    id="tecnico_id"
+                    class="form-select"
+                >
 
-                    <option
-                        value="{{ $tecnico->id }}"
-                        {{ (string) old('tecnico_id', $requerimiento->tecnico_id) === (string) $tecnico->id ? 'selected' : '' }}
-                    >
-                        {{ $tecnico->name }}
+                    <option value="">
+                        Sin técnico asignado
                     </option>
 
-                @endforeach
 
-            </select>
+                    @foreach ($tecnicos as $tecnico)
 
-            @error('tecnico_id')
-                <div style="
-                    color: #B91C1C;
-                    font-size: 14px;
-                    margin-top: 5px;
-                    margin-bottom: 10px;
-                ">
-                    {{ $message }}
+                        <option
+                            value="{{ $tecnico->id }}"
+                            {{ (string) old(
+                                'tecnico_id',
+                                $requerimiento->tecnico_id
+                            ) === (string) $tecnico->id
+                                ? 'selected'
+                                : ''
+                            }}
+                        >
+                            {{ $tecnico->name }}
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+
+                @error('tecnico_id')
+
+                    <span class="texto-error">
+                        {{ $message }}
+                    </span>
+
+                @enderror
+
+
+                <div class="ayuda-campo">
+                    La fecha y hora de asignación se registrarán
+                    automáticamente al guardar.
                 </div>
-            @enderror
 
-            <div class="ayuda-campo">
-                La fecha y hora de asignación serán registradas
-                automáticamente al guardar.
             </div>
 
+
             {{-- TAREA --}}
-            <label for="tarea_asignada">
-                Tarea o acción a realizar
-            </label>
+            <div class="campo-form">
 
-            <textarea
-                name="tarea_asignada"
-                id="tarea_asignada"
-                rows="4"
-                maxlength="2000"
-                placeholder="Ejemplo: Revisar conectividad, validar punto de red y comprobar el cableado del equipo."
-            >{{ old('tarea_asignada', $requerimiento->tarea_asignada) }}</textarea>
+                <label for="tarea_asignada">
+                    Tarea o acción a realizar
+                </label>
 
-            @error('tarea_asignada')
-                <div style="
-                    color: #B91C1C;
-                    font-size: 14px;
-                    margin-top: 5px;
-                    margin-bottom: 10px;
-                ">
-                    {{ $message }}
-                </div>
-            @enderror
+                <textarea
+                    name="tarea_asignada"
+                    id="tarea_asignada"
+                    class="form-control textarea-tarea"
+                    maxlength="2000"
+                    placeholder="Ejemplo: Revisar conectividad, validar punto de red y comprobar cableado."
+                >{{ old(
+                    'tarea_asignada',
+                    $requerimiento->tarea_asignada
+                ) }}</textarea>
+
+
+                @error('tarea_asignada')
+
+                    <span class="texto-error">
+                        {{ $message }}
+                    </span>
+
+                @enderror
+
+            </div>
 
         </div>
 
-        {{-- RESPUESTA ADMINISTRATIVA --}}
-        <label for="respuesta_admin">
-            Respuesta para el funcionario
-        </label>
 
-        <textarea
-            name="respuesta_admin"
-            id="respuesta_admin"
-            rows="5"
-            placeholder="Ingrese la respuesta o gestión realizada para este requerimiento"
-        >{{ old('respuesta_admin', $requerimiento->respuesta_admin) }}</textarea>
+        {{-- =================================================
+             INFORMACIÓN PARA FUNCIONARIO
+             ================================================= --}}
 
-        @error('respuesta_admin')
-            <div style="
-                color: #B91C1C;
-                font-size: 14px;
-                margin-top: 5px;
-                margin-bottom: 10px;
-            ">
-                {{ $message }}
+        <div class="form-card respuesta-card">
+
+            <h2>
+                Información para el funcionario
+            </h2>
+
+            <div class="subtexto">
+                Registre la información que será visible
+                para el funcionario respecto de la atención
+                de su requerimiento.
             </div>
-        @enderror
 
-        {{-- BOTONES --}}
-        <button
-            type="submit"
-            class="btn"
-        >
-            Guardar actualización
-        </button>
 
-        <a
-            href="{{ route('admin.requerimientos.index') }}"
-            class="btn"
-            style="
-                background: #6B7280;
-                margin-left: 10px;
-            "
-        >
-            Volver a administración
-        </a>
+            <div class="campo-form">
+
+                <label for="respuesta_admin">
+                    Respuesta
+                </label>
+
+                <textarea
+                    name="respuesta_admin"
+                    id="respuesta_admin"
+                    class="form-control"
+                    placeholder="Ingrese la respuesta o gestión que será informada al funcionario."
+                >{{ old(
+                    'respuesta_admin',
+                    $requerimiento->respuesta_admin
+                ) }}</textarea>
+
+
+                @error('respuesta_admin')
+
+                    <span class="texto-error">
+                        {{ $message }}
+                    </span>
+
+                @enderror
+
+            </div>
+
+        </div>
+
+
+        {{-- =================================================
+             ACCIONES
+             ================================================= --}}
+
+        <div class="acciones-formulario">
+
+            <button
+                type="submit"
+                class="btn-guardar"
+            >
+                Guardar actualización
+            </button>
+
+
+            <a
+                href="{{ route(
+                    'admin.requerimientos.index'
+                ) }}"
+                class="btn-cancelar"
+            >
+                Cancelar y volver
+            </a>
+
+        </div>
 
     </form>
 

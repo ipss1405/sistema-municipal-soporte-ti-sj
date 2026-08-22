@@ -35,7 +35,7 @@ class RequerimientoController extends Controller
             Auth::id()
         )
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
 
         return view(
             'requerimientos.index',
@@ -54,9 +54,6 @@ class RequerimientoController extends Controller
     /**
      * Guarda un requerimiento nuevo y notifica
      * a los administradores del sistema.
-     *
-     * La prioridad queda pendiente de clasificación
-     * por parte del administrador.
      */
     public function store(Request $request)
     {
@@ -97,10 +94,6 @@ class RequerimientoController extends Controller
             ]
         );
 
-        /*
-         * Se crea el requerimiento asociado
-         * al usuario autenticado.
-         */
         $requerimiento = Requerimiento::create([
             'user_id' => Auth::id(),
             'categoria' => $datos['categoria'],
@@ -110,9 +103,6 @@ class RequerimientoController extends Controller
             'estado' => 'pendiente',
         ]);
 
-        /*
-         * Se buscan los administradores.
-         */
         $administradores = User::where(
             'rol',
             'administrador'
@@ -120,10 +110,8 @@ class RequerimientoController extends Controller
             ->where('id', '!=', Auth::id())
             ->get();
 
-        /*
-         * Se notifica a los administradores.
-         */
         foreach ($administradores as $administrador) {
+
             Notificacion::create([
                 'user_id' => $administrador->id,
 
@@ -155,11 +143,6 @@ class RequerimientoController extends Controller
 
     /**
      * Muestra el detalle de un requerimiento.
-     *
-     * Puede acceder:
-     * - El funcionario propietario.
-     * - Un administrador.
-     * - El técnico TI asignado al requerimiento.
      */
     public function show(Requerimiento $requerimiento)
     {
@@ -184,10 +167,6 @@ class RequerimientoController extends Controller
             );
         }
 
-        /*
-         * Se cargan las relaciones necesarias
-         * para mostrar correctamente el detalle.
-         */
         $requerimiento->load([
             'usuario',
             'tecnico',
@@ -202,8 +181,7 @@ class RequerimientoController extends Controller
 
     /**
      * Muestra los requerimientos al administrador
-     * y permite filtrarlos por estado, prioridad,
-     * categoría y funcionario.
+     * y permite filtrarlos.
      */
     public function adminIndex(Request $request)
     {
@@ -270,7 +248,8 @@ class RequerimientoController extends Controller
 
         $requerimientos = $consulta
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         $funcionarios = User::where(
             'rol',
@@ -289,8 +268,7 @@ class RequerimientoController extends Controller
     }
 
     /**
-     * Muestra el formulario administrativo
-     * para gestionar y derivar un requerimiento.
+     * Muestra el formulario administrativo.
      */
     public function edit(Requerimiento $requerimiento)
     {
@@ -390,6 +368,9 @@ class RequerimientoController extends Controller
             ]
         );
 
+        /*
+         * Guardamos datos anteriores para detectar cambios.
+         */
         $estadoAnterior =
             $requerimiento->estado;
 
@@ -399,13 +380,26 @@ class RequerimientoController extends Controller
         $tecnicoAnterior =
             $requerimiento->tecnico_id;
 
+
+        /*
+         * Técnico seleccionado actualmente.
+         */
         $tecnicoNuevo = !empty($datos['tecnico_id'])
             ? (int) $datos['tecnico_id']
             : null;
 
+
+        /*
+         * Detectamos si hubo asignación
+         * o reasignación de técnico.
+         */
         $cambioTecnico =
             $tecnicoAnterior !== $tecnicoNuevo;
 
+
+        /*
+         * Datos de asignación.
+         */
         if ($tecnicoNuevo) {
 
             if (
@@ -432,6 +426,10 @@ class RequerimientoController extends Controller
             $tareaAsignada = null;
         }
 
+
+        /*
+         * Fecha de cierre.
+         */
         if (
             in_array(
                 $datos['estado'],
@@ -445,6 +443,10 @@ class RequerimientoController extends Controller
             $fechaCierre = null;
         }
 
+
+        /*
+         * Actualizar requerimiento.
+         */
         $requerimiento->update([
             'prioridad' =>
                 $datos['prioridad'],
@@ -471,12 +473,60 @@ class RequerimientoController extends Controller
                 $fechaCierre,
         ]);
 
+
+        /*
+         * =====================================================
+         * NOTIFICACIÓN PARA EL TÉCNICO
+         * =====================================================
+         *
+         * Si el administrador asignó o reasignó
+         * el requerimiento a un técnico,
+         * se genera una notificación nueva.
+         */
+        if (
+            $cambioTecnico &&
+            $tecnicoNuevo
+        ) {
+
+            $tecnicoAsignado =
+                User::find($tecnicoNuevo);
+
+            Notificacion::create([
+                'user_id' =>
+                    $tecnicoAsignado->id,
+
+                'requerimiento_id' =>
+                    $requerimiento->id,
+
+                'titulo' =>
+                    'Nuevo requerimiento asignado',
+
+                'mensaje' =>
+                    'Se le asignó el requerimiento N.º ' .
+                    $requerimiento->id .
+                    ' "' .
+                    $requerimiento->titulo .
+                    '". Tarea asignada: ' .
+                    $tareaAsignada,
+
+                'leida' => false,
+            ]);
+        }
+
+
+        /*
+         * =====================================================
+         * NOTIFICACIÓN PARA EL FUNCIONARIO
+         * =====================================================
+         */
+
         $cambios = [];
 
         if (
             $prioridadAnterior !==
             $datos['prioridad']
         ) {
+
             $nombrePrioridad = ucfirst(
                 str_replace(
                     '_',
@@ -490,10 +540,12 @@ class RequerimientoController extends Controller
                 $nombrePrioridad;
         }
 
+
         if (
             $estadoAnterior !==
             $datos['estado']
         ) {
+
             $nombreEstado = ucfirst(
                 str_replace(
                     '_',
@@ -506,6 +558,7 @@ class RequerimientoController extends Controller
                 'estado: ' .
                 $nombreEstado;
         }
+
 
         if ($cambioTecnico) {
 
@@ -525,10 +578,12 @@ class RequerimientoController extends Controller
             }
         }
 
+
         if (
             $requerimiento->user_id &&
             count($cambios) > 0
         ) {
+
             Notificacion::create([
                 'user_id' =>
                     $requerimiento->user_id,
@@ -556,6 +611,7 @@ class RequerimientoController extends Controller
                 'leida' => false,
             ]);
         }
+
 
         return redirect()
             ->route('admin.requerimientos.index')

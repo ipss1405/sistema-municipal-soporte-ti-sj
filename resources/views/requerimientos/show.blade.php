@@ -2,135 +2,689 @@
 
 @section('content')
 
+{{-- Tabler UI --}}
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"
+>
+
 <style>
-    .detalle-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 25px;
-        align-items: start;
+    :root {
+        --sj-morado: #5B3F95;
+        --sj-morado-claro: #6B4BB0;
+        --sj-verde: #78BE20;
+        --sj-rojo: #EF3E24;
+        --sj-naranjo: #F26B21;
+
+        --sj-texto: #1F2937;
+        --sj-texto-suave: #667085;
+        --sj-borde: #E5E7EB;
+        --sj-fondo-suave: #F8F9FB;
     }
 
-    .responsable-ti {
-        background: #EEF7E8;
-        padding: 15px;
-        border-radius: 8px;
-        border-left: 5px solid #78BE20;
-        margin: 18px 0;
+    /* =========================================================
+       CONTENEDOR GENERAL
+       ========================================================= */
+
+    .detalle-wrapper {
+        margin-top: 24px;
+        margin-bottom: 28px;
     }
 
-    .responsable-ti h3 {
-        color: #5B3F95;
-        margin-top: 0;
+    /* =========================================================
+       CABECERA
+       ========================================================= */
+
+    .detalle-hero {
+        position: relative;
+        overflow: hidden;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        gap: 24px;
+
+        padding: 26px 30px;
+        margin-bottom: 20px;
+
+        border-top: 6px solid var(--sj-verde);
+        border-radius: 18px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #5B3F95 0%,
+                #A43D70 45%,
+                #EF3E24 78%,
+                #F26B21 100%
+            );
+
+        color: #ffffff;
+
+        box-shadow:
+            0 11px 28px rgba(91, 63, 149, 0.14);
+    }
+
+    .detalle-hero::after {
+        content: "";
+
+        position: absolute;
+
+        width: 180px;
+        height: 180px;
+
+        right: -70px;
+        bottom: -105px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(255, 255, 255, 0.08);
+    }
+
+    .detalle-hero-contenido {
+        position: relative;
+        z-index: 1;
+    }
+
+    .detalle-etiqueta {
+        display: inline-flex;
+        align-items: center;
+
+        padding: 6px 14px;
         margin-bottom: 10px;
-        font-size: 19px;
+
+        border-radius: 999px;
+
+        background: var(--sj-verde);
+
+        color: #ffffff;
+
+        font-size: 0.82rem;
+        font-weight: 700;
     }
 
-    .responsable-ti p {
-        margin: 5px 0;
+    .detalle-hero h1 {
+        margin: 0 0 7px;
+
+        color: #ffffff;
+
+        font-size: 2rem;
+        font-weight: 800;
     }
 
-    .sin-responsable {
-        display: inline-block;
-        background: #FEF3C7;
-        color: #92400E;
-        padding: 8px 12px;
-        border-radius: 8px;
-        border-left: 4px solid #F59E0B;
-        margin: 12px 0 18px;
-        font-size: 14px;
+    .detalle-hero p {
+        margin: 0;
+
+        color:
+            rgba(255, 255, 255, 0.88);
+
+        font-size: 0.92rem;
+        line-height: 1.5;
+    }
+
+    /* =========================================================
+       BOTÓN VOLVER
+       ========================================================= */
+
+    .btn-volver-detalle {
+        position: relative;
+        z-index: 1;
+
+        flex-shrink: 0;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 40px;
+
+        padding: 8px 15px;
+
+        border:
+            1px solid rgba(255, 255, 255, 0.60);
+
+        border-radius: 9px;
+
+        background:
+            rgba(255, 255, 255, 0.12);
+
+        color: #ffffff;
+
+        text-decoration: none;
+
+        font-size: 0.84rem;
+        font-weight: 700;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .btn-volver-detalle:hover {
+        background: #ffffff;
+
+        color: var(--sj-morado);
+
+        transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       RESUMEN SUPERIOR
+       ========================================================= */
+
+    .resumen-solicitud {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+
+        gap: 14px;
+
+        margin-bottom: 20px;
+    }
+
+    .resumen-item {
+        min-height: 92px;
+
+        padding: 16px 18px;
+
+        border: 1px solid #ECEEF2;
+        border-top: 4px solid var(--sj-verde);
+        border-radius: 13px;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 6px 17px rgba(91, 63, 149, 0.06);
+    }
+
+    .resumen-item-label {
+        display: block;
+
+        margin-bottom: 6px;
+
+        color: var(--sj-texto-suave);
+
+        font-size: 0.75rem;
+        font-weight: 700;
+
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .resumen-item-valor {
+        color: var(--sj-texto);
+
+        font-size: 0.92rem;
+        font-weight: 700;
+
+        line-height: 1.4;
+    }
+
+    /* =========================================================
+       TARJETAS GENERALES
+       ========================================================= */
+
+    .detalle-card {
+        padding: 22px;
+
+        margin-bottom: 18px;
+
+        border: 1px solid #ECEEF2;
+        border-radius: 15px;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 7px 20px rgba(91, 63, 149, 0.06);
+    }
+
+    .detalle-card h2 {
+        margin: 0 0 16px;
+
+        color: var(--sj-morado);
+
+        font-size: 1.3rem;
+        font-weight: 800;
+    }
+
+    .detalle-card h3 {
+        margin: 0 0 10px;
+
+        color: var(--sj-morado);
+
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    /* =========================================================
+       INFORMACIÓN PRINCIPAL
+       ========================================================= */
+
+    .datos-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 14px 24px;
+    }
+
+    .dato-item {
+        padding-bottom: 11px;
+
+        border-bottom:
+            1px solid #F0F1F3;
+    }
+
+    .dato-item strong {
+        display: block;
+
+        margin-bottom: 4px;
+
+        color: #525A66;
+
+        font-size: 0.79rem;
+        font-weight: 700;
+    }
+
+    .dato-item span {
+        color: var(--sj-texto);
+
+        font-size: 0.91rem;
+    }
+
+    /* =========================================================
+       DESCRIPCIÓN
+       ========================================================= */
+
+    .descripcion-box {
+        padding: 15px 17px;
+
+        border-left:
+            4px solid var(--sj-verde);
+
+        border-radius: 9px;
+
+        background: #F8FAF7;
+
+        color: #374151;
+
+        font-size: 0.90rem;
+        line-height: 1.6;
+    }
+
+    /* =========================================================
+       RESPONSABLE / ASIGNACIÓN
+       ========================================================= */
+
+    .asignacion-card {
+        border-left:
+            5px solid var(--sj-verde);
+    }
+
+    .asignacion-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 15px;
+    }
+
+    .asignacion-item strong {
+        display: block;
+
+        margin-bottom: 4px;
+
+        color: var(--sj-texto-suave);
+
+        font-size: 0.77rem;
+        font-weight: 700;
+    }
+
+    .asignacion-item span {
+        color: var(--sj-texto);
+
+        font-size: 0.90rem;
         font-weight: 600;
     }
 
-    .tarea-tecnico {
-        background: #F3E8FF;
-        padding: 15px;
+    .sin-responsable {
+        display: inline-flex;
+        align-items: center;
+
+        padding: 8px 12px;
+
+        border-left:
+            4px solid #F59E0B;
+
         border-radius: 8px;
-        border-left: 5px solid #5B3F95;
-        margin: 18px 0;
+
+        background: #FEF3C7;
+
+        color: #92400E;
+
+        font-size: 0.83rem;
+        font-weight: 700;
     }
 
-    .tarea-tecnico h3 {
-        color: #5B3F95;
-        margin-top: 0;
-        margin-bottom: 8px;
-        font-size: 19px;
+    /* =========================================================
+       TAREA ASIGNADA
+       ========================================================= */
+
+    .tarea-card {
+        border-left:
+            5px solid var(--sj-morado);
+
+        background: #FBF9FD;
     }
 
-    .tarea-tecnico p {
-        margin-bottom: 0;
+    .tarea-texto {
+        color: #374151;
+
+        font-size: 0.90rem;
+        line-height: 1.55;
     }
 
-    .gestion-tecnica {
-        background: #F8FAFC;
-        border: 1px solid #E5E7EB;
-        border-left: 5px solid #5B3F95;
-        border-radius: 8px;
-        padding: 16px;
-        margin: 18px 0;
-    }
+    /* =========================================================
+       GESTIÓN TÉCNICA
+       ========================================================= */
 
-    .gestion-tecnica h3 {
-        color: #5B3F95;
-        margin-top: 0;
-        margin-bottom: 12px;
-        font-size: 20px;
+    .gestion-card {
+        border-left:
+            5px solid var(--sj-morado);
     }
 
     .gestion-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px 20px;
+
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+
+        gap: 14px;
+
+        margin-bottom: 16px;
     }
 
     .gestion-item {
-        margin: 0;
+        padding: 13px 14px;
+
+        border-radius: 10px;
+
+        background: #F8F9FB;
     }
 
     .gestion-item strong {
         display: block;
-        margin-bottom: 3px;
+
+        margin-bottom: 5px;
+
+        color: var(--sj-texto-suave);
+
+        font-size: 0.76rem;
+        font-weight: 700;
     }
 
-    .avance-interno {
-        background: #FFFFFF;
-        border-radius: 6px;
-        padding: 12px;
+    .gestion-item span {
+        color: var(--sj-texto);
+
+        font-size: 0.88rem;
+        font-weight: 600;
+    }
+
+    /* =========================================================
+       MATERIAL
+       ========================================================= */
+
+    .material-box {
+        padding: 14px 16px;
+
         margin-top: 12px;
-        border-left: 4px solid #78BE20;
+
+        border-left:
+            4px solid var(--sj-naranjo);
+
+        border-radius: 9px;
+
+        background: #FFF7ED;
     }
 
-    .seguimiento-funcionario {
-        background: #EEF7E8;
-        padding: 15px;
-        border-radius: 8px;
-        border-left: 5px solid #78BE20;
-        margin: 18px 0;
+    .material-box strong {
+        display: block;
+
+        margin-bottom: 5px;
+
+        color: #9A3412;
+
+        font-size: 0.84rem;
     }
 
-    .seguimiento-funcionario h3 {
-        color: #5B3F95;
-        margin: 0 0 10px 0;
-        font-size: 19px;
+    .material-box div {
+        color: #6B3A19;
+
+        font-size: 0.89rem;
     }
 
-    .seguimiento-funcionario p {
-        margin: 6px 0;
+    /* =========================================================
+       AVANCE
+       ========================================================= */
+
+    .avance-box {
+        padding: 14px 16px;
+
+        margin-top: 12px;
+
+        border-left:
+            4px solid var(--sj-verde);
+
+        border-radius: 9px;
+
+        background: #F6FBF2;
     }
 
-    @media (max-width: 800px) {
-        .detalle-grid {
-            grid-template-columns: 1fr;
+    .avance-box strong {
+        display: block;
+
+        margin-bottom: 5px;
+
+        color: #3E6815;
+
+        font-size: 0.84rem;
+    }
+
+    .avance-box div {
+        color: #374151;
+
+        font-size: 0.89rem;
+        line-height: 1.5;
+    }
+
+    /* =========================================================
+       INFORMACIÓN FUNCIONARIO
+       ========================================================= */
+
+    .funcionario-card {
+        border-left:
+            5px solid var(--sj-verde);
+
+        background: #FBFFF8;
+    }
+
+    .funcionario-mensaje {
+        color: #374151;
+
+        font-size: 0.91rem;
+        line-height: 1.55;
+    }
+
+    .sin-informacion {
+        padding: 13px 15px;
+
+        border-left:
+            4px solid var(--sj-naranjo);
+
+        border-radius: 9px;
+
+        background: #FEF3C7;
+
+        color: #92400E;
+
+        font-size: 0.85rem;
+    }
+
+    /* =========================================================
+       SEGUIMIENTO FUNCIONARIO
+       ========================================================= */
+
+    .seguimiento-card {
+        border-left:
+            5px solid var(--sj-verde);
+    }
+
+    .seguimiento-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 14px;
+    }
+
+    /* =========================================================
+       ACCIONES
+       ========================================================= */
+
+    .detalle-acciones {
+        display: flex;
+        flex-wrap: wrap;
+
+        gap: 10px;
+
+        margin-top: 4px;
+    }
+
+    .btn-detalle-accion {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 42px;
+
+        padding: 9px 17px;
+
+        border: 0;
+        border-radius: 9px;
+
+        text-decoration: none;
+
+        font-size: 0.86rem;
+        font-weight: 700;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .btn-detalle-accion:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-accion-principal {
+        background: var(--sj-morado);
+        color: #ffffff;
+    }
+
+    .btn-accion-principal:hover {
+        background: var(--sj-verde);
+        color: #ffffff;
+    }
+
+    .btn-accion-secundaria {
+        background: #6B7280;
+        color: #ffffff;
+    }
+
+    .btn-accion-secundaria:hover {
+        background: #4B5563;
+        color: #ffffff;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 991px) {
+
+        .resumen-solicitud {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
         }
 
         .gestion-grid {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+
+        .asignacion-grid {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 767px) {
+
+        .detalle-wrapper {
+            margin-top: 16px;
+            margin-bottom: 20px;
+        }
+
+        .detalle-hero {
+            flex-direction: column;
+            align-items: flex-start;
+
+            padding: 22px;
+        }
+
+        .detalle-hero h1 {
+            font-size: 1.65rem;
+        }
+
+        .btn-volver-detalle {
+            width: 100%;
+        }
+
+        .resumen-solicitud,
+        .datos-grid,
+        .gestion-grid,
+        .asignacion-grid,
+        .seguimiento-grid {
             grid-template-columns: 1fr;
+        }
+
+        .detalle-card {
+            padding: 18px;
+        }
+
+        .detalle-acciones {
+            flex-direction: column;
+        }
+
+        .btn-detalle-accion {
+            width: 100%;
         }
     }
 </style>
 
 
 @php
-    $rolUsuario = auth()->user()->rol;
+
+    $rolUsuario =
+        auth()->user()->rol;
 
     $esTecnicoAsignado =
         $rolUsuario === 'tecnico' &&
@@ -139,411 +693,770 @@
     $puedeVerGestionInterna =
         $rolUsuario === 'administrador' ||
         $esTecnicoAsignado;
+
 @endphp
 
 
-<div class="card">
+<div class="container detalle-wrapper">
 
-    <h1>Detalle del requerimiento</h1>
+    {{-- =====================================================
+         CABECERA
+         ===================================================== --}}
 
-    <div class="detalle-grid">
+    <div class="detalle-hero">
 
-        <section>
+        <div class="detalle-hero-contenido">
 
-            <h2>Información de la solicitud</h2>
+            <span class="detalle-etiqueta">
+
+                @if ($rolUsuario === 'administrador')
+
+                    Gestión administrativa
+
+                @elseif ($rolUsuario === 'tecnico')
+
+                    Gestión técnica
+
+                @else
+
+                    Seguimiento de solicitud
+
+                @endif
+
+            </span>
+
+
+            <h1>
+                Requerimiento #{{ $requerimiento->id }}
+                · {{ $requerimiento->titulo }}
+            </h1>
+
 
             <p>
-                <strong>N° de requerimiento:</strong>
-                {{ $requerimiento->id }}
-            </p>
 
-            <p>
-                <strong>Título:</strong>
-                {{ $requerimiento->titulo }}
-            </p>
-
-            <p>
-                <strong>Categoría:</strong>
                 {{ ucfirst($requerimiento->categoria) }}
-            </p>
 
-            <p>
-                <strong>Prioridad:</strong>
+                ·
 
                 @if ($requerimiento->prioridad === 'sin_asignar')
-                    Sin asignar
+
+                    Prioridad sin asignar
+
                 @else
+
+                    Prioridad
                     {{ ucfirst($requerimiento->prioridad) }}
+
                 @endif
+
             </p>
 
-            <p>
-                <strong>Estado:</strong>
+        </div>
+
+
+        {{-- BOTÓN VOLVER SEGÚN EL ROL --}}
+
+        @if ($rolUsuario === 'administrador')
+
+            <a
+                href="{{ route('admin.requerimientos.index') }}"
+                class="btn-volver-detalle"
+            >
+                ← Volver a administración
+            </a>
+
+
+        @elseif ($rolUsuario === 'tecnico')
+
+            <a
+                href="{{ route('tecnico.dashboard') }}"
+                class="btn-volver-detalle"
+            >
+                ← Volver al panel técnico
+            </a>
+
+
+        @else
+
+            <a
+                href="{{ route('requerimientos.index') }}"
+                class="btn-volver-detalle"
+            >
+                ← Volver a mis requerimientos
+            </a>
+
+        @endif
+
+    </div>
+
+
+    {{-- =====================================================
+         RESUMEN
+         ===================================================== --}}
+
+    <div class="resumen-solicitud">
+
+        <div class="resumen-item">
+
+            <span class="resumen-item-label">
+                Estado
+            </span>
+
+            <div class="resumen-item-valor">
                 <x-estado :estado="$requerimiento->estado" />
-            </p>
+            </div>
 
-            <p>
-                <strong>Fecha de ingreso:</strong>
-                {{ $requerimiento->created_at->format('d-m-Y H:i') }}
-            </p>
+        </div>
 
 
-            {{-- RESPONSABLE TI --}}
-            @if ($requerimiento->tecnico)
+        <div class="resumen-item">
 
-                <div class="responsable-ti">
+            <span class="resumen-item-label">
+                Responsable TI
+            </span>
 
-                    <h3>Responsable TI</h3>
+            <div class="resumen-item-valor">
 
-                    <p>
-                        <strong>Técnico asignado:</strong>
+                {{ $requerimiento->tecnico?->name
+                    ?? 'Pendiente de asignación'
+                }}
+
+            </div>
+
+        </div>
+
+
+        <div class="resumen-item">
+
+            <span class="resumen-item-label">
+                Fecha de ingreso
+            </span>
+
+            <div class="resumen-item-valor">
+
+                {{ $requerimiento->created_at->format('d-m-Y') }}
+
+                <br>
+
+                {{ $requerimiento->created_at->format('H:i') }}
+
+            </div>
+
+        </div>
+
+
+        <div class="resumen-item">
+
+            <span class="resumen-item-label">
+                Última actualización
+            </span>
+
+            <div class="resumen-item-valor">
+
+                {{ $requerimiento->updated_at->format('d-m-Y') }}
+
+                <br>
+
+                {{ $requerimiento->updated_at->format('H:i') }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- =====================================================
+         INFORMACIÓN DE LA SOLICITUD
+         ===================================================== --}}
+
+    <div class="detalle-card">
+
+        <h2>
+            Información de la solicitud
+        </h2>
+
+
+        <div class="datos-grid">
+
+            <div class="dato-item">
+
+                <strong>
+                    N.º de requerimiento
+                </strong>
+
+                <span>
+                    #{{ $requerimiento->id }}
+                </span>
+
+            </div>
+
+
+            <div class="dato-item">
+
+                <strong>
+                    Título
+                </strong>
+
+                <span>
+                    {{ $requerimiento->titulo }}
+                </span>
+
+            </div>
+
+
+            <div class="dato-item">
+
+                <strong>
+                    Categoría
+                </strong>
+
+                <span>
+                    {{ ucfirst($requerimiento->categoria) }}
+                </span>
+
+            </div>
+
+
+            <div class="dato-item">
+
+                <strong>
+                    Prioridad
+                </strong>
+
+                <span>
+
+                    @if ($requerimiento->prioridad === 'sin_asignar')
+
+                        Sin asignar
+
+                    @else
+
+                        {{ ucfirst($requerimiento->prioridad) }}
+
+                    @endif
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div style="margin-top: 18px;">
+
+            <h3>
+                Descripción
+            </h3>
+
+            <div class="descripcion-box">
+
+                {{ $requerimiento->descripcion }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- =====================================================
+         RESPONSABLE TI
+         ===================================================== --}}
+
+    <div class="detalle-card asignacion-card">
+
+        <h2>
+            Asignación TI
+        </h2>
+
+
+        @if ($requerimiento->tecnico)
+
+            <div class="asignacion-grid">
+
+                <div class="asignacion-item">
+
+                    <strong>
+                        Técnico responsable
+                    </strong>
+
+                    <span>
                         {{ $requerimiento->tecnico->name }}
-                    </p>
+                    </span>
+
+                </div>
+
+
+                <div class="asignacion-item">
+
+                    <strong>
+                        Fecha de asignación
+                    </strong>
+
+                    <span>
+
+                        @if ($requerimiento->fecha_asignacion)
+
+                            {{ $requerimiento->fecha_asignacion->format('d-m-Y H:i') }}
+
+                        @else
+
+                            No registrada
+
+                        @endif
+
+                    </span>
+
+                </div>
+
+
+                <div class="asignacion-item">
+
+                    <strong>
+                        Tiempo estimado
+                    </strong>
+
+                    <span>
+                        {{ $requerimiento->tiempo_estimado
+                            ?: 'No informado'
+                        }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        @else
+
+            <div class="sin-responsable">
+                Responsable TI pendiente de asignación
+            </div>
+
+        @endif
+
+    </div>
+
+
+    {{-- =====================================================
+         TAREA INTERNA
+         SOLO ADMINISTRADOR Y TÉCNICO ASIGNADO
+         ===================================================== --}}
+
+    @if (
+        $puedeVerGestionInterna &&
+        $requerimiento->tarea_asignada
+    )
+
+        <div class="detalle-card tarea-card">
+
+            <h2>
+                Tarea asignada al técnico
+            </h2>
+
+            <div class="tarea-texto">
+
+                {{ $requerimiento->tarea_asignada }}
+
+            </div>
+
+        </div>
+
+    @endif
+
+
+    {{-- =====================================================
+         GESTIÓN TÉCNICA INTERNA
+         ===================================================== --}}
+
+    @if (
+        $puedeVerGestionInterna &&
+        (
+            $requerimiento->avance_tecnico ||
+            $requerimiento->tiempo_estimado ||
+            $requerimiento->requiere_materiales
+        )
+    )
+
+        <div class="detalle-card gestion-card">
+
+            <h2>
+                Gestión técnica
+            </h2>
+
+
+            <div class="gestion-grid">
+
+                <div class="gestion-item">
+
+                    <strong>
+                        Responsable
+                    </strong>
+
+                    <span>
+                        {{ $requerimiento->tecnico?->name
+                            ?? 'Sin responsable'
+                        }}
+                    </span>
+
+                </div>
+
+
+                <div class="gestion-item">
+
+                    <strong>
+                        Estado actual
+                    </strong>
+
+                    <span>
+                        <x-estado :estado="$requerimiento->estado" />
+                    </span>
+
+                </div>
+
+
+                <div class="gestion-item">
+
+                    <strong>
+                        ¿Requiere materiales?
+                    </strong>
+
+                    <span>
+                        {{ $requerimiento->requiere_materiales
+                            ? 'Sí'
+                            : 'No'
+                        }}
+                    </span>
+
+                </div>
+
+
+                <div class="gestion-item">
+
+                    <strong>
+                        Tiempo estimado
+                    </strong>
+
+                    <span>
+                        {{ $requerimiento->tiempo_estimado
+                            ?: 'No informado'
+                        }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            {{-- MATERIAL --}}
+
+            @if (
+                $requerimiento->requiere_materiales &&
+                $requerimiento->materiales_requeridos
+            )
+
+                <div class="material-box">
+
+                    <strong>
+                        Materiales o repuestos requeridos
+                    </strong>
+
+                    <div>
+                        {{ $requerimiento->materiales_requeridos }}
+                    </div>
+
+                </div>
+
+            @endif
+
+
+            {{-- AVANCE --}}
+
+            @if ($requerimiento->avance_tecnico)
+
+                <div class="avance-box">
+
+                    <strong>
+                        Avance o trabajo realizado
+                    </strong>
+
+                    <div>
+                        {{ $requerimiento->avance_tecnico }}
+                    </div>
+
+                </div>
+
+            @endif
+
+        </div>
+
+    @endif
+
+
+    {{-- =====================================================
+         SEGUIMIENTO SIMPLIFICADO PARA FUNCIONARIO
+         ===================================================== --}}
+
+    @if (
+        $rolUsuario === 'funcionario' &&
+        $requerimiento->tiempo_estimado
+    )
+
+        <div class="detalle-card seguimiento-card">
+
+            <h2>
+                Seguimiento de la atención
+            </h2>
+
+
+            <div class="seguimiento-grid">
+
+                <div class="gestion-item">
+
+                    <strong>
+                        Responsable TI
+                    </strong>
+
+                    <span>
+                        {{ $requerimiento->tecnico?->name
+                            ?? 'Pendiente de asignación'
+                        }}
+                    </span>
+
+                </div>
+
+
+                <div class="gestion-item">
+
+                    <strong>
+                        Estado
+                    </strong>
+
+                    <span>
+                        <x-estado :estado="$requerimiento->estado" />
+                    </span>
+
+                </div>
+
+
+                <div class="gestion-item">
+
+                    <strong>
+                        Tiempo estimado
+                    </strong>
+
+                    <span>
+                        {{ $requerimiento->tiempo_estimado }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    @endif
+
+
+    {{-- =====================================================
+         INFORMACIÓN PARA EL FUNCIONARIO
+         ===================================================== --}}
+
+    <div class="detalle-card funcionario-card">
+
+        <h2>
+            Información para el funcionario
+        </h2>
+
+
+        @if ($requerimiento->respuesta_admin)
+
+            <div class="funcionario-mensaje">
+
+                {{ $requerimiento->respuesta_admin }}
+
+            </div>
+
+
+        @else
+
+            <div class="sin-informacion">
+
+                El área de Informática aún no ha ingresado
+                información para este requerimiento.
+
+            </div>
+
+        @endif
+
+    </div>
+
+
+    {{-- =====================================================
+         FECHAS DE CIERRE
+         ===================================================== --}}
+
+    <div class="detalle-card">
+
+        <h2>
+            Seguimiento del requerimiento
+        </h2>
+
+
+        <div class="datos-grid">
+
+            <div class="dato-item">
+
+                <strong>
+                    Fecha de ingreso
+                </strong>
+
+                <span>
+                    {{ $requerimiento->created_at->format('d-m-Y H:i') }}
+                </span>
+
+            </div>
+
+
+            <div class="dato-item">
+
+                <strong>
+                    Última actualización
+                </strong>
+
+                <span>
+                    {{ $requerimiento->updated_at->format('d-m-Y H:i') }}
+                </span>
+
+            </div>
+
+
+            <div class="dato-item">
+
+                <strong>
+                    Fecha de asignación TI
+                </strong>
+
+                <span>
 
                     @if ($requerimiento->fecha_asignacion)
 
-                        <p>
-                            <strong>Fecha y hora de asignación:</strong>
-                            {{ $requerimiento->fecha_asignacion->format('d-m-Y H:i') }}
-                        </p>
+                        {{ $requerimiento->fecha_asignacion->format('d-m-Y H:i') }}
+
+                    @else
+
+                        Pendiente
 
                     @endif
 
-                </div>
+                </span>
 
-            @else
-
-                <div class="sin-responsable">
-                    ⚠️ Responsable TI pendiente de asignación
-                </div>
-
-            @endif
+            </div>
 
 
-            {{-- TAREA ASIGNADA --}}
-            {{-- Solo administrador y técnico asignado --}}
-            @if ($puedeVerGestionInterna)
+            <div class="dato-item">
 
-                @if ($requerimiento->tarea_asignada)
+                <strong>
+                    Fecha de cierre
+                </strong>
 
-                    <div class="tarea-tecnico">
+                <span>
 
-                        <h3>Tarea asignada al técnico</h3>
+                    @if ($requerimiento->fecha_cierre)
 
-                        <p>
-                            {{ $requerimiento->tarea_asignada }}
-                        </p>
+                        {{ $requerimiento->fecha_cierre->format('d-m-Y H:i') }}
 
-                    </div>
+                    @else
 
-                @endif
-
-            @endif
-
-
-            {{-- DESCRIPCIÓN ORIGINAL --}}
-            <p>
-                <strong>Descripción:</strong>
-            </p>
-
-            <p style="
-                background: #F9FAFB;
-                padding: 15px;
-                border-radius: 6px;
-                border-left: 5px solid #78BE20;
-            ">
-                {{ $requerimiento->descripcion }}
-            </p>
-
-
-            {{-- GESTIÓN TÉCNICA INTERNA --}}
-            {{-- Visible solo para administrador y técnico responsable --}}
-            @if (
-                $puedeVerGestionInterna &&
-                (
-                    $requerimiento->avance_tecnico ||
-                    $requerimiento->tiempo_estimado ||
-                    $requerimiento->requiere_materiales
-                )
-            )
-
-                <div class="gestion-tecnica">
-
-                    <h3>Gestión técnica</h3>
-
-                    <div class="gestion-grid">
-
-                        <p class="gestion-item">
-
-                            <strong>Responsable</strong>
-
-                            {{ $requerimiento->tecnico?->name ?? 'Sin responsable' }}
-
-                        </p>
-
-
-                        <p class="gestion-item">
-
-                            <strong>Estado actual</strong>
-
-                            <x-estado :estado="$requerimiento->estado" />
-
-                        </p>
-
-
-                        <p class="gestion-item">
-
-                            <strong>¿Requiere materiales?</strong>
-
-                            {{ $requerimiento->requiere_materiales ? 'Sí' : 'No' }}
-
-                        </p>
-
-
-                        <p class="gestion-item">
-
-                            <strong>Tiempo estimado</strong>
-
-                            {{ $requerimiento->tiempo_estimado ?: 'No informado' }}
-
-                        </p>
-
-                    </div>
-
-
-                    @if (
-                        $requerimiento->requiere_materiales &&
-                        $requerimiento->materiales_requeridos
-                    )
-
-                        <div style="
-                            background: #FFF7ED;
-                            border-left: 4px solid #F26B21;
-                            padding: 12px;
-                            border-radius: 6px;
-                            margin-top: 12px;
-                        ">
-
-                            <strong>
-                                Materiales o repuestos requeridos:
-                            </strong>
-
-                            <div style="margin-top: 5px;">
-                                {{ $requerimiento->materiales_requeridos }}
-                            </div>
-
-                        </div>
+                        Pendiente
 
                     @endif
 
+                </span>
 
-                    @if ($requerimiento->avance_tecnico)
+            </div>
 
-                        <div class="avance-interno">
+        </div>
 
-                            <strong>
-                                Avance o trabajo realizado:
-                            </strong>
-
-                            <div style="margin-top: 6px;">
-                                {{ $requerimiento->avance_tecnico }}
-                            </div>
-
-                        </div>
-
-                    @endif
-
-                </div>
-
-            @endif
+    </div>
 
 
-            {{-- INFORMACIÓN SIMPLIFICADA PARA EL FUNCIONARIO --}}
-            @if (
-                $rolUsuario === 'funcionario' &&
-                $requerimiento->tiempo_estimado
-            )
+    {{-- =====================================================
+         ACCIONES SEGÚN ROL
+         ===================================================== --}}
 
-                <div class="seguimiento-funcionario">
+    <div class="detalle-acciones">
 
-                    <h3>Seguimiento de la atención</h3>
+        @if ($rolUsuario === 'administrador')
 
-                    <p>
-                        <strong>Responsable TI:</strong>
-                        {{ $requerimiento->tecnico?->name ?? 'Pendiente de asignación' }}
-                    </p>
-
-                    <p>
-                        <strong>Estado:</strong>
-                        <x-estado :estado="$requerimiento->estado" />
-                    </p>
-
-                    <p>
-                        <strong>Tiempo estimado:</strong>
-                        {{ $requerimiento->tiempo_estimado }}
-                    </p>
-
-                </div>
-
-            @endif
+            <a
+                href="{{ route(
+                    'admin.requerimientos.edit',
+                    $requerimiento
+                ) }}"
+                class="
+                    btn-detalle-accion
+                    btn-accion-principal
+                "
+            >
+                Gestionar requerimiento
+            </a>
 
 
-            {{-- INFORMACIÓN PARA EL FUNCIONARIO --}}
-            @if ($requerimiento->respuesta_admin)
-
-                <p>
-                    <strong>Información para el funcionario:</strong>
-                </p>
-
-                <p style="
-                    background: #EAF7E3;
-                    padding: 15px;
-                    border-radius: 6px;
-                    border-left: 5px solid #5B3F95;
-                ">
-                    {{ $requerimiento->respuesta_admin }}
-                </p>
-
-            @else
-
-                <p style="
-                    background: #FEF3C7;
-                    color: #92400E;
-                    padding: 12px;
-                    border-radius: 6px;
-                    border-left: 5px solid #F26B21;
-                ">
-                    El área de Informática aún no ha ingresado
-                    información para este requerimiento.
-                </p>
-
-            @endif
+            <a
+                href="{{ route(
+                    'admin.requerimientos.index'
+                ) }}"
+                class="
+                    btn-detalle-accion
+                    btn-accion-secundaria
+                "
+            >
+                Volver a administración
+            </a>
 
 
-            {{-- NAVEGACIÓN SEGÚN ROL --}}
+        @elseif ($rolUsuario === 'tecnico')
 
-            @if ($rolUsuario === 'administrador')
-
-                <a
-                    href="{{ route('admin.requerimientos.edit', $requerimiento) }}"
-                    class="btn"
-                >
-                    Gestionar requerimiento
-                </a>
-
-                <a
-                    href="{{ route('admin.requerimientos.index') }}"
-                    class="btn"
-                    style="
-                        background: #6B7280;
-                        margin-left: 10px;
-                    "
-                >
-                    Volver a administración
-                </a>
+            <a
+                href="{{ route(
+                    'tecnico.requerimientos.gestionar',
+                    $requerimiento
+                ) }}"
+                class="
+                    btn-detalle-accion
+                    btn-accion-principal
+                "
+            >
+                Gestionar atención
+            </a>
 
 
-            @elseif ($rolUsuario === 'tecnico')
-
-                <a
-                    href="{{ route('tecnico.requerimientos.gestionar', $requerimiento) }}"
-                    class="btn"
-                >
-                    Gestionar atención
-                </a>
-
-                <a
-                    href="{{ route('tecnico.dashboard') }}"
-                    class="btn"
-                    style="
-                        background: #6B7280;
-                        margin-left: 10px;
-                    "
-                >
-                    Volver al Panel Técnico
-                </a>
+            <a
+                href="{{ route('tecnico.dashboard') }}"
+                class="
+                    btn-detalle-accion
+                    btn-accion-secundaria
+                "
+            >
+                Volver al panel técnico
+            </a>
 
 
-            @else
+        @else
 
-                <a
-                    href="{{ route('requerimientos.index') }}"
-                    class="btn"
-                    style="background: #6B7280;"
-                >
-                    Volver a mis requerimientos
-                </a>
+            <a
+                href="{{ route('requerimientos.index') }}"
+                class="
+                    btn-detalle-accion
+                    btn-accion-secundaria
+                "
+            >
+                Volver a mis requerimientos
+            </a>
 
-            @endif
-
-        </section>
-
-
-        {{-- PANEL DE SEGUIMIENTO --}}
-        <aside class="panel-accesos">
-
-            <h2>Seguimiento</h2>
-
-            <p>
-                <strong>Estado actual:</strong><br>
-                <x-estado :estado="$requerimiento->estado" />
-            </p>
-
-            <p>
-                <strong>Responsable TI:</strong><br>
-
-                @if ($requerimiento->tecnico)
-                    {{ $requerimiento->tecnico->name }}
-                @else
-                    Pendiente de asignación
-                @endif
-            </p>
-
-            <p>
-                <strong>Ingreso:</strong><br>
-                {{ $requerimiento->created_at->format('d-m-Y H:i') }}
-            </p>
-
-            @if ($requerimiento->fecha_asignacion)
-
-                <p>
-                    <strong>Asignación TI:</strong><br>
-                    {{ $requerimiento->fecha_asignacion->format('d-m-Y H:i') }}
-                </p>
-
-            @endif
-
-
-            @if ($requerimiento->tiempo_estimado)
-
-                <p>
-                    <strong>Tiempo estimado:</strong><br>
-                    {{ $requerimiento->tiempo_estimado }}
-                </p>
-
-            @endif
-
-
-            <p>
-                <strong>Última actualización:</strong><br>
-                {{ $requerimiento->updated_at->format('d-m-Y H:i') }}
-            </p>
-
-            <p>
-                <strong>Fecha de cierre:</strong><br>
-
-                @if ($requerimiento->fecha_cierre)
-
-                    {{ $requerimiento->fecha_cierre->format('d-m-Y H:i') }}
-
-                @else
-
-                    Pendiente
-
-                @endif
-            </p>
-
-        </aside>
+        @endif
 
     </div>
 

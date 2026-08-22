@@ -2,132 +2,819 @@
 
 @section('content')
 
+{{-- Tabler UI --}}
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"
+>
+
 <style>
-    .filtros-panel {
-        background: #F9FAFB;
-        border: 1px solid #E5E7EB;
-        border-left: 5px solid #5B3F95;
-        border-radius: 10px;
-        padding: 18px;
-        margin-bottom: 22px;
+    :root {
+        --sj-morado: #5B3F95;
+        --sj-morado-claro: #6B4BB0;
+        --sj-verde: #78BE20;
+        --sj-rojo: #EF3E24;
+        --sj-naranjo: #F26B21;
+
+        --sj-texto: #1F2937;
+        --sj-texto-suave: #667085;
+        --sj-borde: #E5E7EB;
+        --sj-fondo-suave: #F8F9FB;
     }
 
-    .filtros-panel h3 {
-        color: #5B3F95;
-        font-size: 20px;
-        margin-top: 0;
-        margin-bottom: 15px;
+    /* =========================================================
+       CONTENEDOR GENERAL
+       ========================================================= */
+
+    .admin-requerimientos-wrapper {
+        margin-top: 24px;
+        margin-bottom: 28px;
+    }
+
+
+    /* =========================================================
+       CABECERA
+       ========================================================= */
+
+    .requerimientos-hero {
+        position: relative;
+        overflow: hidden;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        gap: 25px;
+
+        padding: 26px 30px;
+
+        margin-bottom: 20px;
+
+        border-top: 6px solid var(--sj-verde);
+        border-radius: 18px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #5B3F95 0%,
+                #A43D70 45%,
+                #EF3E24 78%,
+                #F26B21 100%
+            );
+
+        color: #ffffff;
+
+        box-shadow:
+            0 11px 28px rgba(91, 63, 149, 0.14);
+    }
+
+    .requerimientos-hero::after {
+        content: "";
+
+        position: absolute;
+
+        width: 180px;
+        height: 180px;
+
+        right: -70px;
+        bottom: -105px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-contenido-admin {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-etiqueta {
+        display: inline-flex;
+        align-items: center;
+
+        padding: 6px 14px;
+
+        margin-bottom: 10px;
+
+        border-radius: 999px;
+
+        background: var(--sj-verde);
+
+        color: #ffffff;
+
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .requerimientos-hero h1 {
+        margin: 0 0 7px;
+
+        color: #ffffff;
+
+        font-size: 2rem;
+        font-weight: 800;
+    }
+
+    .requerimientos-hero p {
+        max-width: 760px;
+
+        margin: 0;
+
+        color:
+            rgba(255, 255, 255, 0.88);
+
+        font-size: 0.92rem;
+        line-height: 1.5;
+    }
+
+    .btn-volver-panel {
+        position: relative;
+        z-index: 1;
+
+        flex-shrink: 0;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 40px;
+
+        padding: 8px 15px;
+
+        border:
+            1px solid rgba(255, 255, 255, 0.60);
+
+        border-radius: 9px;
+
+        background:
+            rgba(255, 255, 255, 0.12);
+
+        color: #ffffff;
+
+        text-decoration: none;
+
+        font-size: 0.84rem;
+        font-weight: 700;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .btn-volver-panel:hover {
+        background: #ffffff;
+        color: var(--sj-morado);
+
+        transform: translateY(-1px);
+    }
+
+
+    /* =========================================================
+       FILTROS
+       ========================================================= */
+
+    .filtros-card {
+        margin-bottom: 20px;
+
+        padding: 21px;
+
+        border: 1px solid #ECEEF2;
+        border-left: 5px solid var(--sj-morado);
+        border-radius: 15px;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 7px 20px rgba(91, 63, 149, 0.07);
+    }
+
+    .filtros-cabecera {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 15px;
+
+        margin-bottom: 16px;
+    }
+
+    .filtros-cabecera h2 {
+        margin: 0;
+
+        color: var(--sj-morado);
+
+        font-size: 1.25rem;
+        font-weight: 800;
+    }
+
+    .contador-resultados {
+        display: inline-flex;
+        align-items: center;
+
+        padding: 6px 12px;
+
+        border-radius: 999px;
+
+        background:
+            rgba(120, 190, 32, 0.12);
+
+        color: #4E7F18;
+
+        font-size: 0.82rem;
+        font-weight: 700;
     }
 
     .filtros-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+
         gap: 14px;
     }
 
     .filtro-campo label {
         display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
+
+        margin-bottom: 6px;
+
+        color: var(--sj-texto);
+
+        font-size: 0.84rem;
+        font-weight: 700;
     }
 
-    .filtro-campo select {
-        margin: 0;
+    .filtro-campo .form-select {
+        min-height: 42px;
+
+        border:
+            1px solid var(--sj-borde);
+
+        border-radius: 8px;
+
+        color: var(--sj-texto);
+
+        font-size: 0.88rem;
+    }
+
+    .filtro-campo .form-select:focus {
+        border-color:
+            var(--sj-morado);
+
+        box-shadow:
+            0 0 0 3px
+            rgba(91, 63, 149, 0.10);
     }
 
     .filtros-acciones {
         display: flex;
-        gap: 10px;
+        align-items: center;
+
+        gap: 9px;
+
         margin-top: 16px;
-        flex-wrap: wrap;
+    }
+
+    .btn-filtrar {
+        min-height: 40px;
+
+        padding: 8px 17px;
+
+        border: 0;
+        border-radius: 8px;
+
+        background:
+            var(--sj-morado);
+
+        color: #ffffff;
+
+        font-size: 0.86rem;
+        font-weight: 700;
+
+        transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .btn-filtrar:hover {
+        background:
+            var(--sj-verde);
+
+        color: #ffffff;
+
+        transform: translateY(-1px);
     }
 
     .btn-limpiar {
-        background: #6B7280;
+        min-height: 40px;
+
+        padding: 8px 17px;
+
+        border: 1px solid #D6DAE0;
+        border-radius: 8px;
+
+        background: #ffffff;
+
+        color: #626B78;
+
+        font-size: 0.86rem;
+        font-weight: 700;
+
+        text-decoration: none;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease;
     }
 
-    .resultado-filtros {
-        margin-top: 15px;
-        margin-bottom: 5px;
-        color: #4B5563;
-        font-size: 14px;
+    .btn-limpiar:hover {
+        background: #F2F3F5;
+
+        color: #374151;
     }
 
-    .tabla-wrapper {
+
+    /* =========================================================
+       TABLA
+       ========================================================= */
+
+    .tabla-card {
+        overflow: hidden;
+
+        border: 1px solid #ECEEF2;
+        border-radius: 16px;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 8px 22px rgba(91, 63, 149, 0.07);
+    }
+
+    .tabla-scroll {
         width: 100%;
         overflow-x: auto;
     }
 
+    .tabla-requerimientos {
+        width: 100%;
+
+        margin: 0;
+
+        border-collapse: collapse;
+    }
+
+    .tabla-requerimientos thead th {
+        padding: 14px 12px;
+
+        background: #F5F3F8;
+
+        color: var(--sj-morado);
+
+        border-bottom:
+            1px solid #E5E7EB;
+
+        font-size: 0.82rem;
+        font-weight: 800;
+
+        vertical-align: middle;
+
+        white-space: nowrap;
+    }
+
+    .tabla-requerimientos tbody td {
+        padding: 13px 12px;
+
+        border-bottom:
+            1px solid #ECEEF2;
+
+        color: #374151;
+
+        font-size: 0.86rem;
+
+        vertical-align: middle;
+    }
+
+    .tabla-requerimientos tbody tr {
+        transition:
+            background 0.18s ease;
+    }
+
+    .tabla-requerimientos tbody tr:hover {
+        background: #FBFAFD;
+    }
+
+    .tabla-requerimientos tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .numero-requerimiento {
+        color: var(--sj-morado);
+        font-weight: 800;
+    }
+
+    .funcionario-nombre {
+        font-weight: 600;
+        color: var(--sj-texto);
+    }
+
+    .titulo-requerimiento {
+        min-width: 140px;
+        max-width: 210px;
+    }
+
+    .fecha-requerimiento {
+        min-width: 105px;
+        white-space: nowrap;
+
+        color: #667085;
+
+        font-size: 0.82rem;
+    }
+
+    .fecha-requerimiento .hora {
+        display: block;
+
+        margin-top: 2px;
+
+        color: #98A0AC;
+
+        font-size: 0.77rem;
+    }
+
+
+    /* =========================================================
+       PRIORIDADES
+       ========================================================= */
+
+    .badge-prioridad {
+        display: inline-flex;
+        align-items: center;
+
+        padding: 5px 10px;
+
+        border-radius: 999px;
+
+        font-size: 0.76rem;
+        font-weight: 700;
+
+        white-space: nowrap;
+    }
+
+    .prioridad-sin-asignar {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .prioridad-baja {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    .prioridad-media {
+        background: #E0E7FF;
+        color: #3730A3;
+    }
+
+    .prioridad-alta {
+        background: #FFEDD5;
+        color: #9A3412;
+    }
+
+    .prioridad-urgente {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+
+    /* =========================================================
+       ACCIONES DE LA TABLA
+       ========================================================= */
+
     .acciones-requerimiento {
         display: flex;
-        gap: 7px;
-        flex-wrap: wrap;
         align-items: center;
-        min-width: 300px;
+
+        gap: 6px;
+
+        min-width: 250px;
+
+        white-space: nowrap;
     }
 
     .acciones-requerimiento form {
         margin: 0;
     }
 
-    .btn-detalle {
+    .btn-tabla {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 36px;
+
+        padding: 7px 11px;
+
+        border: 0;
+        border-radius: 7px;
+
+        text-decoration: none;
+
+        font-size: 0.78rem;
+        font-weight: 700;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .btn-tabla:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-ver {
         background: #6B7280;
+        color: #ffffff;
     }
 
-    .btn-detalle:hover {
-        background: #4B5563;
+    .btn-ver:hover {
+        background: #535B68;
+        color: #ffffff;
     }
 
-    @media (max-width: 950px) {
+    .btn-gestionar {
+        background: var(--sj-morado);
+        color: #ffffff;
+    }
+
+    .btn-gestionar:hover {
+        background: var(--sj-verde);
+        color: #ffffff;
+    }
+
+    .btn-eliminar {
+        background: var(--sj-rojo);
+        color: #ffffff;
+
+        cursor: pointer;
+    }
+
+    .btn-eliminar:hover {
+        background: #D93420;
+        color: #ffffff;
+    }
+
+
+    /* =========================================================
+       PAGINACIÓN
+       ========================================================= */
+
+    .paginacion-contenedor {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        gap: 16px;
+
+        padding: 16px 18px;
+
+        border-top:
+            1px solid #ECEEF2;
+
+        background: #FCFCFD;
+
+        flex-wrap: wrap;
+    }
+
+    .paginacion-info {
+        color: #6B7280;
+
+        font-size: 0.82rem;
+    }
+
+    .paginacion-info strong {
+        color: var(--sj-texto);
+    }
+
+    .paginacion {
+        display: flex;
+        align-items: center;
+
+        gap: 5px;
+
+        flex-wrap: wrap;
+    }
+
+    .pagina-enlace,
+    .pagina-deshabilitada {
+        min-width: 36px;
+        height: 36px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0 10px;
+
+        border-radius: 7px;
+
+        font-size: 0.79rem;
+        font-weight: 700;
+    }
+
+    .pagina-enlace {
+        border:
+            1px solid #E1E4E9;
+
+        background: #ffffff;
+
+        color: var(--sj-morado);
+
+        text-decoration: none;
+
+        transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            color 0.2s ease;
+    }
+
+    .pagina-enlace:hover {
+        border-color:
+            var(--sj-morado);
+
+        background: #F5F1FA;
+
+        color:
+            var(--sj-morado);
+    }
+
+    .pagina-activa {
+        border-color:
+            var(--sj-morado);
+
+        background:
+            var(--sj-morado);
+
+        color: #ffffff;
+    }
+
+    .pagina-activa:hover {
+        background:
+            var(--sj-morado);
+
+        color: #ffffff;
+    }
+
+    .pagina-deshabilitada {
+        border:
+            1px solid #E5E7EB;
+
+        background: #F3F4F6;
+
+        color: #A0A7B0;
+    }
+
+
+    /* =========================================================
+       SIN RESULTADOS
+       ========================================================= */
+
+    .sin-resultados {
+        padding: 35px !important;
+
+        text-align: center;
+
+        color: #7A8493 !important;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 991px) {
+
+        .requerimientos-hero {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
         .filtros-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
         }
     }
 
     @media (max-width: 600px) {
+
+        .admin-requerimientos-wrapper {
+            margin-top: 16px;
+        }
+
+        .requerimientos-hero {
+            padding: 22px;
+        }
+
+        .requerimientos-hero h1 {
+            font-size: 1.65rem;
+        }
+
+        .btn-volver-panel {
+            width: 100%;
+        }
+
+        .filtros-card {
+            padding: 17px;
+        }
+
+        .filtros-cabecera {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
         .filtros-grid {
             grid-template-columns: 1fr;
         }
 
-        .filtros-acciones .btn {
+        .filtros-acciones {
+            flex-direction: column;
+        }
+
+        .btn-filtrar,
+        .btn-limpiar {
             width: 100%;
             text-align: center;
+        }
+
+        .paginacion-contenedor {
+            align-items: flex-start;
+            flex-direction: column;
         }
     }
 </style>
 
-<div class="card">
 
-    <h1>Administración de requerimientos</h1>
+<div class="container admin-requerimientos-wrapper">
 
-    <p>
-        En esta sección el área de Informática puede revisar,
-        asignar prioridades, consultar la gestión técnica,
-        gestionar o eliminar los requerimientos ingresados
-        por los funcionarios municipales.
-    </p>
+    {{-- =====================================================
+         CABECERA
+         ===================================================== --}}
 
-    <a
-        href="{{ route('admin.dashboard') }}"
-        class="btn"
-        style="
-            background: #6B7280;
-            margin-bottom: 20px;
-        "
-    >
-        Volver al panel de administración
-    </a>
+    <div class="requerimientos-hero">
+
+        <div class="hero-contenido-admin">
+
+            <span class="hero-etiqueta">
+                Gestión administrativa
+            </span>
+
+            <h1>
+                Administración de requerimientos
+            </h1>
+
+            <p>
+                Revise, filtre y gestione los requerimientos
+                registrados por los funcionarios municipales.
+            </p>
+
+        </div>
 
 
-    {{-- =========================
+        <a
+            href="{{ route('admin.dashboard') }}"
+            class="btn-volver-panel"
+        >
+            ← Volver al panel
+        </a>
+
+    </div>
+
+
+    {{-- =====================================================
          FILTROS
-         ========================= --}}
+         ===================================================== --}}
 
-    <div class="filtros-panel">
+    <div class="filtros-card">
 
-        <h3>
-            Filtrar requerimientos
-        </h3>
+        <div class="filtros-cabecera">
+
+            <h2>
+                Filtrar requerimientos
+            </h2>
+
+
+            <div class="contador-resultados">
+
+                {{ $requerimientos->total() }}
+                requerimientos encontrados
+
+            </div>
+
+        </div>
+
 
         <form
             action="{{ route('admin.requerimientos.index') }}"
@@ -136,7 +823,8 @@
 
             <div class="filtros-grid">
 
-                {{-- Estado --}}
+
+                {{-- ESTADO --}}
                 <div class="filtro-campo">
 
                     <label for="estado">
@@ -146,6 +834,7 @@
                     <select
                         name="estado"
                         id="estado"
+                        class="form-select"
                     >
 
                         <option value="">
@@ -199,7 +888,7 @@
                 </div>
 
 
-                {{-- Prioridad --}}
+                {{-- PRIORIDAD --}}
                 <div class="filtro-campo">
 
                     <label for="prioridad">
@@ -209,6 +898,7 @@
                     <select
                         name="prioridad"
                         id="prioridad"
+                        class="form-select"
                     >
 
                         <option value="">
@@ -255,7 +945,7 @@
                 </div>
 
 
-                {{-- Categoría --}}
+                {{-- CATEGORÍA --}}
                 <div class="filtro-campo">
 
                     <label for="categoria">
@@ -265,6 +955,7 @@
                     <select
                         name="categoria"
                         id="categoria"
+                        class="form-select"
                     >
 
                         <option value="">
@@ -332,7 +1023,7 @@
                 </div>
 
 
-                {{-- Funcionario --}}
+                {{-- FUNCIONARIO --}}
                 <div class="filtro-campo">
 
                     <label for="funcionario">
@@ -342,6 +1033,7 @@
                     <select
                         name="funcionario"
                         id="funcionario"
+                        class="form-select"
                     >
 
                         <option value="">
@@ -370,14 +1062,15 @@
 
                 <button
                     type="submit"
-                    class="btn"
+                    class="btn-filtrar"
                 >
                     Filtrar
                 </button>
 
+
                 <a
                     href="{{ route('admin.requerimientos.index') }}"
-                    class="btn btn-limpiar"
+                    class="btn-limpiar"
                 >
                     Limpiar filtros
                 </a>
@@ -386,167 +1079,346 @@
 
         </form>
 
-
-        <div class="resultado-filtros">
-
-            Requerimientos encontrados:
-
-            <strong>
-                {{ $requerimientos->count() }}
-            </strong>
-
-        </div>
-
     </div>
 
 
-    {{-- =========================
+    {{-- =====================================================
          TABLA
-         ========================= --}}
+         ===================================================== --}}
 
-    <div class="tabla-wrapper">
+    <div class="tabla-card">
 
-        <table>
+        <div class="tabla-scroll">
 
-            <thead>
+            <table class="table table-vcenter tabla-requerimientos">
 
-                <tr>
-                    <th>N°</th>
-                    <th>Funcionario</th>
-                    <th>Título</th>
-                    <th>Categoría</th>
-                    <th>Prioridad</th>
-                    <th>Estado</th>
-                    <th>Fecha ingreso</th>
-                    <th>Acciones</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                @forelse ($requerimientos as $requerimiento)
+                <thead>
 
                     <tr>
+                        <th>N°</th>
+                        <th>Funcionario</th>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Fecha ingreso</th>
+                        <th>Acciones</th>
+                    </tr>
 
-                        <td>
-                            {{ $requerimiento->id }}
-                        </td>
-
-
-                        <td>
-                            {{ $requerimiento->usuario?->name ?? 'Usuario no disponible' }}
-                        </td>
-
-
-                        <td>
-                            {{ $requerimiento->titulo }}
-                        </td>
+                </thead>
 
 
-                        <td>
-                            {{ ucfirst($requerimiento->categoria) }}
-                        </td>
+                <tbody>
+
+                    @forelse ($requerimientos as $requerimiento)
+
+                        <tr>
+
+                            {{-- NÚMERO --}}
+                            <td>
+                                <span class="numero-requerimiento">
+                                    #{{ $requerimiento->id }}
+                                </span>
+                            </td>
 
 
-                        <td>
+                            {{-- FUNCIONARIO --}}
+                            <td>
+                                <span class="funcionario-nombre">
+                                    {{ $requerimiento->usuario?->name ?? 'Usuario no disponible' }}
+                                </span>
+                            </td>
 
-                            @if ($requerimiento->prioridad === 'sin_asignar')
 
-                                <span style="
-                                    background: #FEF3C7;
-                                    color: #92400E;
-                                    padding: 5px 10px;
-                                    border-radius: 20px;
-                                    font-weight: bold;
-                                    white-space: nowrap;
-                                ">
-                                    Sin asignar
+                            {{-- TÍTULO --}}
+                            <td class="titulo-requerimiento">
+                                {{ $requerimiento->titulo }}
+                            </td>
+
+
+                            {{-- CATEGORÍA --}}
+                            <td>
+                                {{ ucfirst($requerimiento->categoria) }}
+                            </td>
+
+
+                            {{-- PRIORIDAD --}}
+                            <td>
+
+                                @switch($requerimiento->prioridad)
+
+                                    @case('sin_asignar')
+
+                                        <span class="badge-prioridad prioridad-sin-asignar">
+                                            Sin asignar
+                                        </span>
+
+                                        @break
+
+
+                                    @case('baja')
+
+                                        <span class="badge-prioridad prioridad-baja">
+                                            Baja
+                                        </span>
+
+                                        @break
+
+
+                                    @case('media')
+
+                                        <span class="badge-prioridad prioridad-media">
+                                            Media
+                                        </span>
+
+                                        @break
+
+
+                                    @case('alta')
+
+                                        <span class="badge-prioridad prioridad-alta">
+                                            Alta
+                                        </span>
+
+                                        @break
+
+
+                                    @case('urgente')
+
+                                        <span class="badge-prioridad prioridad-urgente">
+                                            Urgente
+                                        </span>
+
+                                        @break
+
+
+                                    @default
+
+                                        {{ ucfirst($requerimiento->prioridad) }}
+
+                                @endswitch
+
+                            </td>
+
+
+                            {{-- ESTADO --}}
+                            <td>
+                                <x-estado :estado="$requerimiento->estado" />
+                            </td>
+
+
+                            {{-- FECHA --}}
+                            <td class="fecha-requerimiento">
+
+                                {{ $requerimiento->created_at->format('d-m-Y') }}
+
+                                <span class="hora">
+                                    {{ $requerimiento->created_at->format('H:i') }}
                                 </span>
 
-                            @else
-
-                                {{ ucfirst($requerimiento->prioridad) }}
-
-                            @endif
-
-                        </td>
+                            </td>
 
 
-                        <td>
-                            <x-estado :estado="$requerimiento->estado" />
-                        </td>
+                            {{-- ACCIONES --}}
+                            <td>
 
+                                <div class="acciones-requerimiento">
 
-                        <td>
-                            {{ $requerimiento->created_at->format('d-m-Y H:i') }}
-                        </td>
-
-
-                        <td>
-
-                            <div class="acciones-requerimiento">
-
-                                {{-- VER DETALLE --}}
-                                <a
-                                    href="{{ route('requerimientos.show', $requerimiento) }}"
-                                    class="btn btn-detalle"
-                                >
-                                    Ver detalle
-                                </a>
-
-
-                                {{-- GESTIONAR --}}
-                                <a
-                                    href="{{ route('admin.requerimientos.edit', $requerimiento) }}"
-                                    class="btn"
-                                >
-                                    Gestionar
-                                </a>
-
-
-                                {{-- ELIMINAR --}}
-                                <form
-                                    action="{{ route('admin.requerimientos.destroy', $requerimiento) }}"
-                                    method="POST"
-                                    class="form-eliminar"
-                                >
-
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button
-                                        type="submit"
-                                        class="btn"
-                                        style="background: #EF3E24;"
+                                    <a
+                                        href="{{ route('requerimientos.show', $requerimiento) }}"
+                                        class="btn-tabla btn-ver"
                                     >
-                                        Eliminar
-                                    </button>
+                                        Ver detalle
+                                    </a>
 
-                                </form>
 
-                            </div>
+                                    <a
+                                        href="{{ route('admin.requerimientos.edit', $requerimiento) }}"
+                                        class="btn-tabla btn-gestionar"
+                                    >
+                                        Gestionar
+                                    </a>
 
-                        </td>
 
-                    </tr>
+                                    <form
+                                        action="{{ route('admin.requerimientos.destroy', $requerimiento) }}"
+                                        method="POST"
+                                        class="form-eliminar"
+                                    >
 
-                @empty
+                                        @csrf
+                                        @method('DELETE')
 
-                    <tr>
+                                        <button
+                                            type="submit"
+                                            class="btn-tabla btn-eliminar"
+                                        >
+                                            Eliminar
+                                        </button>
 
-                        <td colspan="8">
-                            No se encontraron requerimientos
-                            con los filtros seleccionados.
-                        </td>
+                                    </form>
 
-                    </tr>
+                                </div>
 
-                @endforelse
+                            </td>
 
-            </tbody>
+                        </tr>
 
-        </table>
+                    @empty
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="sin-resultados"
+                            >
+                                No se encontraron requerimientos
+                                con los filtros seleccionados.
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {{-- =================================================
+             PAGINACIÓN
+             ================================================= --}}
+
+        @if ($requerimientos->hasPages())
+
+            <div class="paginacion-contenedor">
+
+                <div class="paginacion-info">
+
+                    Mostrando
+
+                    <strong>
+                        {{ $requerimientos->firstItem() }}
+                    </strong>
+
+                    a
+
+                    <strong>
+                        {{ $requerimientos->lastItem() }}
+                    </strong>
+
+                    de
+
+                    <strong>
+                        {{ $requerimientos->total() }}
+                    </strong>
+
+                    requerimientos
+
+                </div>
+
+
+                <div class="paginacion">
+
+                    {{-- ANTERIOR --}}
+                    @if ($requerimientos->onFirstPage())
+
+                        <span class="pagina-deshabilitada">
+                            Anterior
+                        </span>
+
+                    @else
+
+                        <a
+                            href="{{ $requerimientos->previousPageUrl() }}"
+                            class="pagina-enlace"
+                        >
+                            Anterior
+                        </a>
+
+                    @endif
+
+
+                    {{-- PÁGINAS --}}
+                    @for (
+                        $pagina = 1;
+                        $pagina <= $requerimientos->lastPage();
+                        $pagina++
+                    )
+
+                        @if ($pagina === $requerimientos->currentPage())
+
+                            <span
+                                class="pagina-enlace pagina-activa"
+                            >
+                                {{ $pagina }}
+                            </span>
+
+                        @else
+
+                            <a
+                                href="{{ $requerimientos->url($pagina) }}"
+                                class="pagina-enlace"
+                            >
+                                {{ $pagina }}
+                            </a>
+
+                        @endif
+
+                    @endfor
+
+
+                    {{-- SIGUIENTE --}}
+                    @if ($requerimientos->hasMorePages())
+
+                        <a
+                            href="{{ $requerimientos->nextPageUrl() }}"
+                            class="pagina-enlace"
+                        >
+                            Siguiente
+                        </a>
+
+                    @else
+
+                        <span class="pagina-deshabilitada">
+                            Siguiente
+                        </span>
+
+                    @endif
+
+                </div>
+
+            </div>
+
+        @else
+
+            {{-- Aunque solo haya una página,
+                 seguimos mostrando el total --}}
+            <div class="paginacion-contenedor">
+
+                <div class="paginacion-info">
+
+                    Mostrando
+
+                    <strong>
+                        {{ $requerimientos->count() }}
+                    </strong>
+
+                    de
+
+                    <strong>
+                        {{ $requerimientos->total() }}
+                    </strong>
+
+                    requerimientos
+
+                </div>
+
+            </div>
+
+        @endif
 
     </div>
 
@@ -570,18 +1442,37 @@
                     event.preventDefault();
 
                     Swal.fire({
-                        title: '¿Eliminar requerimiento?',
-                        text: 'Esta acción no se puede deshacer.',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar',
-                        confirmButtonColor: '#EF3E24',
-                        cancelButtonColor: '#6B7280'
+
+                        title:
+                            '¿Eliminar requerimiento?',
+
+                        text:
+                            'Esta acción no se puede deshacer.',
+
+                        icon:
+                            'warning',
+
+                        showCancelButton:
+                            true,
+
+                        confirmButtonText:
+                            'Sí, eliminar',
+
+                        cancelButtonText:
+                            'Cancelar',
+
+                        confirmButtonColor:
+                            '#EF3E24',
+
+                        cancelButtonColor:
+                            '#6B7280'
+
                     }).then((result) => {
 
                         if (result.isConfirmed) {
+
                             form.submit();
+
                         }
 
                     });
